@@ -1,0 +1,282 @@
+== Changelog ==
+= 2.3.10 2024-03-22 =
+* Minor code improvements.
+* Added code that prevents Matomo Analytics plugin from being restricted.
+
+= 2.3.9 2024-02-19 =
+* Minor code improvements.
+* Changed code for the BETA: DONOTCACHEPAGE option.
+
+= 2.3.8 2024-01-28 =
+* Plugin DB Upgrade script fixed.
+
+= 2.3.7 2024-01-24 =
+* Altered plugin reviews code due to an issue that may affect saving API Key.
+
+= 2.3.6 2024-01-24 =
+* Minor improvements in preparation for Plugin Previews in WordPress Playgrounds.
+
+= 2.3.5 2024-01-24 =
+* Fix for DB upgrade may have an issue if an API Key not set.
+
+= 2.3.4 2024-01-21 =
+* Fix for an issue with "Block on Entire Site" when a custom block page/redirect was selected.
+
+= 2.3.3 2024-01-18 =
+* Fix for an error that may appear if API key is undefined.
+
+= 2.3.2 2024-01-17 =
+* Slight alteration to Page/Post processing code.
+* Fix for unecessary loading on the widget editor in Admin causing an error message.
+
+= 2.3.1 2023-12-25 =
+* Corrected a code that may have displayed a '1' on the end of posts and pages text if they are selected for blocking.
+
+= 2.3.0 2023-12-23 =
+* Refactored the Pages/Posts blocking method due to performance issues with the WordPress Admin UI on sites with a large amount of Pages and Posts.
+* Altered the way a Custom Block Page is set due to performance issues with the WordPress Admin UI on sites with a large amount of Pages and Posts.
+
+= 2.2.3 2023-09-01 =
+* Fixed a bug that could arise with block on all pages enabled and a custom block page selected causing a redirection loop for blocked visitors.
+
+= 2.2.2 2023-08-17 =
+* Revised Code.
+
+= 2.2.1 2023-07-20 =
+* Revised User IP Logging code due to a possible error.
+
+= 2.2.0 2023-07-19 =
+* Revised blocking code for pages/posts.
+* User Registration/Login IP Data reformatted in Users List, now countains Location and Risk Score data.
+* User Registration/Login IP data (displayed to admins) fixed on User profile pages.
+
+= 2.1.3 2023-06-26 =
+* Fix for potential PHP Error.
+
+= 2.1.2 2023-06-06 =
+* Revised blocking code for Block on Entire Site.
+
+= 2.1.1 2023-05-30 =
+* Fix for the possibility that User IP may not be logged on Registration or Login if Cloudflare is in use.
+* Revised blocking code for pages/posts.
+
+= 2.1.0 2023-05-24 =
+* Pages/Posts are now blocked by WordPress Page ID rather than Permalinks. This should be more efficient.
+
+= 2.0.6 2023-03-30 =
+* Correction for stats graph zoom axis on the API Key Statistics Page.
+* Updated WordPress Compatible Version to 6.2
+
+= 2.0.5 2023-03-08 =
+* Fix for potential PHP Warning on Cloudflare Detection Message in Settings.
+* Typo correction for Proxy & VPN Blocker helper text if proxycheck.io API Key is not defined.
+* Improved detection on wp-login.php.
+
+= 2.0.4 2023-01-13 =
+* Updated Countries list under 'Restrict Country/Continent' Tab due to some country names not being in the format returned by the proxycheck.io API.
+* Corrected description text below "Known Good IP Cache" slider under 'Advanced' Tab, this incorrectly read 0 minutes instead of 10 minutes as per the Plugin documentation.
+
+= 2.0.3 2022-12-28 =
+* Correction to logic for remote visitor IP header.
+* Moved CloudFlare detected message to be below the Header Field in PVB Settings > Main. This message will appear above the selection box if CloudFlare Header is detected but not the selected option in the dropdown.
+
+= 2.0.2 2022-12-15 =
+* Fix for CloudFlare Detected Admin Notice message that may sometimes incorrectly appear even if CloudFlare is selected.
+
+= 2.0.1 2022-12-14 =
+* Fix for Custom Block Page Select Box issue that unintentionally resulted in the first option in the dropdown being selected by default if no option was selected.
+* Improvement to Uninstall Script.
+
+= 2.0.0 2022-12-12 =
+* Refined Restrict on Login/Authentication (Advanced) Option
+* Improved code for wp-cron and admin-ajax requests.
+* Improved Settings with the view to allow easier creation of translations.
+* Settings UI has been changed slightly for notes and warnings in the descriptions below fields.
+* Replaced settings multiselect and dropdown js library with a better one.
+
+= 1.10.4 2022-10-17 =
+* "Allow Staff Bypass" (Advanced) option added to allow staff with editing permissions to be able to access the Dashboard, this is for use alongside the "Restrict on Login/Authentication" (Advanced) Setting when set to 'off' and The "Block on All Pages" (Advanced) Option.
+
+= 1.10.3 2022-10-04 =
+* Restrict on Login/Authentication (Advanced) option fixed so that the Block on Entire Site (Advanced) option doesn't cause issues with Login.
+* CSS fix for a padding issue on the input box on the Whitelist/Blacklist pages.
+
+= 1.10.2 2022-07-02 =
+* Further refinements to settings UI.
+* Corrected an issue that would show on the API Key Statistics page if an API key was defined in PVB Settings but the key was incorrect.
+
+= 1.10.1 2022-06-01 =
+* Minor fix for the settings UI not working if WordPress SCRIPT_DEBUG is set to true.
+* Altered Settings UI Dark Theme.
+
+= 1.10.0 2022-05-28 =
+* Corrected Blacklist & Whitelist editor in Proxy & VPN Blocker Settings, the proxycheck.io API endpoint for this feature was recently changed and the status messages are now different, this was resulting in a "failed to add/remove" error message even though the change was made successfully.
+* Debugging page in Proxy & VPN Blocker Settings now tests if the proxycheck.io API is successfully reachable.
+* Minor code improvements.
+
+= 1.9.1 2022-03-01 =
+* Altered how the query tag is reported in proxycheck.io log (Removed 'https://', 'http://' and 'www.' from the URL that is displayed in the log, this is not required information and takes up room in the log on the PVB Settings status page.).
+
+= 1.9.0 2022-02-20 =
+* Minor improvements.
+* Fixed missing menu for small screens in Settings.
+* Fixed a display issue on the Statistics page in Settings if API Dashboard Access was turned off in proxycheck.io Dashboard.
+* Deprecated the TLS toggle, queries will now always be encrypted.
+
+= 1.8.5 2021-09-24 =
+* rolled back some of the changes in the previous update that caused a display issue for the "block on selected pages/posts" UI.
+
+= 1.8.4 2021-09-07 =
+* Minor code cleanup.
+* Fixed UI issue on API Key Statistics Page if API Key is not entered in settings.
+* Altered UI of API Key Statistics Page with an improved top layout and more information.
+
+= 1.8.3 2021-05-23 =
+* User Registration IP and the Most Recent Login IP is now recorded in User Meta and is displayed in the user list and user's page in Admin. If you used "Register IP's" Plugin previously, Proxy & VPN Blocker will get past user registration IP's from this for prior user registrations.
+* Added advanced options for disabling PVB protections on the default WordPress login page/authentication.
+* The Proxy & VPN Blocker settings are no longer cleared on Plugin uninstall unless you set it to clear under "Advanced" settings tab.
+
+= 1.8.2 2021-02-16 =
+* Fixed an issue that caused the Country Whitelist option to not function correctly.
+* Check implemented to disable the Country Whitelist option if the country list is empty, this is to avoid a situation where nobody can access the website.
+* Fixed a redirection issue when adding/removing IP's on the Blacklist Editor page in Settings, it functioned, but redirected you back to the Whitelist Editor page instead of the Blacklist Editor Page after form submission.
+* Added an experimental Debugging Information Option (perhaps expandable in future) which enables a Debugging Page in PVB Settings displaying some information that may be useful for the PVB developer to help diagnose issues.
+* Significantly decreased the amount of Icon font files included in Settings so that only the used icons are included as their own font.
+
+= 1.8.1 2021-02-11 =
+* Multiple fixes for issues affecting the use of known good IP cache. This did not affect the detection of Proxies and VPN's and only stopped known good IP's being cached to prevent constant recheck.
+* Refactored API Call function.
+
+= 1.8.0 2021-02-09 =
+* The Settings UI has been broken down into tabs due to the amount of options available now. The page length was deemed to be too long and confusing for some users.
+* The settings UI has been refreshed, they are now also in Dark Mode depending on OS/Browser setting if supported.
+* Default for VPN Risk Score has been changed from 33 to 66 (recommended) - This only affects fresh installs.
+
+= 1.7.2 2020-12-27 =
+* Fix for potential errors and issues if your proxycheck API query allowance was exhausted.
+* Fix for UI issue with the percentage bar on the API Key Statistics page if queries are over 100% (Burst token in use or queries exhausted).
+* Added an option for Proxy & VPN Blocker to send an email to the defined WordPress Admin Email notifying you of a denied status message received from proxycheck.io when making an API Query. This is useful to see if you have gone over used queries or if you have been blocked due to exceeding per second request rate limits or you have been banned.
+
+= 1.7.1 2020-12-16 =
+* Fix for php error on some older/outdated php versions (7.0.xx, 7.1.xx, 7.2.xx).
+
+= 1.7.0 2020-12-16 =
+* Added option that allows redirecting blocked visitors to an external URL (alternative to redirecting to a page on your site or the default error page with text).
+* Updated amcharts for statistics page to version 4.
+* Renamed Blacklist/Whitelist pages to Blacklist Editor/Whitelist Editor.
+* Minor improvements made to code.
+* Renamed "Access Denied Message or Custom Blocked Page" to "Blocked Visitor Action" in Settings.
+
+= 1.6.8 2020-05-22 =
+* Fix for Country Whitelist option and grouped this option with the country list near the bottom in the section titled "Block or Allow Countries/Continents" with altered explanation text.
+
+= 1.6.7 2020-05-20 =
+* Added an advanced section option to make the country list a list of whitelisted countries instead of blacklisted.
+* Removed the Anti-Clickbombing feature as it no longer works as intended.
+* Updated text on the Plugin settings page.
+
+= 1.6.6 2020-05-09 =
+* Reverted to 1.5.x Cloudflare code due to issues with some server configurations causing IP validation to fail.
+
+= 1.6.5 2020-05-08 =
+* Fixed a rare issue that could happen depending on some hosting PHP configurations which may have caused Cloudflare's IP ranges to fail to be acquired.
+* Altered slightly how blocking on pages/posts is processed.
+* Fixed a visual bug on API Key Statistics Page when API Dashboard Access was disabled in the proxycheck.io account.
+
+= 1.6.4 2020-05-04 =
+* An issue was discovered that prevented some wp-cron or admin-ajax tasks from running, correct operation is to ignore wp-cron & admin-ajax, this affected other Plugins tasks if they communicate with remote servers due to datacenter IP ranges being detected as VPNs by proxycheck.io API, this has been corrected.
+
+= 1.6.3 2020-05-03 =
+* Further refinements to "Block on Entire Site".
+
+= 1.6.2 2020-05-03 =
+* An issue was discovered with the "Block on Entire Site" feature (formerly "Block on All Pages") which caused it to not function, this has been corrected.
+
+= 1.6.1 2020-05-02 =
+* Fix for database update script.
+
+= 1.6.0 2020-05-01 =
+* Implemented proxycheck.io Risk Score functionality.
+* Fixed an issue that may have caused blocking on specific Posts & Pages not to work if permalinks were the WordPress default. Please check your selected pages/posts in PVB Settings after updating!
+* Pagination on Recent Positive Detections log on API Key statistics page was fixed due to an incrementation issue.
+* API Key statistics page Recent Detections log now displays time in the same way as proxycheck.io.
+* If Cloudflare is in use and turned on in settings, $_SERVER['REMOTE_ADDR'] is now validated against a list of Cloudflare IP address ranges for additional security.
+* If Cloudflare is determined to be in use but the Cloudflare setting is not enabled in PVB settings, there will now be a warning message displayed in admin.
+* Known Good IP Cache is now configurable between 10 minutes and 4hrs (previously fixed at 30 minutes).
+* Updated Plugin settings UI including the order settings are listed in and with groupings for better clarity.
+* Refactored many parts of the code.
+
+= 1.5.4 2020-02-02 =
+* Implemented Continent Blocking.
+* Some minor code improvements.
+
+= 1.5.3 2019-11-06 =
+* Corrected an issue that could cause higher than normal known good IP cache misses for some users.
+
+= 1.5.2 2019-10-25 =
+* Fix for an issue that could potentially cause conflicting PVB settings CSS styles and other Plugins settings CSS styles.
+* Implemented a unique settings key feature - When the settings are saved a new unique key is generated, this is saved alongside cached known good IP's and ensures good IP's within the last 30 minutes are checked again if you update the settings.
+* Settings CSS updated due to some changes in WordPress 5.3.
+* Chosen.js library updated.
+
+= 1.5.1 2019-04-13 =
+* Bug fix for PHP Error on statistics page if API key is not specified.
+* Updated readme and some text on the Plugin settings page.
+
+= 1.5.0 2019-03-31 =
+* Added ability to block on specified posts.
+* Updated text descriptions for some settings to make it more clear as to what the setting does.
+* Improved performance of API Key Statistics Page and new statistics table with pagination.
+* Code cleanup and refinements.
+
+= 1.4.0 2018-08-15 =
+* added option to allow blocking on specified pages (in addition to the core protection of wordpress, registration, login, admin area, commenting etc).
+* added proxycheck.io blacklist & whitelist control to the Plugin settings
+* added option to redirect blocked users to your own custom page.
+* Added a rudimentary Anti Click-Bombing feature to enable the protection of ads or other content if you wrap it in the html div class 'pvb-protect-div'. Not compatible with Block on all pages or if a page caching Plugin is used.
+* Fixed an issue where WordPress cron tasks could potentially be blocked from running on certain hosts which are detected as a Proxy or VPN.
+* Removed the Custom Tag Switch (Checkbox) from the Plugin options page, status of custom tagging is now determined by whether the Custom Tag field contains any text.
+* Updated Plugin logo and admin panel UI.
+
+= 1.3.2 2018-06-27 =
+* Fixed an issue where the Cloudflare option was the reverse on servers that don't support X-Forwarded-For headers used by Cloudflare - If you had the Plugin Cloudflare switch set to "on" on such servers it was doing the opposite and not supporting Cloudflare and "off" was the Cloudflare supporting state. If you had the Cloudflare option set to "off" to fix this issue while using Cloudflare, please set it back to "on" after this update.
+
+= 1.3.1 2018-05-16 =
+* fixed an issue where the Plugin was not setting its new version number to the database on update.
+* fixed a minor issue with percentages not being rounded on the information page.
+
+= 1.3.0 2018-05-15 =
+* Added the ability to block entire countries if desired, this uses the proxycheck.io data to determine location of the visitor, but note that this will not show up in your statistics due to this check being done within the Plugin.
+* Altered the API Key Information page to display key, proxycheck.io plan, Queries remaining today, and 30 days stats in a line graph.
+* Fixed a minor issue effecting PHP versions prior to v5.6 on the API key Information page, although the Plugin is made for PHP v5.6+ this fixes the bug on prior versions on this page.
+
+= 1.2.1 2018-05-01 =
+* Known good IP addresses will now get cached for 30 minutes this is to reduce API Queries and site latency on rechecks for legitimate users. Proxy and VPN IP's will not get cached and will be rechecked every time they attempt to visit protected pages.
+* Fixed caching issue where Denied pages could potentially be served to other people using the site when 'block on all pages' is enabled while using a Cache Plugin.
+* Added warning about Block On All Pages and the use of page caching Plugins, please see the FAQ.
+* Improved the styling of the settings pages further.
+
+= 1.2.0 2018-04-17 =
+* Added IP country to stats page
+* Extended stats page to show positive detections from the last 100 queries instead of 50
+* Added toggle to block Proxies/VPN's on all pages (Note this is at the expense of significantly higher query usage)
+* Added slider that enables setting the amount of days from 1 to 60 (default 7) that an IP will be checked for Proxy/VPN history so that you can set your level of security.
+
+= 1.1.0 2018-01-12 =
+* Updated Plugin to support the new proxycheck.io v2 API
+* Fixed a bug that caused an error when enabling the Cloudflare option but not having Cloudflare enabled for the domain
+* Improved Plugin options panel UI
+* Added a toggle to disable querying the proxycheck.io API without having to deactivate the Plugin
+* Added a API Key statistics page that uses data from the proxycheck.io dashboard API if you specify an API Key (This does not use your queries!)
+
+= 1.0.2 2017-12-28 =
+* Added support for WooCommerce Login Forms for aesthetic reasons
+* improved access denied page
+* removed unnecessary scripts
+
+= 1.0.1 2017-12-25 =
+* Fixed an issue with site login
+* Switched from cURL to official WordPress HTTP API for querying the proxycheck.io API
+
+= 1.0 2017-12-22 =
+* Initial release
