@@ -64,9 +64,10 @@ button.pvbdonatedismiss:focus, input.pvbdonatedismiss:focus {
 
 /* Info Area */
 .pvbinfowrap {
-    background: rgba(242, 250, 255, 0.95);
-    backdrop-filter: blur(45px) !important;
+    background: rgba(242,250,255,.75);
+    backdrop-filter: blur(5px) !important;
     border: 1px solid #c5cdd4;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,.1),0 6px 20px 0 rgba(0,0,0,.1);
 }
 
 .pvbinfowraptext h1 {
@@ -468,6 +469,131 @@ p.warning {
     color: #aa04e7;
     border: 1px solid #aa04e7;
 }
+
+
+
+
+
+
+.stats-new {
+    border-bottom: 1px solid #c6cdd4;
+}
+.stats-new a:link {
+    color: #16b3fb;
+    text-decoration: none;
+}
+.stats-new a:visited {
+    color: #16b3fb;
+}
+.stats-new a:link:hover, .stats-new a:hover {
+    color: #212931;
+}
+.stats-new section header .col {
+    color: #16b3fb;
+    border-bottom: 2px solid #16b3fb;
+}
+
+.stats-new section .col:nth-child(1) span {
+    background-color: #f9fbff;
+    color: #212931 ;
+    border: 1px solid #c6cdd4;
+}
+.stats-new section .row > .col.country > img.country-flag {
+    border: 1px solid #c6cdd4;
+}
+
+/* coluns odd/even style */
+.stats-new section .row:nth-child(odd) {
+    background: #fafcff;
+    color: #212931;
+}
+.stats-new section .row:nth-child(even) {
+    background: #f1f1f1;
+    color: #212931;
+}
+.stats-new section .row:hover {
+    background: #f0f3fb;
+}
+
+/* style the types */
+.stats-new section > .row > .col.type > span.VPN {
+    background: #fff1e5;
+    color: #ffab1f ;
+    border: 1px solid #ffab1f;
+}
+.stats-new section > .row > .col.type > span.proxy {
+    background: #ffe2e2;
+    color: #fc2323 ;
+    border: 1px solid#fc2323;
+}
+.stats-new section > .row > .col.type > span.blacklist {
+    background: #ebebeb;
+    color: #555;
+    border: 1px solid#555;
+}
+.stats-new section > .row > .col.type > span.rule {
+    background: #f8e6ff;
+    color: #aa04e7;
+    border: 1px solid #aa04e7;
+}
+
+
+
+
+
+
+.angry-grid-head {
+    color: #16b3fb;
+    border-bottom: 2px solid #16b3fb;
+}
+
+
+
+.angry-grid {
+    background: #fafcff;
+    color: #212931;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+.angry-grid:hover {
+    background: #f0f3fb;
+}
+
+.angry-grid > .item-0 span.space {
+    background-color: #f9fbff;
+    color: #212931 ;
+    border: 1px solid #c6cdd4;
+}
+
+img.country-flag {
+    border: 1px solid #c6cdd4;
+}
+
+.extra-data-row {
+    box-shadow: inset 0px 22px 31px -11px rgba(0,0,0,0.1);
+    background: #fff;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+.extra-data-row span.ipinflux_type_vpn {
+    background: #fff1e5;
+    color: #ffab1f ;
+    border: 1px solid #ffab1f;
+ }
+
+ .extra-data-row span.ipinflux_type_others {
+    background: #ffe2e2;
+    color: #fc2323 ;
+    border: 1px solid#fc2323;
+ }
+
+ .extra-data-row span.ipinflux_blocked_on_url {
+    background: #f8e6ff;
+    color: #aa04e7;
+    border: 1px solid #aa04e7;
+ }
+
+
 
 /* Buttons */
 button.pvbdefault, input.pvbdefault {

@@ -85,6 +85,7 @@ class Proxy_VPN_Blocker_Settings {
 		add_submenu_page( $this->parent->_token . '_settings', 'Blacklist Editor', 'Blacklist Editor', 'manage_options', $this->parent->_token . '_blacklist', array( $this, 'ipblacklist_page' ) );
 		add_submenu_page( $this->parent->_token . '_settings', 'Whitelist Editor', 'Whitelist Editor', 'manage_options', $this->parent->_token . '_whitelist', array( $this, 'ipwhitelist_page' ) );
 		add_submenu_page( $this->parent->_token . '_settings', 'Statistics', 'API Key Statistics', 'manage_options', $this->parent->_token . '_statistics', array( $this, 'statistics_page' ) );
+		add_submenu_page( $this->parent->_token . '_settings', 'Action Log', 'Action Log', 'manage_options', $this->parent->_token . '_action_log', array( $this, 'action_log_page' ) );
 		if ( 'on' === get_option( 'pvb_enable_debugging' ) ) {
 			add_submenu_page( $this->parent->_token . '_settings', 'PVB Debugging', 'PVB Debugging', 'manage_options', $this->parent->_token . '_debugging', array( $this, 'debugging_page' ) );
 		}
@@ -869,14 +870,33 @@ class Proxy_VPN_Blocker_Settings {
 
 		if ( empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
 			echo '<div class="pvbinfowrap">' . "\n";
-			echo '	<div class="pvbinfowrapright">' . "\n";
 			echo '		<div class="pvbinfowraptext">' . "\n";
-			echo '			<h1>' . __( 'Welcome to Proxy &amp; VPN Blocker', 'proxy-vpn-blocker' ) . '</h1>' . "\n";
-			echo '			<p>' . __( 'Without an API Key you don\'t have access to statistics and most features of <a href="https://proxycheck.io" target="_blank">proxycheck.io</a>. You are also limited to making only 100 queries per day.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
-			echo '			<p>' . __( 'We highly recommend that you sign up with proxycheck.io for a free API Key which has 1,000 queries per day, and full access to all features. Paid higher query tiers are <a href="https://proxyvpnblocker.com/discounted-plans/" target="_blank">also available</a> and are recommended for larger sites', 'proxy-vpn-blocker' ) . '</p>' . "\n";
-			echo '			<p>' . __( 'Please enter your proxycheck.io API key under the General tab below to enable full functionality of Proxy &amp; VPN Blocker.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
+			echo '			<h1>' . __( 'Enhance Your Experience with a free proxycheck.io API Key', 'proxy-vpn-blocker' ) . '</h1>' . "\n";
+			echo '			<div class="pvbinfowrapblock">' . "\n";
+			echo '          	<h2>' . __('Free API Key Benefits:', 'proxy-vpn-blocker' ) . '</h2>' . "\n";
+			echo '         		 <ul>' . "\n";
+			echo '          		<li>' . __( '✅ 1,000 queries per day (10x more).', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( '✅ Full access to all API features.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( '✅ Complete statistics dashboard.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( '✅ Enhanced security monitoring.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          	</ul>' . "\n";
+			echo '			</div>' . "\n";
+			echo '			<div class="pvbinfowrapblock">' . "\n";
+			echo '          	<h2>' . __( 'Higher Query Tiers Available' ) . '</h2>' . "\n";
+			echo '				<p>' . __( 'Need more queries? Paid plans offer higher API query limits (10,000+ per day), ideal for larger websites and organizations. These are available from the <a href="https://proxyvpnblocker.com/discounted-plans/" target="_blank">Proxy & VPN Blocker Website</a> for a discounted rate.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
+			echo '			</div>' . "\n";
+			echo '			<div class="pvbinfowrapblock">' . "\n";
+			echo '         	 	<h2>' . __('Quick Setup Guide', 'proxy-vpn-blocker' ) . '</h2>' . "\n";
+			echo '         		<ol>' . "\n";
+			echo '          		<li>' . __( 'Visit <a href="https://proxycheck.io" target="_blank">proxycheck.io</a> to create an account.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( 'Get your Free API key from your proxycheck.io dashboard.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( 'Open the General tab below.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( 'Paste your API key in the designated field.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( 'Save changes to activate full functionality.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          	</ol>' . "\n";
+			echo '				<p>' . __( 'Need help? Visit our <a href="https://proxyvpnblocker.com/installation-and-configuration-free/" target="_blank">Installation & Configuration Guide</a> or visit the <a href="https://wordpress.org/support/plugin/proxy-vpn-blocker/" target="_blank">WordPress Support Community</a>.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
+			echo '			</div>' . "\n";
 			echo '		</div>' . "\n";
-			echo '	</div>' . "\n";
 			echo '</div>' . "\n";
 		}
 		echo '<nav>' . "\n";
@@ -930,6 +950,16 @@ class Proxy_VPN_Blocker_Settings {
 	public function ipwhitelist_page() {
 		include_once 'proxycheckio-whitelist.php';
 	}
+
+	/**
+	 * Load pvb action log page.
+	 *
+	 * @return void
+	 */
+	public function action_log_page() {
+		include_once 'logs/proxy-vpn-blocker-logs.php';
+	}
+
 
 	/**
 	 * Load debugging page.

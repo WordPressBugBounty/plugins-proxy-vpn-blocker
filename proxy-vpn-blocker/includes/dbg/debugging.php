@@ -367,18 +367,6 @@ if ( ! empty( $custom_block_page_id[0] ) ) {
 				</div>';
 }
 
-if ( ! empty( get_option( 'pvb_blocked_pages_ids_array' ) ) ) {
-	$array_options[] = '<div class="row">
-					<div class="col left"><strong>Blocking on Select Page/Post ID\'s:</strong></div>
-					<div class="col right">' . implode( ', ', get_option( 'pvb_blocked_pages_ids_array' ) ) . '</div>
-				</div>';
-} else {
-	$array_options[] = '<div class="row">
-					<div class="col left"><strong>Blocking on Select Page/Post ID\'s</strong></div>
-					<div class="col right">None</div>
-				</div>';
-}
-
 if ( ! empty( get_option( 'pvb_proxycheckio_blocked_countries_field' ) ) ) {
 	$array_options[] = '<div class="row">
 					<div class="col left"><strong>Countries Field:</strong></div>

@@ -389,21 +389,6 @@ if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) || 'on' === get_o
 				';
 		$html2        .= '<div id="amchartAPImonth" style="width: 100%; height: 450px;"></div>' . "\n";
 		$html2        .= '</div>' . "\n";
-		// Get recent detection stats.
-		$html2 .= '<div id="log_outer">' . "\n";
-		$html2 .= '	<div id="log_content"></div>' . "\n";
-		$html2 .= '	<form id="log_query_form" action="https://proxycheck.io/dashboard/export/detections/pvb.pagination.v2.php" method="post" target="hiddenFrame">' . "\n";
-		$html2 .= '		<input type="hidden" id="api_key" name="api_key" value="' . get_option( 'pvb_proxycheckio_API_Key_field' ) . '">' . "\n";
-		$html2 .= '		<input type="hidden" id="page_number" name="page_number" value="0">' . "\n";
-		$html2 .= '		<div class="fancy-bottom">' . "\n";
-		if ( 'on' === get_option( 'pvb_proxycheckio_dummy_data' ) && empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
-			$html2 .= '	<h3>' . __( 'Unfortunately, this section is unavailable in WordPress Playgrounds', 'proxy-vpn-blocker' ) . '</h3>' . "\n";
-		}
-		$html2 .= '			<button class="pvbdefault" style="float: right;" onclick="decrementValue()" type="submit">View Newer Entries <i class="pvb-fa-icon-angle-double-right"></i></button>' . "\n";
-		$html2 .= '			<button class="pvbdefault"  onclick="incrementValue()" type="submit"><i class="pvb-fa-icon-angle-double-left"></i> View Older Entries</button>' . "\n";
-		$html2 .= '		</div>' . "\n";
-		$html2 .= '	</form>' . "\n";
-		$html2 .= '</div>' . "\n";
 		echo wp_kses( $html2, $allowed_html );
 	}
 } else {
@@ -418,48 +403,3 @@ if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) || 'on' === get_o
 	$html .= '</div>';
 	echo wp_kses( $html, $allowed_html );
 }
-
-/**
- * Function for stats table.
- */
-function pagination_javascript() {
-	$get_api_key = get_option( 'pvb_proxycheckio_API_Key_field' );
-	// phpcs:disable
-	?>
-	<script type="text/javascript">
-						jQuery(document).ready(function($) {
-							$('#log_content').load("https://proxycheck.io/dashboard/export/detections/pvb.pagination.v2.php?api_key=<?php echo $get_api_key; ?>");
-						});
-						jQuery('#log_query_form').submit(function(e) { // catch the form's submit event
-							e.preventDefault();
-							jQuery.ajax({ // create an AJAX call...
-								data: jQuery(this).serialize(), // get the form data
-								type: jQuery(this).attr('method'), // GET or POST
-								url: jQuery(this).attr('action'), // the file to call
-								success: function(response) { // on success..
-									jQuery('#log_content').html(response); // update the DIV
-								}
-							}
-						);
-						return false; // cancel original event to prevent form submitting
-						});
-						function incrementValue() {
-							var value = parseInt(document.getElementById('page_number').value, 10);
-							value = isNaN(value) ? 0 : value;
-							value++;
-							document.getElementById('page_number').value = value;
-						}
-						function decrementValue() {
-							var value = parseInt(document.getElementById('page_number').value, 10);
-							value = isNaN(value) ? 0 : value;
-							value--;
-							if (value < 0) {
-								value = 0;
-							}
-							document.getElementById('page_number').value = value;
-						}
-	</script>
-	<?php
-	// phpcs:enable
-}
-add_action( 'admin_footer', 'pagination_javascript' );

@@ -114,7 +114,7 @@ class Proxy_VPN_Blocker {
 	 * @since   1.0
 	 * @return  void
 	 */
-	public function __construct( $file = '', $version = '3.0.5' ) {
+	public function __construct( $file = '', $version = '3.1.0' ) {
 		$this->_version = $version;
 		$this->_token   = 'proxy_vpn_blocker';
 
@@ -258,6 +258,17 @@ class Proxy_VPN_Blocker {
 			wp_enqueue_script( $this->_token . '-settings-pvb-select2-js' );
 			wp_register_script( $this->_token . '-settings-pvb-cookie-js', esc_url( $this->assets_url ) . 'js/cookie' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 			wp_enqueue_script( $this->_token . '-settings-pvb-cookie-js' );
+			wp_register_script( $this->_token . '-settings-pvb-action-logs', esc_url( $this->assets_url ) . 'js/log-ajax' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
+			wp_enqueue_script( $this->_token . '-settings-pvb-action-logs' );
+			wp_localize_script(
+				$this->_token . '-settings-pvb-action-logs',
+				'pvb_action_logs',
+				array(
+					'nonce'     => wp_create_nonce( 'pvb_action_logs_ajax_nonce' ),
+					'ajax_url'  => admin_url( 'admin-ajax.php' ),
+					'flags_url' => esc_url( $this->assets_url ) . '/img/country_flags/',
+				)
+			);
 		}
 	}//end pvb_scripts_footer_function()
 	/**
@@ -300,7 +311,7 @@ class Proxy_VPN_Blocker {
 	 * @see proxy_vpn_blocker()
 	 * @return Main proxy_vpn_blocker instance
 	 */
-	public static function instance( $file = '', $version = '3.0.5' ) {
+	public static function instance( $file = '', $version = '3.1.0' ) {
 
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );

@@ -65,15 +65,8 @@ function proxycheck_function( $visitor_ip, $asn_check, $raw, $skip_transient ) {
 			$vpn_option = 0;
 		}
 
-		// Get checkbox value for Risk_Score.
-		if ( 'on' === get_option( 'pvb_proxycheckio_risk_select_box' ) ) {
-			$risk_option = 1;
-		} else {
-			$risk_option = 0;
-		}
-
 		// Perform the query.
-		$response = wp_remote_post( 'https://proxycheck.io/v2/' . $visitor_ip . '?key=' . get_option( 'pvb_proxycheckio_API_Key_field' ) . '&risk=' . $risk_option . '&vpn=' . $vpn_option . '&days=' . get_option( 'pvb_proxycheckio_Days_Selector' ) . '&asn=' . $asn_check, $args );
+		$response = wp_remote_post( 'https://proxycheck.io/v2/' . $visitor_ip . '?key=' . get_option( 'pvb_proxycheckio_API_Key_field' ) . '&risk=1&vpn=' . $vpn_option . '&days=' . get_option( 'pvb_proxycheckio_Days_Selector' ) . '&asn=' . $asn_check, $args );
 
 		// Decode the JSON from proxycheck.io API.
 		$decoded_json = json_decode( wp_remote_retrieve_body( $response ) );
@@ -115,51 +108,62 @@ function proxycheck_function( $visitor_ip, $asn_check, $raw, $skip_transient ) {
 			}
 		}
 
-		// Check if the IP we're testing is a proxy server or not according to proxycheck.io.
+		// 0 Check if the IP we're testing is a proxy server or not according to proxycheck.io.
 		if ( 'yes' === $decoded_json->$visitor_ip->proxy ) {
 			$array = array( 'yes' );
 		} else {
 			$array = array( 'no' );
 		}
 
-		// Country.
+		// 1 Country.
 		if ( isset( $decoded_json->$visitor_ip->country ) ) {
 			$array[] = $decoded_json->$visitor_ip->country;
 		} else {
 			$array[] = 'null';
 		}
 
-		// Continent.
+		// 2 Continent.
 		if ( isset( $decoded_json->$visitor_ip->continent ) ) {
 			$array[] = $decoded_json->$visitor_ip->continent;
 		} else {
 			$array[] = 'null';
 		}
 
-		// Risk Score.
+		// 3 Risk Score.
 		if ( isset( $decoded_json->$visitor_ip->risk ) ) {
 			$array[] = $decoded_json->$visitor_ip->risk;
 		} else {
 			$array[] = 'null';
 		}
 
-		// Proxy Type.
+		// 4 Proxy Type.
 		if ( isset( $decoded_json->$visitor_ip->type ) ) {
 			$array[] = $decoded_json->$visitor_ip->type;
 		} else {
 			$array[] = 'null';
 		}
 
-		// Country isocode.
+		// 5 Country isocode.
 		if ( isset( $decoded_json->$visitor_ip->isocode ) ) {
 			$array[] = $decoded_json->$visitor_ip->isocode;
 		} else {
 			$array[] = 'null';
 		}
 
-		// City.
+		// 6 City.
 		if ( isset( $decoded_json->$visitor_ip->city ) ) {
 			$array[] = $decoded_json->$visitor_ip->city;
+		} else {
+			$array[] = 'null';
+		}
+
+		// 7 Blocked url for local logging.
+		$protocols   = array( 'https://', 'http://', 'www.' );
+		$host        = ! empty( $_SERVER['HTTP_HOST'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+		$req_uri     = ! empty( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$blocked_url = str_replace( $protocols, '', $host ) . $req_uri;
+		if ( ! empty( $blocked_url ) ) {
+			$array[] = $blocked_url;
 		} else {
 			$array[] = 'null';
 		}
@@ -175,12 +179,10 @@ function proxycheck_function( $visitor_ip, $asn_check, $raw, $skip_transient ) {
 			'null',
 			'null',
 			'null',
+			'null',
 		);
 
 		return $array;
 
 	}
-
 }
-
-

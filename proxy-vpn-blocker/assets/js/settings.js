@@ -75,7 +75,7 @@ jQuery(document).ready(function($) {
         $("#pvbdonationhide").show();
     }
 
-    $("#pvbdonationclosebutton").click(function() {
+    $("#pvbdonationclosebutton").on('click', function() {
         $("#pvbdonationhide").remove();
         Cookies.set('pvb-hide-donate-div', true, { expires: 365 });
     });
@@ -84,7 +84,7 @@ jQuery(document).ready(function($) {
         $(".pvbinfowrap").show();
     }
 
-    $("#pvbinfoclosebutton").click(function() {
+    $("#pvbinfoclosebutton").on('click', function() {
         $(".pvbinfowrap").remove();
         Cookies.set('pvb-hide-info-div', true, { expires: 365 });
     });
@@ -99,7 +99,7 @@ jQuery(document).ready(function($) {
         $('.pvboptionswrap:first').addClass('active');
     }
 
-    $('ul.nav-tab-wrapper li').click(function(){
+    $('ul.nav-tab-wrapper li').on('click', function(){
         var tab_id = $(this).attr('data-tab');
 
         $('ul.nav-tab-wrapper li').removeClass('active');
@@ -172,7 +172,7 @@ jQuery(document).ready(function($) {
         $(".pvbrvwwrap").show();
     }
 
-    $(".pvbdonatedismiss").click(function() {
+    $(".pvbdonatedismiss").on('click', function() {
         $(".pvbrvwwrap").remove();
         Cookies.set('pvb-hide-rvw-div', true, { expires: 365 });
     });
