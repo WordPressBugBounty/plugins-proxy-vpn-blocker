@@ -35,7 +35,7 @@ h2.pvb-wp-notice-fix {
 /* Donations Area */
 .pvbdonationsoffer {
     max-width: 100%;
-    min-width: 495px;
+    min-width: 450px;
     margin: 15px 0 15px 0;
     background-repeat: repeat; 
     border-radius: 7px;
@@ -103,7 +103,7 @@ button.pvbdonatedismiss, input.pvbdonatedismiss {
 /* Info Area */
 .pvbinfowrap {
     width: 100%;
-    min-width: 495px;
+    min-width: 450px;
     border-radius: 7px;
     box-sizing: border-box;
     margin: 5px 0 5px 0;
@@ -166,7 +166,7 @@ pvboptionswrap h2 {
 /* Review Area */
 .pvbrvwwrap {
     width: 100%;
-    min-width: 495px;
+    min-width: 450px;
     border-radius: 7px;
     box-sizing: border-box;
     margin: 15px 0 15px 0;

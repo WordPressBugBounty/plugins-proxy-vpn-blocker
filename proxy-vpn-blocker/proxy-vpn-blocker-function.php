@@ -11,7 +11,7 @@
  * Plugin Name: Proxy & VPN Blocker
  * Plugin URI: https://proxyvpnblocker.com
  * description: Proxy & VPN Blocker prevents Proxies, VPN's and other unwanted visitors from accessing pages, posts and more, using Proxycheck.io API data.
- * Version: 3.1.0
+ * Version: 3.1.1
  * Author: Proxy & VPN Blocker
  * Author URI: https://profiles.wordpress.org/rickstermuk
  * License: GPLv2
@@ -20,8 +20,8 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-$version     = '3.1.0';
-$update_date = 'November 13th 2024';
+$version     = '3.1.1';
+$update_date = 'December 11th 2024';
 
 if ( version_compare( get_option( 'proxy_vpn_blocker_version' ), $version, '<' ) ) {
 	update_option( 'proxy_vpn_blocker_version', $version );
@@ -149,7 +149,7 @@ function pvb_block_deny() {
 		if ( ! empty( get_option( 'pvb_proxycheckio_opt_redirect_url' ) ) ) {
 			nocache_headers();
 			//phpcs:disable
-			wp_safe_redirect( get_option( 'pvb_proxycheckio_opt_redirect_url' ), 302 );
+			wp_redirect( get_option( 'pvb_proxycheckio_opt_redirect_url' ), 302 );
 			//phpcs:enable
 			exit();
 		} else {

@@ -5,6 +5,10 @@
  * @package Proxy & VPN Blocker
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
  // Hook to register the AJAX handler.
 add_action( 'wp_ajax_fetch_pvb_logs', 'fetch_pvb_logs' );
 

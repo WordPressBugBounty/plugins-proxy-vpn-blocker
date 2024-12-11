@@ -5,6 +5,10 @@
  * @package Proxy & VPN Blocker
  */
 
+ if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Function to log Proxy & VPN blocker Actions
  */
