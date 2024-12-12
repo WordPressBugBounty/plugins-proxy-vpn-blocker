@@ -4,7 +4,7 @@ Tags: security, proxy blocker, vpn blocker, proxycheck, ip address
 Requires at least: 4.9
 Tested up to: 6.7.1
 Requires PHP: 7.2
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 License: GPLv2
 
 Blocks Proxies, VPNs, blacklisted IP Addresses (Geolocation) on login and registration, selected Pages, Posts and more using the proxycheck.io API.
@@ -90,6 +90,9 @@ Remember: If you ever have to do this, delete the disablepvb.txt file after you 
 5. Whitelist editor page. The blacklist editor page looks similar to this.
 
 == Changelog ==
+= 3.1.2 2024-12-12 =
+* Correction for potential unavailable function if local user IP logging is off.
+
 = 3.1.1 2024-12-11 =
 * Correction for redirect option.
 
