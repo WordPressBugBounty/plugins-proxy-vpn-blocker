@@ -463,6 +463,18 @@ if ( ! empty( get_option( 'pvb_allow_staff_bypass' ) ) ) {
 				</div>';
 }
 
+if ( ! empty( get_option( 'pvb_cache_buster' ) ) ) {
+	$array_options[] = '<div class="row">
+					<div class="col left"><strong>Cache Busting:</strong></div>
+					<div class="col right">on</div>
+				</div>';
+} else {
+	$array_options[] = '<div class="row">
+					<div class="col left"><strong>Cache Busting:</strong></div>
+					<div class="col right">off</div>
+				</div>';
+}
+
 // Generate Output.
 if ( 'on' === get_option( 'pvb_enable_debugging' ) ) {
 	// Build page HTML.

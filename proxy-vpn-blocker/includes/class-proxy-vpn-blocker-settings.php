@@ -527,15 +527,15 @@ class Proxy_VPN_Blocker_Settings {
 		$settings['RestrictPagePost']         = array(
 			'title'       => __( 'Page Caching', 'proxy-vpn-blocker' ),
 			'icon'        => __( 'fa-solid fa-scroll', 'proxy-vpn-blocker' ),
-			'description' => __( 'Settings relating to Caching of WordPress Pages and Posts.', 'proxy-vpn-blocker' ),
+			'description' => __( 'Settings relating to Caching of WordPress Pages and Posts. Sometimes Proxy & VPN Blocker may not be able to function fully due to WordPress Page Caching being in effect, a page served by cache means an IP check will not happen as the cache serves a static version of pages to the visitor before Plugins like Proxy & VPN Blocker can run.', 'proxy-vpn-blocker' ),
 			'fields'      => array(
 				array(
 					'id'          => 'cache_buster',
-					'label'       => __( 'BETA: Add DONOTCACHEPAGE Headers', 'proxy-vpn-blocker' ),
+					'label'       => __( 'Add DONOTCACHEPAGE Headers', 'proxy-vpn-blocker' ),
 					'description' => __( 'This will add no cache headers to your selected Pages and Posts and Login in order to prevent them from being cached by WordPress cache plugins in order to allow visitors to be checked and blocked as necessary, instead of cache serving them the page anyway.', 'proxy-vpn-blocker' ),
-					'field-note'  => __( 'When using this option the pages selected for visitor IP checking and blocking will not be served by cache plugins, this has the potential to degrade performance on these pages but the impact should be minimal. Unfortunately there is no alternative if you want to block on pages/posts except in cases where Cache Plugins have the option of Deferred Execution or Late Init, <a href="https://proxyvpnblocker.com/2023/06/01/wordpress-caching-plugins-and-proxy-vpn-blocker-an-explainer/" target="_blank">Please see the Proxy & VPN Blocker Website for further information on this</a>', 'proxy-vpn-blocker' ),
+					'field-note'  => __( 'When using this option the pages and posts selected for visitor IP checking and blocking will not be served by cache plugins that respect the header, this has the potential to degrade performance on these pages but the impact should be minimal. Unfortunately there is no alternative if you want to block on pages/posts except in cases where Cache Plugins have the option of Deferred Execution or Late Init. If Block on Entire site is enabled along with this setting, then no cache headers will be defined sitewide. <a href="https://proxyvpnblocker.com/2023/06/01/wordpress-caching-plugins-and-proxy-vpn-blocker-an-explainer/" target="_blank">Please see the Proxy & VPN Blocker Website for further information on this</a>', 'proxy-vpn-blocker' ),
 					'type'        => 'checkbox',
-					'default'     => '',
+					'default'     => 'on',
 				),
 			),
 		);

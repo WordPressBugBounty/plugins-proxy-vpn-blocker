@@ -4,14 +4,14 @@
  *
  * @package           Proxy & VPN Blocker
  * @author            Proxy & VPN Blocker
- * @copyright         2017 - 2024 Proxy & VPN Blocker
+ * @copyright         2017 - 2025 Proxy & VPN Blocker
  * @license           GPL-2.0-or-later
  *
  * @wordpress-plugin
  * Plugin Name: Proxy & VPN Blocker
  * Plugin URI: https://proxyvpnblocker.com
  * description: Proxy & VPN Blocker prevents Proxies, VPN's and other unwanted visitors from accessing pages, posts and more, using Proxycheck.io API data.
- * Version: 3.1.2
+ * Version: 3.1.3
  * Author: Proxy & VPN Blocker
  * Author URI: https://profiles.wordpress.org/rickstermuk
  * License: GPLv2
@@ -20,8 +20,8 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-$version     = '3.1.2';
-$update_date = 'December 12th 2024';
+$version     = '3.1.3';
+$update_date = 'January 8th 2025';
 
 if ( version_compare( get_option( 'proxy_vpn_blocker_version' ), $version, '<' ) ) {
 	update_option( 'proxy_vpn_blocker_version', $version );
@@ -400,6 +400,10 @@ function pvb_set_do_not_cache_header() {
 	$page_ids        = get_option( 'pvb_blocked_pages_ids_array' );
 	$current_page_id = get_queried_object_id();
 
+	if ( 'on' === get_option( 'pvb_proxycheckio_all_pages_activation' ) ) {
+		nocache_headers();
+	}
+
 	if ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php' ) ) ) {
 		nocache_headers();
 	}
@@ -444,7 +448,7 @@ if ( 'on' === get_option( 'pvb_proxycheckio_master_activation' ) ) {
 		add_action( 'template_redirect', 'pvb_select_postspages_integrate', 1 );
 	}
 
-	if ( ! empty( get_option( 'pvb_blocked_pages_ids_array' ) ) && 'on' === get_option( 'pvb_cache_buster' ) ) {
+	if ( 'on' === get_option( 'pvb_cache_buster' ) ) {
 		add_action( 'send_headers', 'pvb_set_do_not_cache_header' );
 	}
 

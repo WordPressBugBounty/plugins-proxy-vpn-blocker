@@ -12,7 +12,7 @@ function upgrade_pvb_db() {
 	global $wpdb;
 
 	$database_version = get_option( 'pvb_db_version' );
-	$current_version  = '5.1.1';
+	$current_version  = '5.1.2';
 
 	// Handle both upgrade scenarios and fresh installations.
 	if ( empty( $database_version ) ) {
@@ -164,6 +164,13 @@ function upgrade_pvb_db() {
 			dbDelta( $sql );
 
 			update_option( 'pvb_db_version', '5.1.1' );
+		}
+
+		// Upgrade DB to 5.1.2 if lower.
+		if ( version_compare( $database_version, '5.1.2', '<' ) && version_compare( $database_version, '5.1.1', '>=' ) ) {
+			update_option( 'pvb_cache_buster', 'on' );
+
+			update_option( 'pvb_db_version', '5.1.2' );
 		}
 	}
 }
