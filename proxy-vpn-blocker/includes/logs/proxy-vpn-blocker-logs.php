@@ -10,31 +10,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $allowed_html = array(
-	'div'    => array(
+	'div'     => array(
 		'class' => array(),
 		'id'    => array(),
 		'style' => array(),
 		'dir'   => array(),
 	),
-	'a'      => array(
-		'href'  => array(),
-		'title' => array(),
+	'a'       => array(
+		'href'   => array(),
+		'title'  => array(),
 		'target' => array(),
 	),
-	'i'      => array(
+	'i'       => array(
 		'class' => array(),
 	),
-	'script' => array(
+	'script'  => array(
 		'type' => array(),
 	),
-	'form'   => array(
+	'form'    => array(
 		'class'  => array(),
 		'id'     => array(),
 		'action' => array(),
 		'method' => array(),
 		'target' => array(),
 	),
-	'input'  => array(
+	'input'   => array(
 		'class' => array(),
 		'id'    => array(),
 		'name'  => array(),
@@ -42,7 +42,7 @@ $allowed_html = array(
 		'title' => array(),
 		'value' => array(),
 	),
-	'button' => array(
+	'button'  => array(
 		'class'   => array(),
 		'id'      => array(),
 		'type'    => array(),
@@ -50,15 +50,15 @@ $allowed_html = array(
 		'name'    => array(),
 		'style'   => array(),
 	),
-	'strong' => array(),
-	'h1'     => array(),
-	'h2'     => array(
+	'strong'  => array(),
+	'h1'      => array(),
+	'h2'      => array(
 		'class' => array(),
 	),
-	'h3'     => array(),
-	'p'      => array(),
-	'section'  => array(),
-	'header'     => array(
+	'h3'      => array(),
+	'p'       => array(),
+	'section' => array(),
+	'header'  => array(
 		'class' => array(),
 	),
 );

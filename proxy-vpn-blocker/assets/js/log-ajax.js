@@ -70,8 +70,13 @@ jQuery(document).ready(function($) {
                             '<div class="extra-data-row">' +
                                 '<div class="extra-data-row-content">' +
                                     '<span class="space ipinflux_' + proxyType + '">' + log.detected_type + '</span>' +
-                                    '<span class="space ipinflux_blocked_on_url" alt="' + log.blocked_url + '">URL: ' + log.blocked_url + '</span>' +
-                                '</div>' +
+                                    '<span class="space ipinflux_blocked_on_url" alt="' + log.blocked_url + '">URL: ' + log.blocked_url + '</span>';
+                        
+                        if (log.api_type) {
+                            logHtml += '<span class="space ipinflux_api_type_used" alt="' + log.api_type + '">Processed By: ' + log.api_type + '</span>';
+                        }
+
+                        logHtml += '</div>' +
                             '</div>';
 
                         // Append the log data to the .log_content container

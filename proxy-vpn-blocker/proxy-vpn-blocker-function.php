@@ -11,7 +11,7 @@
  * Plugin Name: Proxy & VPN Blocker
  * Plugin URI: https://proxyvpnblocker.com
  * description: Proxy & VPN Blocker prevents Proxies, VPN's and other unwanted visitors from accessing pages, posts and more, using Proxycheck.io API data.
- * Version: 3.1.3
+ * Version: 3.2.0
  * Author: Proxy & VPN Blocker
  * Author URI: https://profiles.wordpress.org/rickstermuk
  * License: GPLv2
@@ -20,8 +20,8 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-$version     = '3.1.3';
-$update_date = 'January 8th 2025';
+$version     = '3.2.0';
+$update_date = 'January 24th 2025';
 
 if ( version_compare( get_option( 'proxy_vpn_blocker_version' ), $version, '<' ) ) {
 	update_option( 'proxy_vpn_blocker_version', $version );
@@ -59,8 +59,8 @@ function pvb_get_visitor_ip_address() {
 				$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 			}
 		} else {
-			$get_ip_var         = sanitize_text_field( wp_unslash( $_SERVER[ $header_type[0] ] ) );
-			$visitor_ip_address = ! isset( $get_ip_var ) || empty( $get_ip_var ) ? sanitize_text_field( wp_unslash( $get_ip_var ) ) : sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+			$get_ip_var         = isset( $_SERVER[ $header_type[0] ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ $header_type[0] ] ) ) : '';
+			$visitor_ip_address = empty( $get_ip_var ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : $get_ip_var;
 		}
 	} else {
 		$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
@@ -82,12 +82,19 @@ require_once 'includes/post-additions.php';
 require_once 'includes/proxy-vpn-blocker-admin-bar.php';
 require_once 'includes/logs/proxy-vpn-blocker-action-log-fetcher.php';
 
+
+// Conditionally load User IP Logging.
 if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
 	require_once 'includes/logs/proxy-vpn-blocker-action-log-saver.php';
 	require_once 'includes/user-ip.php';
 }
 
-// Help Mode.
+// Condionally load proxycheck.io CORS code.
+if ( 'on' === get_option( 'pvb_cors_integration' ) && 'on' === get_option( 'pvb_proxycheckio_master_activation' ) ) {
+	require_once 'proxycheckio-cors.php';
+}
+
+// Conditionally load Help Mode.
 if ( 'on' === get_option( 'pvb_option_help_mode' ) ) {
 	require_once 'includes/help-mode.php';
 }
@@ -188,7 +195,7 @@ function pvb_general_check() {
 					// Check if proxycheck answer array key 4 for risk score and compare it to the set proxy risk score.
 					if ( $proxycheck_answer[3] >= get_option( 'pvb_proxycheckio_max_riskscore_proxy' ) ) {
 						if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7] );
+							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7], 'PHP' );
 						}
 						pvb_block_deny();
 					}
@@ -196,7 +203,7 @@ function pvb_general_check() {
 					// Check if proxycheck answer array key 4 for risk score and compare it to the set VPN risk score.
 					if ( $proxycheck_answer[3] >= get_option( 'pvb_proxycheckio_max_riskscore_vpn' ) ) {
 						if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7] );
+							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7], 'PHP' );
 						}
 						pvb_block_deny();
 					}
@@ -204,7 +211,7 @@ function pvb_general_check() {
 			} else {
 				// Do this if risk score checking is off.
 				if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-					pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7] );
+					pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7], 'PHP' );
 				}
 				pvb_block_deny();
 			}
@@ -214,7 +221,7 @@ function pvb_general_check() {
 				if ( 'null' !== $proxycheck_answer[1] && 'null' !== $proxycheck_answer[2] ) {
 					if ( in_array( $proxycheck_answer[1], $countries, true ) || in_array( $proxycheck_answer[2], $countries, true ) ) {
 						if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7] );
+							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7], 'PHP' );
 						}
 						pvb_block_deny();
 					} else {

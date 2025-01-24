@@ -4,7 +4,7 @@ Tags: security, proxy blocker, vpn blocker, proxycheck, ip address
 Requires at least: 4.9
 Tested up to: 6.7.1
 Requires PHP: 7.2
-Stable tag: 3.1.3
+Stable tag: 3.2.0
 License: GPLv2
 
 Blocks Proxies, VPNs, blacklisted IP Addresses (Geolocation) on login and registration, selected Pages, Posts and more using the proxycheck.io API.
@@ -75,7 +75,7 @@ Proxycheck.io is a simple, accurate and reliable API for the detection and block
 
 Although this Plugin has an option to block Proxies & VPN's on all pages, this option is not generally recommended due to significantly higher query usage, but was added on user request.
 
-It is important to note that if you are using a WordPress caching Plugin (eg WP Super Cache, WP Rocket, W3 Total Cache and many others), these will prevent the Proxy or VPN from being blocked if you are using 'Block on all pages' as the caching Plugin will likely serve the visitor a static cached version of your website pages. As the cached pages are served by the caching Plugin in static HTML, the code for proxy detection will not run on these cached pages. This won't affect the normal protections this Plugin provides for Log-in, Registration and commenting.
+It is important to note that if you are using a WordPress caching Plugin (eg WP Super Cache, WP Rocket, W3 Total Cache and many others), these may prevent the Proxy or VPN from being blocked if you are using 'Block on all pages' as the caching Plugin will likely serve the visitor a static cached version of your website pages. As the cached pages are served by the caching Plugin in static HTML, the code for proxy detection will not run on these cached pages. This won't affect the normal protections this Plugin provides for Log-in, Registration and commenting.
 
 =I accidently locked myself out by blocking my own country/continent, what do I do?=
 The fix is simple, upload a .txt file called disablepvb.txt to your wordpress root directory, PVB looks for this file when the proxy and VPN checks are made, if the file exists it will prevent the Plugin from contacting the proxycheck.io API. You will now be able to log in and remove your country/continent in the PVB Settings.
@@ -90,6 +90,9 @@ Remember: If you ever have to do this, delete the disablepvb.txt file after you 
 5. Whitelist editor page. The blacklist editor page looks similar to this.
 
 == Changelog ==
+= 3.2.0 2025-01-24 =
+* Introduced proxycheck.io CORs API as a backup option to the free version of Proxy & VPN Blocker - this may help some who have issues with the Plugin not always blocking IP's due to page caching.
+
 = 3.1.3 2025-01-08 =
 * Page Caching Headers option now enabled by default.
 * Option for DONOTCACHEPAGE Headers extended to block on entire site option.

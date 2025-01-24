@@ -100,8 +100,12 @@ if ( ! empty( $get_api_key ) || 'on' === get_option( 'pvb_proxycheckio_dummy_dat
 	);
 	if ( 'on' === get_option( 'pvb_proxycheckio_dummy_data' ) && empty( $get_api_key ) ) {
 		// Get the dummy data from the Proxy & VPN Blocker Dummy Pool.
-		$request_usage = file_get_contents( dirname( __DIR__ ) . '/dbg/demo_data/proxycheck.daystat.dummy.json' );
-		$api_key_usage = json_decode( $request_usage );
+		$request_usage = wp_remote_get( dirname( __DIR__ ) . '/dbg/demo_data/proxycheck.daystat.dummy.json' );
+		if ( is_wp_error( $request_usage ) ) {
+			$api_key_usage = null;
+		} else {
+			$api_key_usage = json_decode( wp_remote_retrieve_body( $request_usage ) );
+		}
 	} else {
 		// Get the data from the proxycheck dashboard API.
 		$request_usage = wp_remote_get( 'https://proxycheck.io/dashboard/export/usage/?key=' . $get_api_key, $request_args );
@@ -148,8 +152,8 @@ if ( ! empty( get_option( 'pvb_option_ip_header_type' ) ) ) {
 			$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		}
 	} else {
-		$get_ip_var         = sanitize_text_field( wp_unslash( $_SERVER[ $header_type[0] ] ) );
-		$visitor_ip_address = ! empty( $get_ip_var ) ? sanitize_text_field( wp_unslash( $get_ip_var ) ) : '';
+		$get_ip_var         = isset( $_SERVER[ $header_type[0] ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ $header_type[0] ] ) ) : '';
+		$visitor_ip_address = ! empty( $get_ip_var ) ? $get_ip_var : '';
 	}
 } else {
 	$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';

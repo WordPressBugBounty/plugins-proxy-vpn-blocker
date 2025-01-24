@@ -12,7 +12,7 @@ function upgrade_pvb_db() {
 	global $wpdb;
 
 	$database_version = get_option( 'pvb_db_version' );
-	$current_version  = '5.1.2';
+	$current_version  = '5.2.3';
 
 	// Handle both upgrade scenarios and fresh installations.
 	if ( empty( $database_version ) ) {
@@ -46,6 +46,7 @@ function upgrade_pvb_db() {
 			block_method varchar(100) NOT NULL,
 			captcha_passed varchar(100) NOT NULL,
 			blocked_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+			api_type varchar(100) NOT NULL,
 			PRIMARY KEY  (id)
 		) $charset_collate;";
 
@@ -171,6 +172,20 @@ function upgrade_pvb_db() {
 			update_option( 'pvb_cache_buster', 'on' );
 
 			update_option( 'pvb_db_version', '5.1.2' );
+		}
+
+		// Upgrade DB to 5.2.0 if lower.
+		if ( version_compare( $database_version, '5.2.3', '<' ) && version_compare( $database_version, '5.1.2', '>=' ) ) {
+			$charset_collate = $wpdb->get_charset_collate();
+
+			// Add the new api_type column to the existing table.
+			$sql = "ALTER TABLE {$wpdb->prefix}pvb_visitor_action_log ADD COLUMN api_type varchar(100) NOT NULL;";
+
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+			$wpdb->query( $sql );
+
+			update_option( 'pvb_db_version', '5.2.3' );
 		}
 	}
 }

@@ -78,6 +78,10 @@ class Proxy_VPN_Blocker_Admin_API {
 				$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '" />' . "\n";
 				break;
 
+			case 'cors_public':
+				$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" autocomplete="off" type="text" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '" />' . "\n";
+				break;
+
 			case 'textarea':
 				$html .= '<textarea id="' . esc_attr( $field['id'] ) . '" rows="5" cols="50" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '">' . $data . '</textarea><br/>' . "\n";
 				break;
@@ -319,7 +323,6 @@ class Proxy_VPN_Blocker_Admin_API {
 
 		//phpcs:ignore
 		echo $html;
-
 	}
 
 	/**
@@ -357,5 +360,4 @@ class Proxy_VPN_Blocker_Admin_API {
 
 		return $data;
 	}
-
 }

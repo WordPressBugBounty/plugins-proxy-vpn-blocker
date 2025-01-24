@@ -524,7 +524,7 @@ class Proxy_VPN_Blocker_Settings {
 				),
 			),
 		);
-		$settings['RestrictPagePost']         = array(
+		$settings['PageCaching']         = array(
 			'title'       => __( 'Page Caching', 'proxy-vpn-blocker' ),
 			'icon'        => __( 'fa-solid fa-scroll', 'proxy-vpn-blocker' ),
 			'description' => __( 'Settings relating to Caching of WordPress Pages and Posts. Sometimes Proxy & VPN Blocker may not be able to function fully due to WordPress Page Caching being in effect, a page served by cache means an IP check will not happen as the cache serves a static version of pages to the visitor before Plugins like Proxy & VPN Blocker can run.', 'proxy-vpn-blocker' ),
@@ -536,6 +536,56 @@ class Proxy_VPN_Blocker_Settings {
 					'field-note'  => __( 'When using this option the pages and posts selected for visitor IP checking and blocking will not be served by cache plugins that respect the header, this has the potential to degrade performance on these pages but the impact should be minimal. Unfortunately there is no alternative if you want to block on pages/posts except in cases where Cache Plugins have the option of Deferred Execution or Late Init. If Block on Entire site is enabled along with this setting, then no cache headers will be defined sitewide. <a href="https://proxyvpnblocker.com/2023/06/01/wordpress-caching-plugins-and-proxy-vpn-blocker-an-explainer/" target="_blank">Please see the Proxy & VPN Blocker Website for further information on this</a>', 'proxy-vpn-blocker' ),
 					'type'        => 'checkbox',
 					'default'     => 'on',
+				),
+			),
+		);
+		$settings['CORS']                     = array(
+			'title'        => __( 'CORS API Settings', 'proxy-vpn-blocker' ),
+			'icon'         => __( 'fa-solid fa-passport', 'proxy-vpn-blocker' ),
+			'description'  => __( "These settings are for the proxycheck.io Cross-Origin Resource Sharing (CORS) API feature. This is intended as a fallback feature in cases where the PHP Version of the API Calls are not functioning, generally this is is the case if you are using a Caching Plugin or if the page is loaded from a web caching service. Also do note that this can work with specific pages/posts or block on all pages, but does not work with settings under 'Locational Restrictions' and 'Email Filtering' tabs. It is recommended that you use Custom Rules on proxycheck.io for specific tuning of how IP's are blocked here.", 'proxy-vpn-blocker' ),
+			'warn-message' => __( 'Please note that this will display a generic "Please deactivate your proxy to access this page" message to a blocked visitor. In cases where the Anti Adblock CORS is enabled and an Adblocker is detected as preventing the contacting of the proxycheck.io CORS API, the message "Please deactivate your adblocker to access this page." will be displayed instead. CORS replaces regular blocking methods provided by Proxy & VPN Blocker and is intended to only be used if you have issues with those not working and troubleshooting steps haven\'t helped.', 'proxy-vpn-blocker' ),
+			'fields'       => array(
+				array(
+					'id'          => 'cors_integration',
+					'label'       => __( 'proxycheck.io CORS Support', 'proxy-vpn-blocker' ),
+					'description' => __( 'Enable proxycheck.io Cross-Origin Resource Sharing (CORS)', 'proxy-vpn-blocker' ),
+					'field-note'  => __( 'proxycheck.io Dashboard API Access is required, with the setting "Automatically Alter Origins" turned on, to be able to automatically add origins to your Origin Names list. When "Automatically Alter Origins" is turned on your sites URL will be automatically added to your Origin Names list when this setting is turned on, without this, you will have to manually add the sites URL to your Origin Names List on your proxycheck.io Dashboard..', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => '',
+				),
+				array(
+					'id'            => 'auto_alter_proxycheck_CORS_origins',
+					'label'         => __( 'Automatically Alter Origins', 'proxy-vpn-blocker' ),
+					'description'   => __( 'Automatically Add/Remove origins from CORS origins list on proxycheck.io', 'proxy-vpn-blocker' ),
+					'field-note'    => __( 'We can Automatically add/remove CORS origins to your list on proxycheck.io if Dashboard API Access is enabled.', 'proxy-vpn-blocker' ),
+					'field-warning' => __( 'If you have multiple WordPress sites sharing a single proxycheck API key it is recommended that you turn this setting off as there is the potential to cause a conflict where the origins will be added by one site and removed by another. Without this setting you will have to manually configure your allowed Origin Names on your proxycheck.io Dashboard.', 'proxy-vpn-blocker' ),
+					'type'          => 'checkbox',
+					'default'       => '',
+				),
+				array(
+					'id'            => 'proxycheckio_CORS_public_key',
+					'label'         => __( 'CORS Public key', 'proxy-vpn-blocker' ),
+					'description'   => __( 'Your proxycheck.io Cross-Origin Resource Sharing (CORS) Public Key from your proxycheck.io dashboard (you will find this under the CORS tab).', 'proxy-vpn-blocker' ),
+					'field-note'    => __( 'Without this, CORS will not function.', 'proxy-vpn-blocker' ),
+					'field-warning' => __( "This key must start with 'public-'. if the key doesn't start with 'public-' it is not the correct key. This field will not accept a non 'public-' key.", 'proxy-vpn-blocker' ),
+					'type'          => 'cors_public',
+					'default'       => '',
+					'placeholder'   => __( 'Get your CORS public key at https://proxycheck.io/dashboard', 'proxy-vpn-blocker' ),
+				),
+				array(
+					'id'          => 'CORS_protect_on_webcache',
+					'label'       => __( 'proxycheck.io CORS Protect on Web Cache Services', 'proxy-vpn-blocker' ),
+					'description' => __( 'Use proxycheck.io Cross-Origin Resource Sharing (CORS) to protect the site from being viewed by Proxies & VPNs in Web Cache. (e.g. Google, Bing, Archive.org)', 'proxy-vpn-blocker' ),
+					'field-note'  => __( "proxycheck.io Dashboard API Access is required to be able to automatically add origins to your Origin Names list. When this setting and 'Automatically Alter Origins' is turned on the Origins 'webcache.googleusercontent.com', 'cc.bingj.com' and 'web.archive.org' will be automatically added to your Origin Names list. Note that for Google/Bing Cache it may take some time for this to work because it will depend on when your site is next crawled. As for Archive.org, older versions of the site in the Archive will not be protected.", 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => '',
+				),
+				array(
+					'id'          => 'CORS_antiadblock',
+					'label'       => __( 'Use Anti Adblock CORS javascript', 'proxy-vpn-blocker' ),
+					'description' => __( 'Use the Anti Adblock version of the CORS javascript - Some Ad block lists have added the proxycheck.io domain name, this means that CORS will not function. When this setting is on we can detect if this happens and throw an error when a connection to proxycheck.io is blocked.', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => '',
 				),
 			),
 		);

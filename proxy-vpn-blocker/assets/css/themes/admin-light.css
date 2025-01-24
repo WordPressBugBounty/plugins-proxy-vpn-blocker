@@ -593,6 +593,12 @@ img.country-flag {
     border: 1px solid #aa04e7;
  }
 
+ .extra-data-row span.ipinflux_api_type_used {
+    background: #f0f0f0;
+    color: #383838 ;
+    border: 1px solid #383838;
+ }
+
 
 
 /* Buttons */
