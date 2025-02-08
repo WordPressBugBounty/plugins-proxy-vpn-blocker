@@ -35,7 +35,7 @@ function pvb_cors_javascript() {
 					vpn_detection: <?php echo 'on' === get_option( 'pvb_proxycheckio_VPN_select_box' ) ? 'true' : 'false'; ?>,
 					redirect_enabled: <?php echo 'on' === get_option( 'pvb_proxycheckio_redirect_bad_visitor' ) ? 'true' : 'false'; ?>,
 					redirect_url: '<?php echo esc_url( get_option( 'pvb_proxycheckio_opt_redirect_url' ) ); ?>',
-					denied_message: '<?php echo esc_js( get_option( 'pvb_proxycheckio_denied_access_field', 'Access Denied' ) ); ?>'
+					denied_message: '<?php echo esc_js( get_option( 'pvb_proxycheckio_denied_access_field', 'Access Denied' ) ); ?>',
 				})
 			};
 
@@ -125,10 +125,21 @@ function pvb_cors_javascript() {
 
 				const apiUrl = `https://proxycheck.io/v2/?key=${pvbConfig.proxycheck_key}&vpn=${pvbConfig.settings.vpn_detection ? 1 : 0}&asn=1&risk=1`;
 
-				fetch(apiUrl)
-					.then(response => response.json())
-					.then(handleProxyResponse)
-					.catch(error => console.error('PVB CORS Error:', error));
+				const xhr = new XMLHttpRequest();
+				xhr.open('GET', apiUrl, true);
+				xhr.onload = function() {
+					if (xhr.status >= 200 && xhr.status < 400) {
+						const data = JSON.parse(xhr.responseText);
+						handleProxyResponse(data);
+					}
+				};
+				<?php if ( 'on' === get_option( 'pvb_CORS_antiadblock' ) ) { ?>
+					xhr.onerror = function(e) {
+						document.body.innerHTML = 'Please deactivate your adblocker to access this page.';
+						window.stop();
+					};
+				<?php } ?>
+				xhr.send();
 			}
 
 			// Run immediately
