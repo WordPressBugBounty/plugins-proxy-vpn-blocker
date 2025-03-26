@@ -4,7 +4,7 @@ Tags: security, proxy blocker, vpn blocker, proxycheck, ip address
 Requires at least: 4.9
 Tested up to: 6.7.1
 Requires PHP: 7.2
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 License: GPLv2
 
 Blocks Proxies, VPNs, blacklisted IP Addresses (Geolocation) on login and registration, selected Pages, Posts and more using the proxycheck.io API.
@@ -90,6 +90,10 @@ Remember: If you ever have to do this, delete the disablepvb.txt file after you 
 5. Whitelist editor page. The blacklist editor page looks similar to this.
 
 == Changelog ==
+= 3.2.2 2025-03-26 =
+* Fix for potential for checkbox to not display in the sidebar of the WordPress Block Editor for Custom Post Types (CPT). Thank you to @gdvd.
+* Updated some plugin settings text.
+
 = 3.2.1 2025-02-08 =
 * Minor correction to CORS option javascript.
 

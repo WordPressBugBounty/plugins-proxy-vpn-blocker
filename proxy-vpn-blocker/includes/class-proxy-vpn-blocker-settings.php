@@ -422,7 +422,7 @@ class Proxy_VPN_Blocker_Settings {
 				),
 				array(
 					'id'          => 'proxycheckio_VPN_select_box',
-					'label'       => __( 'Detect VPNs?', 'proxy-vpn-blocker' ),
+					'label'       => __( 'Also Detect VPNs?', 'proxy-vpn-blocker' ),
 					'description' => __( 'Set this to \'on\' to enable detection of VPN Visitors in addition to Proxies.', 'proxy-vpn-blocker' ),
 					'type'        => 'checkbox',
 					'default'     => '',
@@ -921,19 +921,19 @@ class Proxy_VPN_Blocker_Settings {
 		if ( empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
 			echo '<div class="pvbinfowrap">' . "\n";
 			echo '		<div class="pvbinfowraptext">' . "\n";
-			echo '			<h1>' . __( 'Enhance Your Experience with a free proxycheck.io API Key', 'proxy-vpn-blocker' ) . '</h1>' . "\n";
+			echo '			<h1>' . __( 'Enhance Proxy & VPN Blocker functionality with a free proxycheck.io API Key', 'proxy-vpn-blocker' ) . '</h1>' . "\n";
 			echo '			<div class="pvbinfowrapblock">' . "\n";
 			echo '          	<h2>' . __('Free API Key Benefits:', 'proxy-vpn-blocker' ) . '</h2>' . "\n";
 			echo '         		 <ul>' . "\n";
-			echo '          		<li>' . __( '✅ 1,000 queries per day (10x more).', 'proxy-vpn-blocker' ) . '</li>' . "\n";
-			echo '          		<li>' . __( '✅ Full access to all API features.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
-			echo '          		<li>' . __( '✅ Complete statistics dashboard.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
-			echo '          		<li>' . __( '✅ Enhanced security monitoring.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( '✔️ 1,000 queries per day (10x more).', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( '✔️ Full access to all API features.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( '✔️ Complete statistics dashboard.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( '✔️ Enhanced security monitoring.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
 			echo '          	</ul>' . "\n";
 			echo '			</div>' . "\n";
 			echo '			<div class="pvbinfowrapblock">' . "\n";
 			echo '          	<h2>' . __( 'Higher Query Tiers Available' ) . '</h2>' . "\n";
-			echo '				<p>' . __( 'Need more queries? Paid plans offer higher API query limits (10,000+ per day), ideal for larger websites and organizations. These are available from the <a href="https://proxyvpnblocker.com/discounted-plans/" target="_blank">Proxy & VPN Blocker Website</a> for a discounted rate.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
+			echo '				<p>' . __( 'Need more queries? Paid plans offer higher API query limits (10,000+ per day), ideal for larger websites and organizations. These are available from the <a href="https://proxyvpnblocker.com/discounted-plans/" target="_blank">Proxy & VPN Blocker Website</a> for am exclusive discounted price for Proxy & VPN Blocker Plugin users.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
 			echo '			</div>' . "\n";
 			echo '			<div class="pvbinfowrapblock">' . "\n";
 			echo '         	 	<h2>' . __('Quick Setup Guide', 'proxy-vpn-blocker' ) . '</h2>' . "\n";
@@ -943,8 +943,10 @@ class Proxy_VPN_Blocker_Settings {
 			echo '          		<li>' . __( 'Open the General tab below.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
 			echo '          		<li>' . __( 'Paste your API key in the designated field.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
 			echo '          		<li>' . __( 'Save changes to activate full functionality.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
+			echo '          		<li>' . __( 'Configure other plugin settings as required.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
 			echo '          	</ol>' . "\n";
 			echo '				<p>' . __( 'Need help? Visit our <a href="https://proxyvpnblocker.com/installation-and-configuration-free/" target="_blank">Installation & Configuration Guide</a> or visit the <a href="https://wordpress.org/support/plugin/proxy-vpn-blocker/" target="_blank">WordPress Support Community</a>.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
+			echo '				<p>' . __( 'Need more features and customization? Check out what is available in <a href="https://proxyvpnblocker.com/premium/" target="_blank">Proxy & VPN Blocker Premium</a>', 'proxy-vpn-blocker' ) . '</p>' . "\n";
 			echo '			</div>' . "\n";
 			echo '		</div>' . "\n";
 			echo '</div>' . "\n";
