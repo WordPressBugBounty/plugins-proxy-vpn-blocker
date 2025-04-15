@@ -141,8 +141,8 @@ if ( ! empty( $get_api_key ) ) {
 					continue;
 				}
 				$html .=  '			<div class="row">' . "\n";
-				$html .=  '				<div class="col left">' . $ip_address . '</div>' . "\n";
-				$html .=  '				<div class="col"><button type="submit" class="entrydelete" name="remove" value="' . $ip_address . '"><i class="fa-solid fa-trash-can"></i> Delete Entry</button></div>' . "\n";
+				$html .=  '				<div class="col left">' . htmlentities( $ip_address ) . '</div>' . "\n";
+				$html .=  '				<div class="col"><button type="submit" class="entrydelete" name="remove" value="' . htmlentities( $ip_address ) . '"><i class="fa-solid fa-trash-can"></i> Delete Entry</button></div>' . "\n";
 				$html .=  '			</div>' . "\n";
 			}
 		} else {

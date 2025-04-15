@@ -76,6 +76,11 @@ jQuery(document).ready(function($) {
                             logHtml += '<span class="space ipinflux_api_type_used" alt="' + log.api_type + '">Processed By: ' + log.api_type + '</span>';
                         }
 
+                        logHtml += 
+                        '<div class="log-whitelist-btn"><button class="add-to-whitelist-btn" data-ip="' + log.ip_address + '">' +
+                            '<i class="fa-solid fa-plus"></i> Whitelist IP' +
+                        '</button></div>';
+
                         logHtml += '</div>' +
                             '</div>';
 
@@ -111,11 +116,11 @@ jQuery(document).ready(function($) {
     loadLogs(currentPage);
 
     // Handle pagination - Next and Previous buttons
-    $('#prev-page').on('click', function() {
+    $('#prev-page').click(function() {
         loadLogs(currentPage + 1);
     });
 
-    $('#next-page').on('click', function() {
+    $('#next-page').click( function() {
         if (currentPage > 1) {
             loadLogs(currentPage - 1);
         }
@@ -189,3 +194,32 @@ function convertToLocalTime(utcTimestamp) {
 
     return localTimeString;
 }
+
+jQuery(function($) {
+    $(document).on('click', '.add-to-whitelist-btn', function(e) {
+        e.preventDefault();
+
+        const ip = $(this).data('ip');
+        const $btn = $(this);
+
+        $.ajax({
+            url: pvb_action_logs.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'whitelist_add',
+                nonce_add_ip_whitelist: pvb_action_logs.whitelist_nonce,
+                add: ip
+            },
+            success: function(response) {
+                if (response.success === 'false') {
+                    $btn.text('✖ Access Denied by proxycheck.io').prop('disabled', true);
+                } else {
+                    $btn.text('✔ Successfully Whitelisted').prop('disabled', true);
+                }
+            },
+            error: function(xhr, status, error) {
+                $btn.text('✖ Failed').addClass('error');
+            }
+        });
+    });
+});

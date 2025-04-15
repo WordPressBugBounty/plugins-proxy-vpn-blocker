@@ -172,7 +172,7 @@ jQuery(document).ready(function($) {
         $(".pvbrvwwrap").show();
     }
 
-    $(".pvbdonatedismiss").on('click', function() {
+    $(".pvbdonatedismiss").on('click', function(){
         $(".pvbrvwwrap").remove();
         Cookies.set('pvb-hide-rvw-div', true, { expires: 365 });
     });

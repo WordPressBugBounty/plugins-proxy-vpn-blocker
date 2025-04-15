@@ -1182,7 +1182,23 @@ img.country-flag {
     }
 }
 
+.add-to-whitelist-btn {
+    font-size: 11pt;
+    padding: 5px 10px;
+    margin: 0;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 7px;
+    outline:none;
+    transition: all 0.3s;
+    float: right;
+    border: none;
+}
 
+.log-whitelist-btn {
+    display: inline-block;
+    margin: 0px 3px 0px 3px;
+}
 
 
 

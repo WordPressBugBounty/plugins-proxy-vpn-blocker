@@ -632,6 +632,20 @@ button.pvbdismissactive, input.pvbdismiss:active {
     color: #fff;
 }
 
+button.add-to-whitelist-btn {
+    background: #979797;
+    color: #fff;
+}
+button.add-to-whitelist-btn:hover {
+    background-color:#646464;
+    color: #fff;
+}
+button.add-to-whitelist-btn:focus,
+button.add-to-whitelist-btn:active {
+    background-color:#646464;
+    color: #fff;
+}
+
 /* WHITELIST/BLACKLIST PAGE */
 #add-list-wrapper:hover {
     border: none;

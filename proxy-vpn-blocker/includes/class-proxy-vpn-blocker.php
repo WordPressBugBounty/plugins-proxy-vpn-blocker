@@ -114,7 +114,7 @@ class Proxy_VPN_Blocker {
 	 * @since   1.0
 	 * @return  void
 	 */
-	public function __construct( $file = '', $version = '3.2.2' ) {
+	public function __construct( $file = '', $version = '3.2.3' ) {
 		$this->_version = $version;
 		$this->_token   = 'proxy_vpn_blocker';
 
@@ -264,9 +264,10 @@ class Proxy_VPN_Blocker {
 				$this->_token . '-settings-pvb-action-logs',
 				'pvb_action_logs',
 				array(
-					'nonce'     => wp_create_nonce( 'pvb_action_logs_ajax_nonce' ),
-					'ajax_url'  => admin_url( 'admin-ajax.php' ),
-					'flags_url' => esc_url( $this->assets_url ) . '/img/country_flags/',
+					'nonce'           => wp_create_nonce( 'pvb_action_logs_ajax_nonce' ),
+					'ajax_url'        => admin_url( 'admin-ajax.php' ),
+					'flags_url'       => esc_url( $this->assets_url ) . '/img/country_flags/',
+					'whitelist_nonce' => wp_create_nonce( 'add-ip-whitelist' ),
 				)
 			);
 		}
@@ -311,7 +312,7 @@ class Proxy_VPN_Blocker {
 	 * @see proxy_vpn_blocker()
 	 * @return Main proxy_vpn_blocker instance
 	 */
-	public static function instance( $file = '', $version = '3.2.2' ) {
+	public static function instance( $file = '', $version = '3.2.3' ) {
 
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );
