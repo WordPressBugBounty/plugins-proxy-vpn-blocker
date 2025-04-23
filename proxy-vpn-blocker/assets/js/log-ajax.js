@@ -116,11 +116,11 @@ jQuery(document).ready(function($) {
     loadLogs(currentPage);
 
     // Handle pagination - Next and Previous buttons
-    $('#prev-page').click(function() {
+    $('#prev-page').on('click', function() {
         loadLogs(currentPage + 1);
     });
 
-    $('#next-page').click( function() {
+    $('#next-page').on('click', function() {
         if (currentPage > 1) {
             loadLogs(currentPage - 1);
         }
