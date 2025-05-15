@@ -114,7 +114,7 @@ class Proxy_VPN_Blocker {
 	 * @since   1.0
 	 * @return  void
 	 */
-	public function __construct( $file = '', $version = '3.2.4' ) {
+	public function __construct( $file = '', $version = '3.3.0' ) {
 		$this->_version = $version;
 		$this->_token   = 'proxy_vpn_blocker';
 
@@ -223,14 +223,12 @@ class Proxy_VPN_Blocker {
 	public function pvb_scripts_header_function( $hook = '' ) {
 		$screen = get_current_screen();
 		if ( stripos( $screen->base, 'proxy_vpn_blocker_statistics' ) ) {
-			wp_register_script( $this->_token . '-settings-pvb-am4core-js', esc_url( $this->assets_url ) . 'js/amcharts/core.js', array( 'jquery' ), $this->_version, false );
-			wp_enqueue_script( $this->_token . '-settings-pvb-am4core-js' );
-			wp_register_script( $this->_token . '-settings-pvb-am4charts-js', esc_url( $this->assets_url ) . 'js/amcharts/charts.js', array( 'jquery' ), $this->_version, false );
-			wp_enqueue_script( $this->_token . '-settings-pvb-am4charts-js' );
-			wp_register_script( $this->_token . '-settings-pvb-am4charts-animated-js', esc_url( $this->assets_url ) . 'js/amcharts/theme/animated.js', array( 'jquery' ), $this->_version, false );
-			wp_enqueue_script( $this->_token . '-settings-pvb-am4charts-animated-js' );
-			wp_register_script( $this->_token . '-settings-pvb-am4charts-dark-js', esc_url( $this->assets_url ) . 'js/amcharts/theme/dark.js', array( 'jquery' ), $this->_version, false );
-			wp_enqueue_script( $this->_token . '-settings-pvb-am4charts-dark-js' );
+			wp_register_script( $this->_token . '-settings-pvb-am5index-js', esc_url( $this->assets_url ) . 'js/amcharts5/index.js', $this->_version, false );
+			wp_enqueue_script( $this->_token . '-settings-pvb-am5index-js' );
+			wp_register_script( $this->_token . '-settings-pvb-am5xy-js', esc_url( $this->assets_url ) . 'js/amcharts5/xy.js', $this->_version, false );
+			wp_enqueue_script( $this->_token . '-settings-pvb-am5xy-js' );
+			wp_register_script( $this->_token . '-settings-pvb-am5animated-js', esc_url( $this->assets_url ) . 'js/amcharts5/themes/Animated.js', $this->_version, false );
+			wp_enqueue_script( $this->_token . '-settings-pvb-am5animated-js' );
 		}
 		wp_register_script( $this->_token . '-wpsettings-pvb-tooltips', esc_url( $this->assets_url ) . 'js/ui-extensions.min.js', array( 'jquery' ), $this->_version, false );
 		wp_enqueue_script( $this->_token . '-wpsettings-pvb-tooltips' );
@@ -249,25 +247,60 @@ class Proxy_VPN_Blocker {
 	 */
 	public function pvb_scripts_footer_function( $hook = '' ) {
 		$screen = get_current_screen();
-		if ( stripos( $screen->base, 'proxy_vpn_blocker_' ) ) {
+		if ( stripos( $screen->base, 'proxy_vpn_blocker_settings' ) ) {
 			wp_enqueue_script( 'jquery-ui-core' );// enqueue jQuery UI Core.
 			wp_enqueue_script( 'jquery-ui-tabs' );// enqueue jQuery UI Tabs.
+			wp_enqueue_media();
+		}
+		if ( stripos( $screen->base, 'proxy_vpn_blocker_' ) ) {
 			wp_register_script( $this->_token . '-settings-pvb-js', esc_url( $this->assets_url ) . 'js/settings' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 			wp_enqueue_script( $this->_token . '-settings-pvb-js' );
 			wp_register_script( $this->_token . '-settings-pvb-select2-js', esc_url( $this->assets_url ) . 'js/select2/select2pvb' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 			wp_enqueue_script( $this->_token . '-settings-pvb-select2-js' );
 			wp_register_script( $this->_token . '-settings-pvb-cookie-js', esc_url( $this->assets_url ) . 'js/cookie' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 			wp_enqueue_script( $this->_token . '-settings-pvb-cookie-js' );
+			if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
+				$proxycheck_key_status = 'yes';
+			} else {
+				$proxycheck_key_status = 'no';
+
+			}
+		}
+		if ( stripos( $screen->base, 'proxy_vpn_blocker_action_log' ) ) {
 			wp_register_script( $this->_token . '-settings-pvb-action-logs', esc_url( $this->assets_url ) . 'js/log-ajax' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 			wp_enqueue_script( $this->_token . '-settings-pvb-action-logs' );
 			wp_localize_script(
 				$this->_token . '-settings-pvb-action-logs',
 				'pvb_action_logs',
 				array(
-					'nonce'           => wp_create_nonce( 'pvb_action_logs_ajax_nonce' ),
-					'ajax_url'        => admin_url( 'admin-ajax.php' ),
-					'flags_url'       => esc_url( $this->assets_url ) . '/img/country_flags/',
-					'whitelist_nonce' => wp_create_nonce( 'add-ip-whitelist' ),
+					'nonce'                 => wp_create_nonce( 'pvb_action_logs_ajax_nonce' ),
+					'ajax_url'              => admin_url( 'admin-ajax.php' ),
+					'flags_url'             => esc_url( $this->assets_url ) . '/img/country_flags/',
+					'whitelist_nonce'       => wp_create_nonce( 'add-ip-whitelist' ),
+					'proxycheck_apikey_set' => $proxycheck_key_status,
+				)
+			);
+		}
+		if ( stripos( $screen->base, 'proxy_vpn_blocker_statistics' ) ) {
+			wp_register_script( $this->_token . '-settings-proxycheck-stats-refresh', esc_url( $this->assets_url ) . 'js/settings-proxycheck-stats-refresh' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
+			wp_enqueue_script( $this->_token . '-settings-proxycheck-stats-refresh' );
+			wp_localize_script(
+				$this->_token . '-settings-proxycheck-stats-refresh',
+				'pvb_fetch_stats',
+				array(
+					'nonce'    => wp_create_nonce( 'pvb_stat_refresh_ajax_nonce' ),
+					'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+					'interval' => 60000, // 60 seconds - this is the minimum update time supported by the dashboard API.
+				)
+			);
+			wp_register_script( $this->_token . '-settings-proxycheck-apigraph', esc_url( $this->assets_url ) . 'js/settings-proxycheck-apigraph' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
+			wp_enqueue_script( $this->_token . '-settings-proxycheck-apigraph' );
+			wp_localize_script(
+				$this->_token . '-settings-proxycheck-apigraph',
+				'pvb_fetch_apigraph',
+				array(
+					'nonce'   => wp_create_nonce( 'pvb_apigraph_ajax_nonce' ),
+					'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				)
 			);
 		}
@@ -312,7 +345,7 @@ class Proxy_VPN_Blocker {
 	 * @see proxy_vpn_blocker()
 	 * @return Main proxy_vpn_blocker instance
 	 */
-	public static function instance( $file = '', $version = '3.2.4' ) {
+	public static function instance( $file = '', $version = '3.3.0' ) {
 
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );

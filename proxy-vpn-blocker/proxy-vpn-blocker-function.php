@@ -11,7 +11,7 @@
  * Plugin Name: Proxy & VPN Blocker
  * Plugin URI: https://proxyvpnblocker.com
  * description: Proxy & VPN Blocker prevents Proxies, VPN's and other unwanted visitors from accessing pages, posts and more, using Proxycheck.io API data.
- * Version: 3.2.4
+ * Version: 3.3.0
  * Author: Proxy & VPN Blocker
  * Author URI: https://profiles.wordpress.org/rickstermuk
  * License: GPLv2
@@ -20,8 +20,14 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-$version     = '3.2.4';
-$update_date = 'April 23rd 2025';
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+$version     = '3.3.0';
+$update_date = 'May 15th 2025';
 
 if ( version_compare( get_option( 'proxy_vpn_blocker_version' ), $version, '<' ) ) {
 	update_option( 'proxy_vpn_blocker_version', $version );
@@ -36,13 +42,9 @@ function pvb_get_visitor_ip_address() {
 		$header_type = get_option( 'pvb_option_ip_header_type' );
 		if ( 'HTTP_CF_CONNECTING_IP' === $header_type[0] ) {
 			if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
-				$cf_ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
-				// Fix for Cloudflare returning an array of IP's in rare occurances.
-				if ( is_array( $cf_ip ) ) {
-					$visitor_ip_address = $cf_ip[0];
-				} else {
-					$visitor_ip_address = $cf_ip;
-				}
+				$cf_ip              = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
+				$ip_array           = explode( ', ', $cf_ip );
+				$visitor_ip_address = $ip_array[0];
 			} else {
 				$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 			}
@@ -65,27 +67,24 @@ function pvb_get_visitor_ip_address() {
 	} else {
 		$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 	}
-	return $visitor_ip_address;
-}
 
-// Exit if accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	return $visitor_ip_address;
 }
 
 // Load plugin class and function files.
 require_once 'includes/class-proxy-vpn-blocker.php';
 require_once 'includes/class-proxy-vpn-blocker-settings.php';
 require_once 'includes/custom-form-handlers.php';
-require_once 'includes/proxy-vpn-blocker-stat-loader.php';
+require_once 'includes/pvb-stats-page/proxy-vpn-blocker-stat-loader.php';
+require_once 'includes/pvb-stats-page/proxy-vpn-blocker-usage-fetcher.php';
 require_once 'includes/post-additions.php';
 require_once 'includes/proxy-vpn-blocker-admin-bar.php';
-require_once 'includes/logs/proxy-vpn-blocker-action-log-fetcher.php';
-
+require_once 'includes/pvb-action-logs/proxy-vpn-blocker-action-log-fetcher.php';
+require_once 'includes/proxy-vpn-blocker-classic-editor-support.php';
 
 // Conditionally load User IP Logging.
 if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-	require_once 'includes/logs/proxy-vpn-blocker-action-log-saver.php';
+	require_once 'includes/pvb-action-logs/proxy-vpn-blocker-action-log-saver.php';
 	require_once 'includes/user-ip.php';
 }
 
@@ -105,6 +104,10 @@ require_once 'includes/lib/class-proxy-vpn-blocker-admin-api.php';
 
 // Load db updater.
 require_once 'pvb-db-upgrade.php';
+// Run upgrade logic on plugin activation.
+register_activation_hook( __FILE__, 'upgrade_pvb_db' );
+// Run a version check to catch auto-updates or manual upgrades.
+add_action( 'plugins_loaded', 'maybe_upgrade_pvb_db' );
 
 /**
  * Returns the main instance of Proxy_VPN_Blocker to prevent the need to use globals.

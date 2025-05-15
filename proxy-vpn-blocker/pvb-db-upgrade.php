@@ -6,13 +6,47 @@
  */
 
 /**
+ * Proxy & VPN Blocker Premium Current DB Version.
+ *
+ * @since 3.3.0
+ */
+define( 'PVB_DB_VERSION', '5.2.3' );
+
+/**
+ * Function to check if the database needs an upgrade.
+ *
+ * @since 3.3.0
+ */
+function maybe_upgrade_pvb_db() {
+	$current_version  = PVB_DB_VERSION;
+	$existing_version = get_option( 'pvb_db_version' );
+
+	// Only run if an upgrade is needed.
+	if ( version_compare( $existing_version, $current_version, '<' ) ) {
+
+		// Prevent race conditions or double execution.
+		if ( get_transient( 'pvb_db_upgrade_running' ) ) {
+			return;
+		}
+
+		set_transient( 'pvb_db_upgrade_running', 1, 60 ); // Avoid duplicate runs for 1 minute.
+
+		upgrade_pvb_db();
+
+		delete_transient( 'pvb_db_upgrade_running' );
+	}
+}
+
+/**
  * Function to upgrade database.
+ *
+ * @since 3.3.0
  */
 function upgrade_pvb_db() {
 	global $wpdb;
 
 	$database_version = get_option( 'pvb_db_version' );
-	$current_version  = '5.2.3';
+	$current_version  = PVB_DB_VERSION;
 
 	// Handle both upgrade scenarios and fresh installations.
 	if ( empty( $database_version ) ) {
@@ -189,4 +223,3 @@ function upgrade_pvb_db() {
 		}
 	}
 }
-add_action( 'init', 'upgrade_pvb_db' );

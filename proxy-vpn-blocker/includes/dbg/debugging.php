@@ -127,33 +127,34 @@ if ( ! empty( $get_api_key ) || 'on' === get_option( 'pvb_proxycheckio_dummy_dat
 require_once dirname( __DIR__, 2 ) . '/proxycheckio-api-call.php';
 if ( ! empty( get_option( 'pvb_option_ip_header_type' ) ) ) {
 	$header_type = get_option( 'pvb_option_ip_header_type' );
-	if ( '$_SERVER["HTTP_CF_CONNECTING_IP"]' === $header_type[0] ) {
-		if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
-			$cf_ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
-			// Fix for Cloudflare returning an array of IP's in rare occurances.
-			if ( is_array( $cf_ip ) ) {
-				$visitor_ip_address = $cf_ip[0];
+	if ( ! empty( get_option( 'pvb_option_ip_header_type' ) ) ) {
+		$header_type = get_option( 'pvb_option_ip_header_type' );
+		if ( 'HTTP_CF_CONNECTING_IP' === $header_type[0] ) {
+			if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
+				$cf_ip              = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
+				$ip_array           = explode( ', ', $cf_ip );
+				$visitor_ip_address = $ip_array[0];
 			} else {
-				$visitor_ip_address = $cf_ip;
+				$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+			}
+		} elseif ( 'HTTP_X_FORWARDED_FOR' === $header_type[0] ) {
+			if ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+				$x_forwarded_for_ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
+				// Checks if $x_forwarded_for_ip is an array of IP's.
+				if ( is_array( $x_forwarded_for_ip ) ) {
+					$visitor_ip_address = $x_forwarded_for_ip[0];
+				} else {
+					$visitor_ip_address = $x_forwarded_for_ip;
+				}
+			} else {
+				$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 			}
 		} else {
-			$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		}
-	} elseif ( '$_SERVER["HTTP_X_FORWARDED_FOR"]' === $header_type[0] ) {
-		if ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			$x_forwarded_for_ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
-			// Checks if $x_forwarded_for_ip is an array of IP's.
-			if ( is_array( $x_forwarded_for_ip ) ) {
-				$visitor_ip_address = $x_forwarded_for_ip[0];
-			} else {
-				$visitor_ip_address = $x_forwarded_for_ip;
-			}
-		} else {
-			$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+			$get_ip_var         = isset( $_SERVER[ $header_type[0] ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ $header_type[0] ] ) ) : '';
+			$visitor_ip_address = empty( $get_ip_var ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : $get_ip_var;
 		}
 	} else {
-		$get_ip_var         = isset( $_SERVER[ $header_type[0] ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ $header_type[0] ] ) ) : '';
-		$visitor_ip_address = ! empty( $get_ip_var ) ? $get_ip_var : '';
+		$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 	}
 } else {
 	$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';

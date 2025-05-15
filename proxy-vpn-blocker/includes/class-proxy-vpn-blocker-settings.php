@@ -959,7 +959,7 @@ class Proxy_VPN_Blocker_Settings {
 		echo '			<li><a href="https://wordpress.org/support/plugin/proxy-vpn-blocker/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Support & Issues</a></li>' . "\n";
 		echo '			<li><a href="https://proxyvpnblocker.com/installation-and-configuration-free/" target="_blank"><i class="fa-solid fa-circle-question"></i> Configuration Guide</a></li>' . "\n";
 		echo '			<li><a href="https://proxyvpnblocker.com/faq/" target="_blank"><i class="fa-solid fa-file-lines"></i> FAQ</a></li>' . "\n";
-		echo '			<li id="premium"><a href="https://proxyvpnblocker.com/premium/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Go Premium!</a></li>' . "\n";
+		echo '			<li id="premium"><a href="https://proxyvpnblocker.com/premium/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Explore Premium</a></li>' . "\n";
 		echo ' 	 	</ul>' . "\n";
 		echo '	  <span class="toggle">Menu</span>' . "\n";
 		echo '	</label>' . "\n";
@@ -982,7 +982,7 @@ class Proxy_VPN_Blocker_Settings {
 	 * @return void
 	 */
 	public function statistics_page() {
-		include_once 'proxycheckio-apikey-statistics.php';
+		include_once 'pvb-stats-page/proxycheckio-apikey-statistics.php';
 	}
 
 	/**
@@ -1009,7 +1009,7 @@ class Proxy_VPN_Blocker_Settings {
 	 * @return void
 	 */
 	public function action_log_page() {
-		include_once 'logs/proxy-vpn-blocker-logs.php';
+		include_once 'pvb-action-logs/proxy-vpn-blocker-logs.php';
 	}
 
 

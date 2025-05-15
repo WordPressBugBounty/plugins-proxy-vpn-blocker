@@ -302,19 +302,21 @@ nav {
 .pvbareawrap {
     margin: 16px 0px 16px 0px;
     max-width: 100%;
-    min-width: 495px;
+    min-width: 370px;
     padding: 2px 12px 12px 12px;
     border-radius: 7px;
     box-sizing: border-box;
     display: inherit;
+    position: relative;
 }
 .pvbareawrap p {
      font-size: 12pt;
      margin: 12px 0 -2px 0;
 }
 .pvbareawrap h1 {
-    font-size: 20pt !important;
-    font-weight: bold;
+    font-size: 19pt !important;
+    line-height: 19pt;
+    font-weight: 600;
 }
 .pvbareawrap h2 {
     margin: 10px 0 10px 0;
@@ -379,107 +381,112 @@ nav {
 
 /* nav tabs */
 .nav-tab-wrapper {
-   display: inline-block;
-	list-style: none;
-    border-bottom: none; 
-    vertical-align:top;
-    padding: 10px 5px 10px 0;
-}
-.nav-tab-wrapper li {
-    padding: 15px 10px 15px 10px;
-    font-size: 12pt;
-    cursor: pointer;
-    height: auto;
-    width: 250px;
-    margin: 2px 0 2px 0;
-    border-radius: 0 7px 7px 0;
-    transition: all 0.2s linear;
-}
-.nav-tab-wrapper li a:hover, .nav-tab-wrapper li a:active {
-    text-decoration: none;
-}
-.nav-tab-wrapper li a {
-    text-decoration: none;
-    cursor: pointer;
-    user-select: none;
-    margin-left: 10px;
-    font-weight: bold;
-}
-
-.tabs-content{
-    float: right;
-    max-width: calc(100% - 270px);
-    vertical-align:top;
-}
-
-.pvb-settings-tabs-logo {
-    background: url(../img/pvb-logo.png);
-    width: 100%;
-    height: 75px;
-    margin-left: 10px;
-    background-repeat: no-repeat;
-}
-.pvb-settings-tabs-after {
-    text-align: center;
-    height: 100%;
-}
-
-@keyframes fadeInOpacity {
-	0% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 1;
-	}
-}
-@media screen and (max-width: 900px) {
-    .nav-tab-wrapper li i {
-        display: block;
-        font-size: 14pt;
-        margin: 0 auto;
-    }
-
-    .nav-tab-wrapper {
-        border-bottom: none !important;
-        padding-bottom: 6px;
-        vertical-align:top;
-        text-align: center;
-    }
-    .nav-tab-wrapper li {
-        padding: 5px;
-        cursor: pointer;
-        height: 80px;
-        width: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .nav-tab-wrapper li a:hover, .nav-tab-wrapper li a:active {
-        text-decoration: none;
-    }
-    .nav-tab-wrapper li a {
-        font-size: 8pt;
-        text-decoration: none;
-        text-align: center;
-        margin-left: 0px;
-    }
-
-    .tabs-content{
-        display: inline-block;
-        max-width: calc(100% - 90px);
-        vertical-align:top;
-    }
-
-    .pvb-settings-tabs-logo {
-        background: url(../img/pvb-logo-blue.png);
-        width: 100%;
-        height: 75px;
-        margin-left: 0;
-        margin-top: -5px;
-        background-repeat: no-repeat;
-        background-position: center;
-    }
-}
+    display: inline-block;
+     list-style: none;
+     border-bottom: none; 
+     vertical-align:top;
+     padding: 10px 5px 10px 0;
+ }
+ .nav-tab-wrapper li {
+     padding: 15px 10px 15px 10px;
+     font-size: 12pt;
+     cursor: pointer;
+     height: auto;
+     width: 250px;
+     margin: 3px 0 3px 0;
+     border-radius: 0 7px 7px 0;
+     transition: all 0.2s linear;
+ }
+ 
+ .nav-tab-wrapper li i {
+     margin-top: -5px;
+ }
+ .nav-tab-wrapper li a:hover, .nav-tab-wrapper li a:active {
+     text-decoration: none;
+ }
+ .nav-tab-wrapper li a {
+     text-decoration: none;
+     cursor: pointer;
+     user-select: none;
+     margin-left: 8px;
+     font-weight: bold;
+ }
+ 
+ .tabs-content{
+     float: right;
+     max-width: calc(100% - 270px);
+     vertical-align:top;
+ }
+ 
+ .pvb-settings-tabs-logo {
+     background: url(../img/pvb-logo.png);
+     width: 100%;
+     height: 75px;
+     margin-left: 10px;
+     background-repeat: no-repeat;
+ }
+ .pvb-settings-tabs-after {
+     text-align: center;
+     height: 100%;
+ }
+ 
+ @keyframes fadeInOpacity {
+     0% {
+         opacity: 0;
+     }
+     100% {
+         opacity: 1;
+     }
+ }
+ @media screen and (max-width: 900px) {
+     .nav-tab-wrapper li i {
+         display: block;
+         font-size: 14pt;
+         margin: 0 auto;
+     }
+ 
+     .nav-tab-wrapper {
+         border-bottom: none !important;
+         padding-bottom: 6px;
+         vertical-align:top;
+         text-align: center;
+     }
+     .nav-tab-wrapper li {
+         padding: 5px;
+         cursor: pointer;
+         height: 80px;
+         width: 65px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+     }
+     .nav-tab-wrapper li a:hover, .nav-tab-wrapper li a:active {
+         text-decoration: none;
+     }
+     .nav-tab-wrapper li a {
+         font-size: 8pt;
+         text-decoration: none;
+         text-align: center;
+         margin-left: 0px;
+         line-height: 0;
+     }
+ 
+     .tabs-content{
+         display: inline-block;
+         max-width: calc(100% - 75px);
+         vertical-align:top;
+     }
+ 
+     .pvb-settings-tabs-logo {
+         background: url(../img/pvb-logo-blue.png);
+         width: 100%;
+         height: 75px;
+         margin-left: 0;
+         margin-top: -5px;
+         background-repeat: no-repeat;
+         background-position: center;
+     }
+ }
 
 /* options area range slider */
 .range-slider {
@@ -708,70 +715,144 @@ input.pvb[type=text] {
 
 /* Top API info Columns */
 .api-info {
-    min-width: 495px;
+    min-width: 370px;
     margin: -7px 0 -7px 0;
 }
 
 .api-info-col1 {
-    flex: 65%;
-    padding: 0 5px 0 5px;
-    border-radius: 7px;
-    margin: 7px 0 7px 0;
+    flex: 40%;
 }
 
 .api-info-col2 {
-    flex: 35%;
-    padding: 0 5px 0 5px;
-    border-radius: 7px;
-    margin: 7px 0 7px 0;
+    flex: 20%;
 }
 
-@media only screen and (min-width: 640px) {
+.api-info-col3 {
+    flex: 40%;
+}
+
+.sub-card {
+    border-radius: 7px;
+    padding: 5px;
+    position: relative;
+    overflow: visible;
+    margin: 0 0 5px 0;
+    z-index: 1;
+}
+
+@media only screen and (min-width: 800px) {
+    .sub-card {
+        margin: 0;
+    }
+
     .api-info {
         display: flex;
+        align-items: stretch;
+        gap: 10px; /* adds spacing between columns */
+        margin: -7px 0;
+        align-items: stretch;
     }
+
+    .api-info-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+        flex: 1; /* equal width columns unless overridden */
+    }
+    
+    .api-info-col .sub-card {
+        border-radius: 6px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        z-index: 1;
+      }
+
+    .api-info-col1, .api-info-col2, .api-info-col3 {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .api-info-col2 .sub-card {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        z-index: 10;
+    }
+
+    .api-info-col2 .sub-card + .sub-card {
+        margin-top: 10px; /* space between stacked cards */
+        z-index: 1;
+    }
+
+    .api-info-col1 {
+        flex: 40%;
+    }
+    
     .api-info-col2 {
-        margin: 7px 0 7px 11px !important;
+        flex: 20%;
+    }
+    
+    .api-info-col3 {
+        flex: 40%;
+    }
+
+    .api-info-col1 .sub-card,
+    .api-info-col3 .sub-card {
+    flex: 1; /* <- force full height match */
     }
 }
 
 .api-info-apikey {
-    font-size: 16pt;
-    line-height: 16pt;
+    font-size: clamp(10pt, 2vw, 14pt);
+    line-height: 1.2;
     padding: 10px 0 5px 0;
 }
+
 .api-info-tier {
-    font-size: 16pt;
-    line-height: 16pt;
+    font-size: clamp(10pt, 1.8vw, 12pt);
+    line-height: 1.2;
 }
 
 .api-info p {
-    font-size: 14pt !important;
+    font-size: clamp(10pt, 2vw, 14pt) !important;
 }
 
 .api-info h1 {
-    font-size: 20pt !important;
-    font-weight: bold;
+    font-size: clamp(14pt, 3vw, 18pt) !important;
+    line-height: 1.1;
+    padding-right: 1.2em;
+    font-weight: 600;
+    margin-top: -10px;
+    margin-bottom: -5px;
 }
 
 .api-info-title-small {
-    font-size: 16pt;
-    line-height: 16pt;
-    font-weight: bold !important;
+    font-size: clamp(10pt, 2vw, 14pt);
+    line-height: 1.2;
     padding: 5px 0 0 0;
 }
 
 .api-info-queries-used {
-    font-size: 47pt;
-    line-height: 47pt;
-    padding: 5px 0 15px 0;
+    font-size: clamp(24pt, 6vw, 50pt);
+    line-height: 1.1;
+    padding: 15px 0;
 }
 
 .api-info-bursts {
-    font-size: 26pt;
-    line-height: 26pt;
-    padding: 5px 0 5px 0;
+    font-size: clamp(16pt, 4vw, 22pt);
+    line-height: 1.2;
+    padding: 5px 0;
 }
+
+.api-info-bursts small {
+    font-size: clamp(12pt, 3vw, 17pt);
+    line-height: 1.2;
+}
+
 
 .api-query-block {
     width: 100%;
@@ -783,25 +864,137 @@ input.pvb[type=text] {
     border-radius: 7px;
 }
 
-@media (min-width: 800px) {
-    .api-queries {
-        width: 64%;
-        float: left;
-        padding: 0 0 10px 0;
-    }
+/* stats page tooltips */
+.tooltip-icon {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 16px;
+    cursor: help;
+    color: #979b9e;
+  }
+  
+  .tooltip-icon::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -5px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 15px;
+    border-radius: 4px;
+    font-size: 18px;
+    display: block;
+    width: 200px;
+    white-space: normal;
+    word-wrap: break-word;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 99999;
+  }
+  
+  .tooltip-icon::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 100%; /* arrow on the right edge of the tooltip box */
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent transparent rgba(0, 0, 0, 0.85);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 9998;
+    margin-left: -20px;
+  }
+  
+  .tooltip-icon:hover::after,
+  .tooltip-icon:hover::before {
+    opacity: 1;
+  }
 
-    .api-bursts {
-        width: 35%;
-        float: right;
-        padding: 0 0 10px 0;
-    }
+/* refresh timer */
+#pvb-refresh-timer {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	width: 40px;
+	height: 40px;
+	z-index: 9999;
+}
+
+.circle {
+	width: 100%;
+	height: 100%;
+}
+
+.circle path {
+	fill: none;
+	stroke-width: 4;
+}
+
+.circle .bg {
+	stroke: #e6e6e6;
+}
+
+.circle .progress {
+	stroke: #979b9e;
+	stroke-dasharray: 100, 100;
+	stroke-dashoffset: 100;
+	transition: stroke-dashoffset 1s linear;
+}
+
+.pvb-timer-count {
+    position: absolute;
+    color: #979b9e;
+    top: 46%;
+    left: 46%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#pvb-refresh-timer .progress {
+	transition: stroke-dashoffset 1s linear, stroke 0.3s ease;
+}
+
+/* amchart extras */
+.amchartareawrap {
+    margin: 16px 0px 16px 0px;
+    max-width: 100%;
+    min-width: 370px;
+    border-radius: 7px;
+    box-sizing: border-box;
+    display: inherit;
+}
+.amchartareawrap h1 {
+    font-size: clamp(14pt,3vw,18pt) !important;
+    line-height: 19pt;
+    font-weight: 600;
+    padding: 7px 10px 7px 10px;
+}
+
+#amchartAPImonth {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: #fff;
+    margin-bottom: 7px;
+}
+#amchart-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    color: #555;
 }
 
 /* stats table and whitelist/blacklist */
 #log_outer {
     margin: 16px 0px 16px 0px;
     max-width: 100%;
-    min-width: 495px;
+    min-width: 370px;
     border-radius: 7px;
     box-sizing: border-box;
     display: inherit;
@@ -1097,6 +1290,15 @@ input.pvb[type=text] {
     padding-left: 5px;
  }
 
+ @media screen and (max-width: 650px) {
+    img.country-flag {
+        margin: 0 auto;
+    }
+
+    .angry-grid > .item-2 span span {
+        display: none;
+     }
+ }
 
  .angry-grid > .item-3 {
     padding: 10px;
@@ -1213,7 +1415,6 @@ button.pvbdefault, input.pvbdefault {
     margin: 8px 0 8px 0;
     text-decoration: none;
     font-weight: bold;
-    text-transform: uppercase;
     cursor: pointer;
     border-radius: 7px;
     outline:none;
@@ -1226,7 +1427,6 @@ button.pvbdismiss, input.pvbdismiss {
     margin: 5px 0 5px 0;
     text-decoration: none;
     font-weight: bold;
-    text-transform: uppercase;
     cursor: pointer;
     border-radius: 7px;
     outline:none;

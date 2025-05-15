@@ -21,7 +21,7 @@ if ( ! empty( $get_api_key ) ) {
 					echo '		</div>' . "\n";
 					echo '	</div>' . "\n";
 					echo '	<div class="pvbrvwwrapright">' . "\n";
-					echo '		<button class="pvbdonatedismiss" id="pvbdonationclosebutton" title="close"><i class="pvb-fa-icon-times-circle"></i></button>' . "\n";
+					echo '		<button class="pvbdonatedismiss" id="pvbdonationclosebutton" title="close"><i class="fa-solid fa-circle-xmark"></i></button>' . "\n";
 					echo '		<div class="pvbrvwraptext">' . "\n";
 					echo '			<p>' . __( 'We are very happy to see that you are making use of the Proxy & VPN Blocker plugin on ' . get_bloginfo( 'name' ) . '!', 'proxy-vpn-blocker' ) . '</p>' . "\n";
 					echo '			<p>' . __( 'If at all possible, we would be very grateful if you would take a moment to <a href="https://wordpress.org/plugins/proxy-vpn-blocker/#reviews" target="_blank">leave us a review</a> as this helps to encourage more people.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
@@ -37,7 +37,7 @@ if ( ! empty( $get_api_key ) ) {
 					echo '		</div>' . "\n";
 					echo '	</div>' . "\n";
 					echo '	<div class="pvbrvwwrapright">' . "\n";
-					echo '		<button class="pvbdonatedismiss" id="pvbdonationclosebutton" title="close"><i class="pvb-fa-icon-times-circle"></i></button>' . "\n";
+					echo '		<button class="pvbdonatedismiss" id="pvbdonationclosebutton" title="close"><i class="fa-solid fa-circle-xmark"></i></button>' . "\n";
 					echo '		<div class="pvbrvwwraptext">' . "\n";
 					echo '			<p>' . __( 'We are very happy to see that you are making use of the Proxy & VPN Blocker plugin on ' . get_bloginfo( 'name' ) . '!', 'proxy-vpn-blocker' ) . '</p>' . "\n";
 					echo '			<p>' . __( 'If at all possible, we would be very grateful if you would take a moment to <a href="https://wordpress.org/plugins/proxy-vpn-blocker/#reviews" target="_blank">leave us a review on WordPress.org</a> as this helps to increase visibility of Proxy & VPN Blocker.', 'proxy-vpn-blocker' ) . '</p>' . "\n";

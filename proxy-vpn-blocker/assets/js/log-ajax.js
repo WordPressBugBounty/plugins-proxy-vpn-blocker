@@ -76,10 +76,12 @@ jQuery(document).ready(function($) {
                             logHtml += '<span class="space ipinflux_api_type_used" alt="' + log.api_type + '">Processed By: ' + log.api_type + '</span>';
                         }
 
-                        logHtml += 
-                        '<div class="log-whitelist-btn"><button class="add-to-whitelist-btn" data-ip="' + log.ip_address + '">' +
-                            '<i class="fa-solid fa-plus"></i> Whitelist IP' +
-                        '</button></div>';
+                        if (pvb_action_logs.proxycheck_apikey_set === 'yes') {
+                            logHtml += 
+                            '<div class="log-whitelist-btn"><button class="add-to-whitelist-btn" data-ip="' + log.ip_address + '">' +
+                                '<i class="fa-solid fa-plus"></i> Whitelist IP' +
+                            '</button></div>';
+                        }
 
                         logHtml += '</div>' +
                             '</div>';
