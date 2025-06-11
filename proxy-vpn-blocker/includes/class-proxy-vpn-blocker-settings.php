@@ -955,7 +955,7 @@ class Proxy_VPN_Blocker_Settings {
 		echo '	<input type="checkbox" id="checkbox" />' . "\n";
 		echo '	<label for="checkbox">' . "\n";
 		echo '  	<ul class="menu first">' . "\n";
-		echo '			<li><a href="https://proxyvpnblocker.com" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> PVB Website</a></li>' . "\n";
+		echo '			<li><a href="https://proxyvpnblocker.com" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> proxyvpnblocker.com</a></li>' . "\n";
 		echo '			<li><a href="https://wordpress.org/support/plugin/proxy-vpn-blocker/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Support & Issues</a></li>' . "\n";
 		echo '			<li><a href="https://proxyvpnblocker.com/installation-and-configuration-free/" target="_blank"><i class="fa-solid fa-circle-question"></i> Configuration Guide</a></li>' . "\n";
 		echo '			<li><a href="https://proxyvpnblocker.com/faq/" target="_blank"><i class="fa-solid fa-file-lines"></i> FAQ</a></li>' . "\n";

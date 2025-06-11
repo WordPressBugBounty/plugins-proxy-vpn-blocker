@@ -4,14 +4,15 @@ Tags: security, proxy blocker, vpn blocker, proxycheck, ip address
 Requires at least: 4.9
 Tested up to: 6.8.1
 Requires PHP: 7.2
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 License: GPLv2
 
-Blocks access to WordPress by proxies, VPNs, TOR, spam networks, and more using the proxycheck.io API. Supports geoblocking, IP logging, and admin control.
+Stop unwanted traffic—block proxies, VPNs, TOR and spam using the proxycheck.io API. Easy to configure with geoblocking, IP logging & admin controls.
 
 == Description ==
 = Block Proxies, VPNs, TOR, and More – Protect Your WordPress Site =
 [Proxy & VPN Blocker](https://proxyvpnblocker.com) helps secure your WordPress site by detecting and blocking traffic from anonymous sources using the powerful [proxycheck.io](https://proxycheck.io) API. Prevent unwanted access to login, registration, wp-admin, specific pages or posts — or even your entire site — from:
+
 * Proxies
 * VPNs (optional)
 * Tor nodes
@@ -36,7 +37,9 @@ It also blocks spam comments from anonymous networks commonly used by spammers.
 👥 Logs registration and most recent login IPs in the Users list and profile  
 📊 View API usage statistics directly in your WordPress Dashboard  
 📝 Manage your proxycheck.io Whitelist and Blacklist without leaving WordPress  
-🔧 Simple integration via the WordPress Editor and AWordPress Toolbar for page-level protection  
+🔧 Simple integration via the WordPress Editor and WordPress Toolbar for page-level protection  
+
+And much more available in [Proxy & VPN Blocker Premium](https://proxyvpnblocker.com/premium)!
 
 = The proxycheck.io API =
 This Plugin can be used without a proxycheck.io API key, but it will be limited to 100 daily queries to the API. To enhance the capabilities, you can obtain a free API key from proxycheck.io, which allows for 1,000 free daily queries, making it suitable for small WordPress sites.
@@ -94,8 +97,12 @@ Remember: If you ever have to do this, delete the disablepvb.txt file after you 
 3. Error message example if you opt to use a page within your site's theme.
 4. API Key Stats page.
 5. Whitelist editor page. The blacklist editor page looks similar to this.
+6. Action Log - A list of recently detected IP Addresses.
 
 == Changelog ==
+= 3.3.1 2025-06-11 =
+* Minor changes made to settings UI.
+
 = 3.3.0 2025-05-15 =
 * API Key Statistics page in Settings has been refreshed with amcharts 5 and statistics that automatically update every minute.
 * Action log directory renamed in plugin files due to an edge case where some site backup systems ignore directories named /logs.
