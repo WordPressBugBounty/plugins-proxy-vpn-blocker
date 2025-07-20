@@ -23,6 +23,8 @@ i {
 
 .wrap {
     max-width: 1250px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0 auto;
 }
 a:focus, a:active {
     box-shadow: none !important;
@@ -129,11 +131,12 @@ button.pvbdonatedismiss, input.pvbdonatedismiss {
     text-align: center;
 }
 .pvbinfowraptext p {
-    font-size: 12pt;
+    font-size: 14pt;
+    font-weight: bold;
 }
 p.description{
     display: block;
-    font-weight: bold;
+    font-size: 1rem;
 }
 .pvbinfowraptext h2 {
     margin-top:0;
@@ -242,7 +245,7 @@ nav {
         font-size: 12pt;
     }
 }
-@media screen and (max-width: 850px) {
+@media screen and (max-width: 1100px) {
     .toggle {
         clear: both;
         display: block;
@@ -336,12 +339,13 @@ nav {
     max-width: 100%;
     box-sizing: border-box;
     display: inherit;
+    height: 100%;
 }
 .pvboptionswrap {
     display: none;
 }
-.pvoptionswrap-head {
-    padding: 10px;
+.pvboptionswrap-head {
+    padding: 10px 10px 20px 10px;
 }
 .pvboptionswrap p {
      font-size: 12pt;
@@ -427,8 +431,15 @@ nav {
  }
  .pvb-settings-tabs-after {
      text-align: center;
-     height: 100%;
  }
+ .pvb-settings-tabs-ipinflux-logo {
+         background: url(../img/ipinflux.png);
+         max-width: 100px;
+         height: 18px;
+         background-repeat: no-repeat;
+         background-position: center;
+         margin: 0 auto;
+     }
  
  @keyframes fadeInOpacity {
      0% {
@@ -496,28 +507,29 @@ nav {
 .range_sliderrange {
 	-webkit-appearance: none;
 	width: calc(100% - (73px));
-	height: 12px;
-	border-radius: 5px;
+	height: 30px;
+	border-radius: 15px;
 	outline: none;
 	padding: 0;
+    margin-top: -5px;
 }
 .range_sliderrange::-webkit-slider-thumb {
 	-webkit-appearance: none;
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
+	width: 34px;
+	height: 22px;
+	border-radius: 20px;
     cursor: pointer;
 }
 .range_sliderrange::-moz-range-thumb {
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
+	width: 34px;
+	height: 22px;
+	border-radius: 20px;
     cursor: pointer;
 }
 .range_sliderrange::-ms-thumb {
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
+	width: 34px;
+	height: 22px;
+	border-radius: 20px;
 	cursor: pointer;
     transform: scale(1) !important;
 }
@@ -528,9 +540,9 @@ nav {
     font-weight: bold;
     font-size: 16px;
     text-align: center;
-    border-radius: 3px;
+    border-radius: 20px;
     padding: 4px 8px 6px 8px;
-    margin: -7px 0 0 7px;
+    margin: -4px 0 0 7px;
 }
 .range_sliderrange::-moz-range-track {
 	background: transparent;
@@ -565,7 +577,7 @@ nav {
     display: block;
     width: 200%;
     margin-left: -100%;
-    transition: margin 0.3s ease-in 0s;
+    transition: background-color 0.2s ease 0s;
 }
 .onoffswitch-inner:before, .onoffswitch-inner:after {
     display: block;
@@ -590,42 +602,68 @@ nav {
 .onoffswitch-switch {
     display: block;
     width: 32px;
-    margin: -2px;
+    margin: 3px;
     position: absolute;
     top: 0;
     bottom: 0;
     right: 48px;
-    transition: all 0.3s ease-in 0s;
+    transition: transform 0.2s ease-in 0s, right 0.2s ease-in 0s;
+    will-change: transform, right;
     border-radius: 20px;
 }
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
     margin-left: 0;
 }
+
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0px; 
+}
+.onoffswitch-checkbox + .onoffswitch-label .onoffswitch-switch {
+    right: 40px; 
 }
 
 /* settings form table */
 .settings-form-wrapper {
     padding: 2px 12px 12px 12px;
-    border-radius: 7px 0 0 7px;
 }
 .pvb_settingssection_container {
     width: 100%;
 }
 .pvb_settingsform_row {
-    margin: 10px 0 10px 0;
+    background: linear-gradient(135deg, #f8faff 0%, #f1f5f9 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 20px 10px 20px;
+    transition: all 0.2s ease;
+    margin-bottom: 20px;
 }
+.pvb_settingsform_row:hover {
+    border-color: #16b3fb;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+}
+
 .pvb_settingsform_left {
     width: 100%;
 }
 .pvb_settingsform_left h3 {
-    font-weight: bold;
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .pvb_settingsform_right {
     width: 100%;
     padding-bottom: 10px;
+}
+
+.pvb-submit-footer {
+    display: inline-block;
+    width: 100%;
+}
+
+.pvb-submit-footer .submit {
+    display: block;
+    float: right;
+    margin: 20px;
 }
 
 .pvb-prem-info {
@@ -671,22 +709,22 @@ nav {
 
 
 .field-note {
-    padding:10px;
+    padding:15px;
     margin: 10px 0 10px 0;
-    border-radius: 7px;
-    color: #ed7e29;
-    font-size: 16px;
-    font-weight: bold;
-    border: 1px solid #ed7e29;
+    border-radius: 12px;
+    color: #92400e;
+    background: #fef3c7;
+    font-size: 15px;
+    border: 1px solid #f59e0b;
 }
 
 .field-warning {
-    padding:10px;
+    padding:15px;
     margin: 10px 0 10px 0;
     border-radius: 7px;
-    color: #bf0b0b;
-    font-size: 16px;
-    font-weight: bold;
+    color: #720000;
+    background: #fdf2f5;
+    font-size: 15px;
     border: 1px solid #bf0b0b;
 }
 
@@ -1416,9 +1454,13 @@ button.pvbdefault, input.pvbdefault {
     text-decoration: none;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 7px;
+    border-radius: 25px;
     outline:none;
-    transition: all 0.3s;
+    transition: transform 0.2s;
+}
+
+button.pvbdefault:hover, input.pvbdefault:hover {
+     transform: translateY(-2px);
 }
 
 button.pvbdismiss, input.pvbdismiss {
@@ -1428,7 +1470,7 @@ button.pvbdismiss, input.pvbdismiss {
     text-decoration: none;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 7px;
+    border-radius: 25px;
     outline:none;
     transition: all 0.3s;
 }

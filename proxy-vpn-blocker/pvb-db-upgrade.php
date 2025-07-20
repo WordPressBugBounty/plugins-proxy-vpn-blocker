@@ -10,7 +10,7 @@
  *
  * @since 3.3.0
  */
-define( 'PVB_DB_VERSION', '5.2.3' );
+define( 'PVB_DB_VERSION', '5.2.4' );
 
 /**
  * Function to check if the database needs an upgrade.
@@ -94,6 +94,12 @@ function upgrade_pvb_db() {
 		// Set the version after everything is set up.
 		update_option( 'pvb_db_version', $current_version );
 	} elseif ( $current_version !== $database_version ) {
+		// This is an upgrade from an existing version - mark setup as complete.
+		// to prevent setup wizard from showing to existing users.
+		if ( ! get_option( 'pvb_setup_complete' ) ) {
+			update_option( 'pvb_setup_complete', 'on' );
+		}
+
 		// Upgrade DB to 3.0.0 if lower.
 		if ( version_compare( $database_version, '3.0.0', '<' ) && version_compare( $database_version, '2.0.1', '>=' ) ) {
 			add_option( 'pvb_protect_default_login_page', 'on' );
@@ -220,6 +226,15 @@ function upgrade_pvb_db() {
 			$wpdb->query( $sql );
 
 			update_option( 'pvb_db_version', '5.2.3' );
+		}
+
+		// Upgrade DB to 5.2.4 if lower.
+		if ( version_compare( $database_version, '5.2.4', '<' ) && version_compare( $database_version, '5.2.3', '>=' ) ) {
+			// Mark setup as complete for existing users.
+			if ( ! get_option( 'pvb_setup_complete' ) ) {
+				update_option( 'pvb_setup_complete', 'on' );
+			}
+			update_option( 'pvb_db_version', '5.2.4' );
 		}
 	}
 }

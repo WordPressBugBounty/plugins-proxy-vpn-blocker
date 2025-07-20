@@ -1,6 +1,6 @@
 <?php
 /**
- * This file runs when the plugin in uninstalled (deleted).
+ * This file runs when the plugin in uninstalled (delete option in plugins list).
  * This will not run when the plugin is deactivated.
  *
  * @package Proxy & VPN Blocker
@@ -40,6 +40,7 @@ $options = array(
 	'pvb_proxycheckio_current_key',
 	'pvb_option_help_mode',
 	'pvb_enable_debugging',
+	'pvb_setup_complete',
 	'pvb_cleanup_on_uninstall',
 );
 foreach ( $options as $option ) {

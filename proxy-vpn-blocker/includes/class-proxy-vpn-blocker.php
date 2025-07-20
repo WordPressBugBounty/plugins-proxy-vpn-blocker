@@ -114,7 +114,7 @@ class Proxy_VPN_Blocker {
 	 * @since   1.0
 	 * @return  void
 	 */
-	public function __construct( $file = '', $version = '3.3.1' ) {
+	public function __construct( $file = '', $version = '3.4.0' ) {
 		$this->_version = $version;
 		$this->_token   = 'proxy_vpn_blocker';
 
@@ -126,6 +126,7 @@ class Proxy_VPN_Blocker {
 
 		$this->script_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
+		add_action( 'admin_init', array( $this, 'redirect_after_activation' ) );
 		register_activation_hook( $this->file, array( $this, 'install' ) );
 
 		// Load admin JS & CSS.
@@ -205,6 +206,10 @@ class Proxy_VPN_Blocker {
 			wp_enqueue_style( $this->_token . '-admin' );
 			wp_register_style( $this->_token . '-select2', esc_url( $this->assets_url ) . 'css/select2/select2pvb.min.css', array(), $this->_version );
 			wp_enqueue_style( $this->_token . '-select2' );
+		}
+		if ( stripos( $screen->base, 'pvb_setup_wizard' ) ) {
+			wp_register_style( $this->_token . '-setup-wizard', esc_url( $this->assets_url ) . 'css/setup-wizard.min.css', array(), $this->_version );
+			wp_enqueue_style( $this->_token . '-setup-wizard' );
 		}
 		wp_register_style( $this->_token . '-wpsettings-pvb-tooltips', esc_url( $this->assets_url ) . 'css/ui-extensions.min.css', array(), $this->_version );
 		wp_enqueue_style( $this->_token . '-wpsettings-pvb-tooltips' );
@@ -304,7 +309,21 @@ class Proxy_VPN_Blocker {
 				)
 			);
 		}
+		if ( stripos( $screen->base, 'pvb_setup_wizard' ) ) {
+			wp_register_script( $this->_token . '-settings-pvb-setup-wizard', esc_url( $this->assets_url ) . 'js/setup-wizard/setup-wizard' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
+			wp_enqueue_script( $this->_token . '-settings-pvb-setup-wizard' );
+			wp_localize_script(
+				$this->_token . '-settings-pvb-setup-wizard',
+				'pvb_setup_wizard',
+				array(
+					'nonce'    => wp_create_nonce( 'pvb_setup_wizard_ajax_nonce' ),
+					'ajax_url' => admin_url( 'admin-ajax.php' ),
+				)
+			);
+
+		}
 	}//end pvb_scripts_footer_function()
+
 	/**
 	 * Load plugin localisation
 	 *
@@ -345,7 +364,7 @@ class Proxy_VPN_Blocker {
 	 * @see proxy_vpn_blocker()
 	 * @return Main proxy_vpn_blocker instance
 	 */
-	public static function instance( $file = '', $version = '3.3.1' ) {
+	public static function instance( $file = '', $version = '3.4.0' ) {
 
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );
@@ -380,6 +399,10 @@ class Proxy_VPN_Blocker {
 	 */
 	public function install() {
 		$this->log_version_number();
+
+		if ( ! isset( $_GET['activate-multi'] ) ) {
+			add_option( $this->_token . '_pvb_activation_redirect', true );
+		}
 	} //End install()
 
 	/**
@@ -392,4 +415,38 @@ class Proxy_VPN_Blocker {
 	public function log_version_number() {
 		update_option( $this->_token . '_version', $this->_version );
 	} //End _log_version_number()
+
+	/**
+	 * Redirect to settings page after activation
+	 *
+	 * @access public
+	 * @since  1.0.0
+	 * @return void
+	 */
+	public function redirect_after_activation() {
+		if ( get_option( $this->_token . '_pvb_activation_redirect', false ) ) {
+			delete_option( $this->_token . '_pvb_activation_redirect' );
+
+			// Safety checks.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+
+			// Don't redirect if already on plugin page.
+			if ( isset( $_GET['page'] ) && $_GET['page'] === $this->_token . '-settings' ) {
+				return;
+			}
+
+			if ( ! get_option( 'pvb_setup_complete' ) ) {
+				// Redirect to setup wizard if not completed.
+				wp_redirect( admin_url( 'admin.php?page=pvb_setup_wizard&step=1' ) );
+			} else {
+				// Redirect to settings page if setup is complete.
+				wp_redirect( admin_url( 'admin.php?page=proxy_vpn_blocker_settings' ) );
+			}
+
+			// Exit to prevent further execution.
+			exit;
+		}
+	} //End redirect_after_activation()
 }

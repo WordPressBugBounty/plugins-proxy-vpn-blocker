@@ -67,6 +67,19 @@ class Proxy_VPN_Blocker_Settings {
 	}
 
 	/**
+	 * Get the instance of Proxy_VPN_Blocker_Premium_Settings.
+	 */
+	public function maybe_redirect_to_setup() {
+		// Only redirect if the user is accessing the PVB Settings page.
+		$is_main_settings_page = isset( $_GET['page'] ) && $_GET['page'] === $this->parent->_token . '_settings';
+
+		if ( current_user_can( 'manage_options' ) && $is_main_settings_page && 'on' !== get_option( 'pvb_setup_complete' ) ) {
+			wp_redirect( admin_url( 'admin.php?page=pvb_setup_wizard&step=1' ) );
+			exit;
+		}
+	}
+
+	/**
 	 * Initialise settings
 	 *
 	 * @return void
@@ -80,8 +93,19 @@ class Proxy_VPN_Blocker_Settings {
 	 * @return void
 	 */
 	public function add_menu_item() {
-		$this->parent->assets_url = esc_url( trailingslashit( plugins_url( 'proxy-vpn-blocker/assets/' ) ) );
-		add_menu_page( 'Proxy & VPN Blocker', 'PVB Settings', 'manage_options', $this->parent->_token . '_settings', array( $this, 'settings_page' ), esc_url( $this->parent->assets_url ) . 'img/pvb.svg' );
+		$icon_svg = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path fill-rule="evenodd" clip-rule="evenodd" d="M9.69249 0.140441C8.84054 0.552021 7.59335 1.02836 6.57655 1.33053C5.4111 1.67688 3.8166 2.00676 2.65977 2.14088C2.18519 2.1959 2.08793 2.22401 2.03397 2.32172C1.98891 2.40329 1.98857 10.2659 2.03358 10.7904C2.12148 11.8144 2.34936 12.692 2.7444 13.5277C3.67421 15.4948 5.54445 17.2928 8.70528 19.2582C9.22527 19.5816 9.91485 19.9803 9.98679 19.9992C10.0452 20.0146 10.4316 19.8005 11.2111 19.3207C14.9533 17.0174 16.9233 14.9498 17.6655 12.5462C17.7633 12.2293 17.8535 11.8264 17.931 11.3597L17.9848 11.0361L17.9924 6.70504L18 2.37404L17.9475 2.30498C17.9186 2.26698 17.8696 2.22595 17.8387 2.21375C17.8077 2.20156 17.5234 2.15676 17.2069 2.1142C14.6449 1.76957 12.3483 1.10316 10.2781 0.103619C10.1597 0.0464614 10.0448 -0.000175682 10.0227 4.97524e-07C10.0006 0.000201845 9.85202 0.0634 9.69249 0.140441ZM10.2121 1.42089C10.6634 1.65604 11.5966 2.03752 12.2946 2.27224C13.4765 2.6697 14.927 3.03071 16.1619 3.23476C16.4697 3.28562 16.7356 3.3315 16.7528 3.33674C16.7783 3.34449 16.7826 4.05155 16.7758 7.10308C16.7666 11.1827 16.775 10.918 16.6338 11.5979C16.505 12.2184 16.1646 13.0891 15.841 13.6261C15.5147 14.1677 15.0015 14.8116 14.51 15.2964C13.5714 16.2222 12.1479 17.2737 10.4533 18.2931L10.0239 18.5513L9.61396 18.3074C7.13608 16.833 5.35661 15.3368 4.41479 13.9359C3.78767 13.0031 3.41061 11.9601 3.27542 10.7844C3.25058 10.5684 3.24357 9.71806 3.24357 6.92116V3.33482L3.38954 3.31479C3.73537 3.2673 4.61807 3.10884 5.05411 3.01594C6.75938 2.65266 8.55892 2.05347 9.76356 1.44789C9.88398 1.38736 9.99648 1.33687 10.0135 1.33572C10.0306 1.33456 10.1199 1.37289 10.2121 1.42089ZM9.83545 2.63585C9.34329 3.28575 8.89231 4.08344 8.60091 4.81944C8.48588 5.10991 8.28437 5.73889 8.30084 5.75593C8.30612 5.76139 8.44581 5.65415 8.61125 5.51759C8.94053 5.24582 9.27519 4.98303 9.29203 4.98303C9.29791 4.98303 9.30524 6.3223 9.3083 7.95921L9.31387 10.9354L9.66807 11.2965C9.86287 11.4952 10.0263 11.6538 10.0312 11.6489C10.0362 11.6441 10.1942 11.4824 10.3824 11.2897L10.7245 10.9393V7.96117C10.7245 6.32321 10.7303 4.98303 10.7374 4.98303C10.7445 4.98303 10.9744 5.16369 11.2483 5.38447C11.5222 5.60527 11.7463 5.78191 11.7463 5.777C11.7463 5.74035 11.5055 5.00314 11.4376 4.83202C11.2567 4.37582 10.9458 3.77356 10.632 3.27158C10.4327 2.95274 10.0489 2.41585 10.0202 2.41585C10.0102 2.41585 9.92707 2.51484 9.83545 2.63585ZM7.09961 5.4706C6.30373 6.191 5.66137 7.12074 5.31498 8.05359C5.21842 8.31365 5.12405 8.63571 5.13967 8.65187C5.14505 8.65743 5.23518 8.60568 5.33994 8.53687C5.62638 8.34874 5.9344 8.15426 5.94594 8.15426C5.95158 8.15426 5.95625 8.98387 5.95632 9.99785L5.95644 11.8414L6.43474 12.2567C6.69778 12.4851 7.26433 12.9778 7.69375 13.3516C8.12315 13.7253 8.66326 14.1945 8.89399 14.3942L9.31348 14.7573L9.31385 15.7281L9.31421 16.699L9.67169 17.0432L10.0291 17.3875L10.3748 17.0432L10.7205 16.699L10.7225 15.7267L10.7245 14.7544L10.8067 14.6896C10.9014 14.6148 12.3558 13.3608 13.3948 12.4581L14.1045 11.8414L14.1053 9.99496L14.1062 8.14847L14.1731 8.19426C14.3603 8.32244 14.8955 8.65479 14.9027 8.64739C14.9072 8.64268 14.8611 8.48168 14.8002 8.28959C14.6039 7.6704 14.2037 6.92813 13.7503 6.34213C13.5725 6.11234 13.0319 5.54223 12.8228 5.36406L12.6951 5.25521V8.19926V11.1433L12.166 11.6048C11.875 11.8586 11.3796 12.2933 11.0651 12.5708C10.7507 12.8482 10.3884 13.1675 10.26 13.2802L10.0265 13.4852L9.42065 12.9568C9.0874 12.6662 8.48362 12.1388 8.07892 11.7848L7.34309 11.1412L7.33691 8.2013L7.33073 5.2614L7.09961 5.4706Z" fill="currentColor"/>
+			</svg>';
+		add_action( 'admin_init', array( $this, 'maybe_redirect_to_setup' ) );
+		add_submenu_page(
+			'Proxy & VPN Blocker',
+			__( 'Proxy & VPN Blocker Setup Wizard', 'proxy-vpn-blocker' ),
+			__( 'Proxy & VPN Blocker Setup Wizard', 'proxy-vpn-blocker' ),
+			'manage_options',
+			'pvb_setup_wizard',
+			array( $this, 'render_setup_page' )
+		);
+		add_menu_page( 'Proxy & VPN Blocker', 'PVB Settings', 'manage_options', $this->parent->_token . '_settings', array( $this, 'settings_page' ), 'data:image/svg+xml;base64,' . base64_encode( $icon_svg ) );
 		add_submenu_page( $this->parent->_token . '_settings', 'Blacklist Editor', 'Blacklist Editor', 'manage_options', $this->parent->_token . '_blacklist', array( $this, 'ipblacklist_page' ) );
 		add_submenu_page( $this->parent->_token . '_settings', 'Whitelist Editor', 'Whitelist Editor', 'manage_options', $this->parent->_token . '_whitelist', array( $this, 'ipwhitelist_page' ) );
 		add_submenu_page( $this->parent->_token . '_settings', 'Statistics', 'API Key Statistics', 'manage_options', $this->parent->_token . '_statistics', array( $this, 'statistics_page' ) );
@@ -89,6 +113,15 @@ class Proxy_VPN_Blocker_Settings {
 		if ( 'on' === get_option( 'pvb_enable_debugging' ) ) {
 			add_submenu_page( $this->parent->_token . '_settings', 'PVB Debugging', 'PVB Debugging', 'manage_options', $this->parent->_token . '_debugging', array( $this, 'debugging_page' ) );
 		}
+	}
+
+	/**
+	 * Render the settings wizard page.
+	 *
+	 * @return void
+	 */
+	public function render_setup_page() {
+		include plugin_dir_path( __FILE__ ) . 'setup-wizard/pvb-setup-wizard.php';
 	}
 
 	/**
@@ -673,6 +706,13 @@ class Proxy_VPN_Blocker_Settings {
 					'default'     => '',
 				),
 				array(
+					'id'          => 'setup_complete',
+					'label'       => 'Disable Setup Wizard',
+					'description' => __( 'Disables the Proxy & VPN Blocker Setup Wizard. Turn off to go back to the Setup Wizard.', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => '',
+				),
+				array(
 					'id'          => 'cleanup_on_uninstall',
 					'label'       => 'Cleanup on Uninstall',
 					'description' => __( 'Cleans up all Proxy & VPN Blocker settings on plugin uninstall.', 'proxy-vpn-blocker' ),
@@ -780,7 +820,7 @@ class Proxy_VPN_Blocker_Settings {
 		}
 
 		echo '	<div class="pvb-settings-tabs-after">' . "\n"; // settings tabs after start.
-		echo '		<p>Proxy & VPN Blocker ' . get_option( 'proxy_vpn_blocker_version' ) . '</p>' . "\n";
+		echo '		<p>Proxy & VPN Blocker Lite: ' . get_option( 'proxy_vpn_blocker_version' ) . '</p>' . "\n";
 		echo '	</div>' . "\n"; // settings tabs after end.
 
 		echo '		</ul>' . "\n";
@@ -790,14 +830,16 @@ class Proxy_VPN_Blocker_Settings {
 				continue;
 			}
 			echo '		<div class="pvboptionswrap" id="tab-' . $section['id'] . '">' . "\n";
-			echo '			<div class="pvoptionswrap-head">' . "\n";
+			echo '			<div class="pvboptionswrap-head">' . "\n";
 			echo '		<h1>' . $section['title'] . '</h1>' . "\n";
 			call_user_func( $section['callback'], $section );
 			echo '			</div>' . "\n";
 			echo '			<div class="settings-form-wrapper">' . "\n";
 			$this->pvb_do_settings_fields( $page, $section['id'] );
 			echo '			</div>' . "\n";
-			echo '			<input name="Submit" type="submit" class="pvbdefault submit" value="' . esc_attr( __( 'Save Settings', 'proxy-vpn-blocker' ) ) . '" />' . "\n";
+			echo '			<div class="pvb-submit-footer">' . "\n";
+			echo '				<input name="Submit" type="submit" class="pvbdefault submit" value="' . esc_attr( __( 'Save Settings', 'proxy-vpn-blocker' ) ) . '" />' . "\n";
+			echo '          </div>' . "\n"; // submit footer end.
 			echo '		</div>' . "\n";
 		}
 		echo '		</div>' . "\n"; // tabs content end.
