@@ -114,7 +114,7 @@ class Proxy_VPN_Blocker {
 	 * @since   1.0
 	 * @return  void
 	 */
-	public function __construct( $file = '', $version = '3.4.1' ) {
+	public function __construct( $file = '', $version = '3.4.2' ) {
 		$this->_version = $version;
 		$this->_token   = 'proxy_vpn_blocker';
 
@@ -146,7 +146,7 @@ class Proxy_VPN_Blocker {
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
 
 		// Handle updates.
-		add_action( 'upgrader_process_complete', array( $this, 'install' ), 10, 2 );
+		add_action( 'upgrader_process_complete', array( $this, 'maybe_install_on_update' ), 10, 2 );
 
 		add_action( 'init', array( $this, 'pvb_register_post_meta' ), 10, 1 );
 	} // End __construct ()
@@ -364,7 +364,7 @@ class Proxy_VPN_Blocker {
 	 * @see proxy_vpn_blocker()
 	 * @return Main proxy_vpn_blocker instance
 	 */
-	public static function instance( $file = '', $version = '3.4.1' ) {
+	public static function instance( $file = '', $version = '3.4.2' ) {
 
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );
@@ -445,13 +445,35 @@ class Proxy_VPN_Blocker {
 			if ( ! get_option( 'pvb_setup_complete' ) ) {
 				// Redirect to setup wizard if not completed.
 				wp_redirect( admin_url( 'admin.php?page=pvb_setup_wizard&step=1' ) );
-			} else {
-				// Redirect to settings page if setup is complete.
-				wp_redirect( admin_url( 'admin.php?page=proxy_vpn_blocker_settings' ) );
+				// Exit to prevent further execution.
+				exit;
 			}
-
-			// Exit to prevent further execution.
-			exit;
 		}
 	} //End redirect_after_activation()
+
+	/**
+	 * Only run install logic if our own plugin is being updated.
+	 *
+	 * This function checks if the current update action is for a plugin and if that plugin is this one.
+	 * If so, it calls the install method to perform any necessary updates.
+	 *
+	 * @param object $upgrader_object The upgrader object.
+	 * @param array  $options         The options passed to the upgrader.
+	 */
+	public function maybe_install_on_update( $upgrader_object, $options ) {
+		if (
+			isset( $options['action'], $options['type'] ) &&
+			'update' === $options['action'] &&
+			'plugin' === $options['type'] &&
+			! empty( $options['plugins'] ) &&
+			is_array( $options['plugins'] )
+		) {
+			foreach ( $options['plugins'] as $plugin_file ) {
+				if ( plugin_basename( $this->file ) === $plugin_file ) {
+					$this->install();
+					break;
+				}
+			}
+		}
+	}
 }

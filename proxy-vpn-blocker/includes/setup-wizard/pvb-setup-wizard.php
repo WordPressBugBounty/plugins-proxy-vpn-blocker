@@ -280,7 +280,7 @@ function get_recommended_header( $headers ) {
 									<h3 class="option-title"><?php esc_html_e( 'IP Header Configuration', 'proxy-vpn-blocker' ); ?></h3>
 									<span class="recommended-badge"><?php esc_html_e( 'Recommended', 'proxy-vpn-blocker' ); ?></span>
 									
-									<?php if ( $recommended_header ): ?>
+									<?php if ( $recommended_header ) : ?>
 										<div class="recommended-setting">
 											<label class="header-option recommended">
 												<input type="radio" name="pvb_option_ip_header_type" value="<?php echo esc_attr( $recommended_header['key'] ); ?>" checked>
@@ -303,8 +303,8 @@ function get_recommended_header( $headers ) {
 										<div class="detail-section">
 											<div class="detail-title"><?php esc_html_e( 'Other Available Options:', 'proxy-vpn-blocker' ); ?></div>
 											<div class="header-options">
-												<?php foreach ( $detected_headers as $header ): ?>
-													<?php if ( $header['key'] !== $recommended_header['key'] ): ?>
+												<?php foreach ( $detected_headers as $header ) : ?>
+													<?php if ( $header['key'] !== $recommended_header['key'] ) : ?>
 														<label class="header-option">
 															<input type="radio" name="pvb_option_ip_header_type" value="<?php echo esc_attr( $header['key'] ); ?>">
 															<div class="option-content">
@@ -378,9 +378,9 @@ function get_recommended_header( $headers ) {
 							<div class="option-header">
 								<div>
 									<h3 class="option-title"><?php esc_html_e( 'Enable Cache Buster (DONOTCACHEPAGE Header)', 'proxy-vpn-blocker' ); ?></h3>
-									<?php if ( $cache_detected ): ?>
+									<?php if ( $cache_detected ) : ?>
 										<span class="recommended-badge"><?php esc_html_e( 'Recommended', 'proxy-vpn-blocker' ); ?></span>
-									<?php else: ?>
+									<?php else : ?>
 										<span class="optional-badge"><?php esc_html_e( 'Optional', 'proxy-vpn-blocker' ); ?></span>
 									<?php endif; ?>
 									<?php pvb_render_toggle_switch( 'pvb_cache_buster', 'pvb_cache_buster', $cache_buster_value ); ?>
@@ -388,7 +388,7 @@ function get_recommended_header( $headers ) {
 										<p class="option-description">
 											<?php esc_html_e( 'We detected potential caching on your site. Enabling this option helps prevent cached pages from interfering with visitor blocking by setting DONOTCACHEPAGE headers on pages you have selected for blocking with Proxy & VPN Blocker.', 'proxy-vpn-blocker' ); ?>
 										</p>
-									<?php else: ?>
+									<?php else : ?>
 										<p class="option-description">
 											<?php esc_html_e( 'No caching detected, but you may enable this option if you use caching plugins or server-side caching. This will set DONOTCACHEPAGE headers on the pages you have selected for blocking with Proxy & VPN Blocker.', 'proxy-vpn-blocker' ); ?>
 										</p>

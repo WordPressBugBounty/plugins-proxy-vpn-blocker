@@ -429,7 +429,7 @@ class Proxy_VPN_Blocker_Settings {
 				array(
 					'id'          => 'proxycheckio_master_activation',
 					'label'       => __( 'Enable Proxy & VPN Blocker', 'proxy-vpn-blocker' ),
-					'description' => __( "Set this to 'on'  to enable Proxy & VPN Blocker. If set to 'off' this plugin will not be protecting this site.", 'proxy-vpn-blocker' ),
+					'description' => __( 'Master toggle: Enable visitor IP address monitoring. When disabled, all plugin functionality is turned off.', 'proxy-vpn-blocker' ),
 					'type'        => 'checkbox',
 					'default'     => 'on',
 				),

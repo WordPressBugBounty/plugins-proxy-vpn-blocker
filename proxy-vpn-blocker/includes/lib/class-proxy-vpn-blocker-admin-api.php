@@ -91,12 +91,14 @@ class Proxy_VPN_Blocker_Admin_API {
 				if ( $data && 'on' === $data ) {
 					$checked = 'checked';
 				}
-				$html .= '<div class="onoffswitch">' . "\n";
-				$html .= '<input autocomplete="off" tabindex="0" class="onoffswitch-checkbox" type="' . esc_attr( $field['type'] ) . '" name="' . esc_attr( $option_name ) . '" id="' . esc_attr( $field['id'] ) . '" ' . $checked . '>' . "\n";
-				$html .= '<label class="onoffswitch-label" for="' . esc_attr( $field['id'] ) . '">' . "\n";
-				$html .= '<span class="onoffswitch-inner"></span>' . "\n";
-				$html .= '<span class="onoffswitch-switch"></span>' . "\n";
-				$html .= '</label>';
+				$html .= '<div class="onoffswitch-container">' . "\n";
+				$html .= '	<div class="onoffswitch">' . "\n";
+				$html .= '		<input autocomplete="off" tabindex="0" class="onoffswitch-checkbox" type="' . esc_attr( $field['type'] ) . '" name="' . esc_attr( $option_name ) . '" id="' . esc_attr( $field['id'] ) . '" ' . $checked . '>' . "\n";
+				$html .= '		<label class="onoffswitch-label" for="' . esc_attr( $field['id'] ) . '">' . "\n";
+				$html .= '			<span class="onoffswitch-inner"></span>' . "\n";
+				$html .= '			<span class="onoffswitch-switch"></span>' . "\n";
+				$html .= '		</label>';
+				$html .= '	</div>' . "\n";
 				$html .= '</div>' . "\n";
 				break;
 

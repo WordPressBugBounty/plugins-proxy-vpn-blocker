@@ -4,7 +4,7 @@ Tags: security, proxy blocker, vpn blocker, proxycheck, ip address
 Requires at least: 4.9
 Tested up to: 6.8.1
 Requires PHP: 7.2
-Stable tag: 3.4.1
+Stable tag: 3.4.2
 License: GPLv2
 
 Stop unwanted traffic—block proxies, VPNs, TOR and spam using the proxycheck.io API. Easy to configure with geoblocking, IP logging & admin controls.
@@ -100,6 +100,9 @@ Remember: If you ever have to do this, delete the disablepvb.txt file after you 
 6. Action Log - A list of recently detected IP Addresses.
 
 == Changelog ==
+= 3.4.1 2025-07-29 =
+* Correct issue where redirect may forcibly happen to PVB Settings page.
+
 = 3.4.1 2025-07-20 =
 * Correct issue with ajax on admin.
 

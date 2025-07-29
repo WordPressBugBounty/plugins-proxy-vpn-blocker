@@ -507,7 +507,7 @@ nav {
 .range_sliderrange {
 	-webkit-appearance: none;
 	width: calc(100% - (73px));
-	height: 30px;
+	height: 10px;
 	border-radius: 15px;
 	outline: none;
 	padding: 0;
@@ -549,6 +549,10 @@ nav {
 }
 
 /*styles for colored switches*/
+.onoffswitch-container {
+    width: 80px;
+    float: right;
+}
 .onoffswitch {
     position: relative;
     width: 80px;
@@ -557,7 +561,18 @@ nav {
     -moz-user-select:none;
     -ms-user-select: none;
     float: right;
-    margin: -20px 10px 0 50px;;
+    margin: -40px 10px 0 50px;
+}
+@media screen and (max-width: 900px) {
+    .onoffswitch-container {
+        display: inline-block;
+        width: 100%;
+    }
+    .onoffswitch {
+        position: relative;
+        float: left;
+        margin: -5px 0 5px 0;
+    }
 }
 .onoffswitch input {
     display: none;
