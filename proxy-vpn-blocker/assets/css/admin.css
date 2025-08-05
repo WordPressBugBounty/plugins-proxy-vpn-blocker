@@ -764,6 +764,7 @@ input.pvb[type=text] {
 }
 .pvberrorinside {
 	padding: 15px;
+    
 }
 
 /* Top API info Columns */
@@ -1462,6 +1463,7 @@ img.country-flag {
 
 
 /* Buttons */
+/* Primary buttons */
 button.pvbdefault, input.pvbdefault {
     font-size: 14pt;
     padding: 10px 15px;
@@ -1478,6 +1480,24 @@ button.pvbdefault:hover, input.pvbdefault:hover {
      transform: translateY(-2px);
 }
 
+/* Secondary buttons */
+button.pvbsecondary.small, input.pvbsecondary.small {
+    font-size: 11pt;
+    padding: 5px 10px;
+    margin: 8px 0 8px 0;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 25px;
+    outline:none;
+    transition: transform 0.2s;
+    border: 0;
+}
+button.pvbsecondary:hover, input.pvbsecondary:hover {
+     transform: translateY(-2px);
+}
+
+/* Dismiss buttons */
 button.pvbdismiss, input.pvbdismiss {
     font-size: 15pt;
     padding: 5px 10px;

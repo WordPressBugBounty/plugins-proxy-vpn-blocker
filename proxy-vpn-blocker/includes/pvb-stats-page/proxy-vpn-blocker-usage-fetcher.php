@@ -35,14 +35,18 @@ function number_format_short( $n ) {
  * Get stats from the proxycheck.io Dashboard API.
  */
 function pvb_get_proxycheck_api_key_stats() {
-	$get_api_key = get_option( 'pvb_proxycheckio_API_Key_field' );
-	if ( ! empty( $get_api_key ) ) {
+	if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
 		// Build page HTML.
-		$request_args  = array(
+		$request_args = array(
 			'timeout'     => '10',
 			'blocking'    => true,
 			'httpversion' => '1.1',
 		);
+
+		// Get and Decrypt API Key.
+		$encrypted_key = get_option( 'pvb_proxycheckio_API_Key_field' );
+		$get_api_key   = PVB_API_Key_Encryption::decrypt( $encrypted_key );
+
 		$request_usage = wp_remote_get( 'https://proxycheck.io/dashboard/export/usage/?key=' . $get_api_key, $request_args );
 		$api_key_usage = json_decode( wp_remote_retrieve_body( $request_usage ) );
 

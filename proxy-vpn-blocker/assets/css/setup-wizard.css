@@ -642,3 +642,29 @@ button.pvbsecondary.with-left-icon i, input.pvbsecondary.with-left-icon i {
     color: #16b3fb;
     font-size: 6rem;
 }
+
+/* Error Messages */
+.pvberror {
+	border-radius: 9px;
+	overflow: hidden;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 40px auto;
+    position: relative;
+    overflow: hidden;
+}
+.pvberrortitle {
+	font-size: 18px;
+	font-weight: bold;
+	padding: 15px;
+    background: #16b3fb;
+    color: #fff;
+    border-bottom: 1px solid #ddd;
+}
+.pvberrorinside {
+	padding: 15px;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    background: #fff;
+}

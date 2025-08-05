@@ -11,7 +11,7 @@
  * Plugin Name: Proxy & VPN Blocker
  * Plugin URI: https://proxyvpnblocker.com
  * description: Proxy & VPN Blocker prevents Proxies, VPN's and other unwanted visitors from accessing pages, posts and more, using Proxycheck.io API data.
- * Version: 3.4.2
+ * Version: 3.4.3
  * Author: Proxy & VPN Blocker
  * Author URI: https://profiles.wordpress.org/rickstermuk
  * License: GPLv2
@@ -26,8 +26,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-$version     = '3.4.2';
-$update_date = 'July 29th 2025';
+$version     = '3.4.3';
+$update_date = 'August 5th 2025';
 
 if ( version_compare( get_option( 'proxy_vpn_blocker_version' ), $version, '<' ) ) {
 	update_option( 'proxy_vpn_blocker_version', $version );
@@ -106,6 +106,7 @@ if ( 'on' === get_option( 'pvb_option_help_mode' ) ) {
 
 // Load plugin libraries.
 require_once 'includes/lib/class-proxy-vpn-blocker-admin-api.php';
+require_once 'includes/lib/class-pvb-api-key-encryption.php';
 
 // Load db updater.
 require_once 'pvb-db-upgrade.php';
@@ -395,6 +396,85 @@ function pvb_select_postspages_integrate() {
 }
 
 /**
+ * PVB on select paths integration (for virtual/plugin paths like courses/, products/, etc.)
+ */
+function pvb_select_paths_integrate() {
+	if ( ! is_file( ABSPATH . 'disablepvb.txt' ) ) {
+		$can_bypass    = pvb_check_rank();
+		$blocked_paths = get_option( 'pvb_defined_protected_paths', array() );
+		$host          = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+
+		// Array of URI's that we want to avoid code running on when Block on Entire Site is in use.
+		$avoid_uris = array(
+			esc_url_raw( ( is_ssl() ? 'https://' : 'http://' ) . $host . '/wp-content/plugins/matomo/app/matomo.php?' ),
+		);
+
+		// Check if the request is from WordPress Cron.
+		if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+			// This is a WordPress Cron request.
+			return;
+		}
+
+		// Check if the request is from Admin AJAX.
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			// This is an Admin AJAX request.
+			return;
+		}
+
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			// This is a REST API request.
+			return;
+		}
+
+		// Skip if no paths are configured for blocking.
+		if ( empty( $blocked_paths ) || ! is_array( $blocked_paths ) ) {
+			return;
+		}
+
+		// Get the current request path.
+		$request_uri  = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$request_path = wp_parse_url( $request_uri, PHP_URL_PATH );
+		$request_path = trim( $request_path, '/' );
+
+		// Skip empty paths (homepage).
+		if ( empty( $request_path ) ) {
+			return;
+		}
+
+		if ( false === $can_bypass ) {
+			// Check if current path matches any protected path.
+			$is_protected = false;
+
+			foreach ( $blocked_paths as $protected_path ) {
+				$protected_path = trim( $protected_path, '/' );
+
+				if ( empty( $protected_path ) ) {
+					continue;
+				}
+
+				// Check for exact match.
+				if ( $request_path === $protected_path ) {
+					$is_protected = true;
+					break;
+				}
+
+				// Check if request path starts with protected path (for sub-pages).
+				// e.g., protecting "courses" also protects "courses/advanced-php".
+				if ( strpos( $request_path . '/', $protected_path . '/' ) === 0 ) {
+					$is_protected = true;
+					break;
+				}
+			}
+
+			// If path is protected, run the general check.
+			if ( $is_protected ) {
+				pvb_general_check();
+			}
+		}
+	}
+}
+
+/**
  * Reprocesses Selected Restricted Pages and Posts to permalinks for use later if the WordPress Permalinks structure is updated.
  * Cannot otherwise get permalinks from page early enough to use when we need it.
  *
@@ -465,6 +545,13 @@ if ( 'on' === get_option( 'pvb_proxycheckio_master_activation' ) ) {
 
 	if ( 'on' === get_option( 'pvb_cache_buster' ) ) {
 		add_action( 'send_headers', 'pvb_set_do_not_cache_header' );
+	}
+
+	/**
+	 * Enable block on specified VIRTUAL PATHS option
+	 */
+	if ( ! empty( get_option( 'pvb_defined_protected_paths' ) ) && 'on' === get_option( 'pvb_protected_paths' ) ) {
+		add_action( 'init', 'pvb_select_paths_integrate', 1 );
 	}
 
 	/**

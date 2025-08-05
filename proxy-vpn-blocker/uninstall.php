@@ -41,6 +41,7 @@ $options = array(
 	'pvb_option_help_mode',
 	'pvb_enable_debugging',
 	'pvb_setup_complete',
+	'pvb_db_version',
 	'pvb_cleanup_on_uninstall',
 );
 foreach ( $options as $option ) {

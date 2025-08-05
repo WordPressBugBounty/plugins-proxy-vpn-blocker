@@ -10,7 +10,7 @@
  *
  * @since 3.3.0
  */
-define( 'PVB_DB_VERSION', '5.2.4' );
+define( 'PVB_DB_VERSION', '5.2.5' );
 
 /**
  * Function to check if the database needs an upgrade.
@@ -93,6 +93,7 @@ function upgrade_pvb_db() {
 
 		// Set the version after everything is set up.
 		update_option( 'pvb_db_version', $current_version );
+		return; // Prevent running upgrade logic on fresh install.
 	} elseif ( $current_version !== $database_version ) {
 		// This is an upgrade from an existing version - mark setup as complete.
 		// to prevent setup wizard from showing to existing users.
@@ -235,6 +236,23 @@ function upgrade_pvb_db() {
 				update_option( 'pvb_setup_complete', 'on' );
 			}
 			update_option( 'pvb_db_version', '5.2.4' );
+		}
+
+		if ( version_compare( $database_version, '5.2.5', '<' ) && version_compare( $database_version, '5.2.4', '>=' ) ) {
+			if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
+				$current_api_key = get_option( 'pvb_proxycheckio_API_Key_field' );
+
+				// Check if API key is already encrypted.
+				// Unencrypted keys are exactly 27 chars (xxxxxx-xxxxxx-xxxxxx-xxxxxx format).
+				// Encrypted keys will be much longer.
+				if ( strlen( $current_api_key ) === 27 ) {
+					// API key appears to be unencrypted, proceed with encryption.
+					$encrypted_api_key = PVB_API_Key_Encryption::encrypt( $current_api_key );
+					update_option( 'pvb_proxycheckio_API_Key_field', $encrypted_api_key );
+				}
+				// If length > 28, assume it's already encrypted and skip.
+			}
+			update_option( 'pvb_db_version', '5.2.5' );
 		}
 	}
 }

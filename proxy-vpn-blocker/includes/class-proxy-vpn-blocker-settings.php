@@ -86,7 +86,9 @@ class Proxy_VPN_Blocker_Settings {
 	 */
 	public function init_settings() {
 		$this->settings = $this->settings_fields();
+		add_filter( 'pre_update_option_pvb_proxycheckio_API_Key_field', array( $this, 'handle_api_key_update' ), 10, 2 );
 	}
+
 	/**
 	 * Add settings page to admin menu
 	 *
@@ -134,6 +136,110 @@ class Proxy_VPN_Blocker_Settings {
 		$settings_link = '<a href="admin.php?page=proxy_vpn_blocker_settings">' . __( 'Settings', 'proxy-vpn-blocker' ) . '</a>';
 		array_push( $links, $settings_link );
 		return $links;
+	}
+	/**
+	 * Get custom post type paths
+	 *
+	 * @return array
+	 */
+	private static function get_custom_post_type_paths() {
+		$paths      = array();
+		$post_types = get_post_types( array( '_builtin' => false ), 'objects' );
+
+		foreach ( $post_types as $pt ) {
+			if ( ! empty( $pt->rewrite['slug'] ) ) {
+				$paths[] = $pt->rewrite['slug'] . '/';
+			}
+		}
+
+		return $paths;
+	}
+
+
+	/**
+	 * Get all detected paths
+	 *
+	 * @return array
+	 */
+	private static function pvb_get_all_detected_paths() {
+		$paths = array();
+
+		// 1. Get paths from custom post types.
+		if ( method_exists( 'Proxy_VPN_Blocker_Settings', 'get_custom_post_type_paths' ) ) {
+			$paths = array_merge( $paths, self::get_custom_post_type_paths() );
+		}
+
+		// 2. Get paths from rewrite rules (if defined).
+		if ( function_exists( 'pvb_get_dynamic_plugin_paths' ) ) {
+			$paths = array_merge( $paths, pvb_get_dynamic_plugin_paths() );
+		}
+
+		// 3. BuddyPress specific paths — only if active.
+		if ( function_exists( 'bp_core_get_directory_page_ids' ) ) {
+			$page_ids = bp_core_get_directory_page_ids();
+
+			foreach ( $page_ids as $component => $page_id ) {
+				$slug = get_page_uri( $page_id );
+				if ( ! empty( $slug ) ) {
+					$paths[] = trailingslashit( $slug );
+				}
+			}
+		}
+
+		// 4. Include already saved paths (to preserve custom user entries).
+		$saved_paths = get_option( 'pvb_defined_protected_paths' );
+		if ( is_array( $saved_paths ) ) {
+			$paths = array_merge( $paths, $saved_paths );
+		}
+
+		// 5. Normalize and remove duplicates.
+		$paths = array_map( 'trim', $paths );
+		$paths = array_map( 'untrailingslashit', $paths );
+		$paths = array_filter(
+			$paths,
+			function ( $path ) {
+				return ! is_numeric( $path );
+			}
+		);
+		$paths = array_unique( $paths );
+		$paths = array_filter( $paths ); // remove empty values.
+
+		// 6. Return as trailing slashes again for consistency.
+		foreach ( $paths as $i => $path ) {
+			$paths[ $i ] = trailingslashit( $path );
+		}
+
+		return $paths;
+	}
+
+	/**
+	 * Get all paths with display labels for settings select field
+	 *
+	 * @return array
+	 */
+	private static function pvb_get_all_path_options() {
+		$options     = array();
+		$all_paths   = self::pvb_get_all_detected_paths();
+		$saved_paths = get_option( 'pvb_defined_protected_paths' );
+		if ( ! is_array( $saved_paths ) ) {
+			$saved_paths = array();
+		}
+
+		// Use detected paths as base, ensure key = value.
+		foreach ( $all_paths as $path ) {
+			$path             = trailingslashit( untrailingslashit( $path ) );
+			$options[ $path ] = 'Detected: ' . $path;
+		}
+
+		// Add custom entries not in detected list.
+		foreach ( $saved_paths as $path ) {
+			$path = trailingslashit( untrailingslashit( $path ) );
+			if ( ! isset( $options[ $path ] ) ) {
+				$options[ $path ] = 'Custom: ' . $path;
+			}
+		}
+
+		return $options;
 	}
 
 	/**
@@ -557,7 +663,7 @@ class Proxy_VPN_Blocker_Settings {
 				),
 			),
 		);
-		$settings['PageCaching']         = array(
+		$settings['PageCaching']              = array(
 			'title'       => __( 'Page Caching', 'proxy-vpn-blocker' ),
 			'icon'        => __( 'fa-solid fa-scroll', 'proxy-vpn-blocker' ),
 			'description' => __( 'Settings relating to Caching of WordPress Pages and Posts. Sometimes Proxy & VPN Blocker may not be able to function fully due to WordPress Page Caching being in effect, a page served by cache means an IP check will not happen as the cache serves a static version of pages to the visitor before Plugins like Proxy & VPN Blocker can run.', 'proxy-vpn-blocker' ),
@@ -569,6 +675,30 @@ class Proxy_VPN_Blocker_Settings {
 					'field-note'  => __( 'When using this option the pages and posts selected for visitor IP checking and blocking will not be served by cache plugins that respect the header, this has the potential to degrade performance on these pages but the impact should be minimal. Unfortunately there is no alternative if you want to block on pages/posts except in cases where Cache Plugins have the option of Deferred Execution or Late Init. If Block on Entire site is enabled along with this setting, then no cache headers will be defined sitewide. <a href="https://proxyvpnblocker.com/2023/06/01/wordpress-caching-plugins-and-proxy-vpn-blocker-an-explainer/" target="_blank">Please see the Proxy & VPN Blocker Website for further information on this</a>', 'proxy-vpn-blocker' ),
 					'type'        => 'checkbox',
 					'default'     => 'on',
+				),
+			),
+		);
+		$settings['PVBProtectedPaths']        = array(
+			'title'       => __( 'Protected Paths', 'proxy-vpn-blocker' ),
+			'icon'        => __( 'fa-solid fa-person-walking-dashed-line-arrow-right', 'proxy-vpn-blocker' ),
+			'description' => __( '(Beta) protection for virtual paths added by third-party plugins is currently available. However, please be aware that this feature may not work seamlessly with all paths or how other plugins implement them. If you encounter any issues, kindly contact Proxy & VPN Blocker Support providing details on the plugin so we can prioritize its integration.', 'proxy-vpn-blocker' ),
+			'fields'      => array(
+				array(
+					'id'          => 'protected_paths',
+					'label'       => __( 'Enable Virtual Path Protection', 'proxy-vpn-blocker' ),
+					'description' => __( 'Turning this checkbox on enables protections for the defined paths below', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => '',
+				),
+				array(
+					'id'          => 'defined_protected_paths',
+					'label'       => __( 'Protected Paths', 'proxy-vpn-blocker' ),
+					'description' => __( "Define a list of paths you'd like to protect e.g. 'courses/', 'files/'", 'proxy-vpn-blocker' ),
+					'field-note'  => __( 'Note that these paths would be ones that exist on your WordPress front end and that were added by another plugin as a virtual path, but are otherwise not Pages or Posts that you can edit. Please be aware that this will also cover anything beyond the path e.g. "courses/course-1"', 'proxy-vpn-blocker' ),
+					'type'        => 'select_paths_multi',
+					'options'     => self::pvb_get_all_path_options(),
+					'default'     => '',
+					'placeholder' => __( 'Enter Path and hit space or enter to type multiple paths at once...', 'proxy-vpn-blocker' ),
 				),
 			),
 		);
@@ -896,6 +1026,125 @@ class Proxy_VPN_Blocker_Settings {
 			echo '</div>' . "\n";
 		}
 		//phpcs:enable
+	} // End of pvb_do_settings_fields.
+
+	/**
+	 * Add domains to proxycheck.io allowed domains CORS list for defined API Key.
+	 */
+	public function cors_owndomain_add() {
+		if ( ! get_transient( 'pvb_' . get_option( 'pvb_proxycheckio_current_key' ) . '_own_domain_added_' ) ) {
+			// Get and Decrypt API Key.
+			$encrypted_key = get_option( 'pvb_proxycheckio_API_Key_field' );
+			$get_api_key   = PVB_API_Key_Encryption::decrypt( $encrypted_key );
+
+			$endpoint = 'https://proxycheck.io/dashboard/cors/add/?key=' . $get_api_key;
+
+			$site_url = wp_parse_url( site_url() );
+
+			$data = $site_url['host'];
+
+			$args = array(
+				'method'      => 'POST',
+				'body'        => array(
+					'data' => $data,
+				),
+				'timeout'     => '5',
+				'blocking'    => true,
+				'httpversion' => '1.1',
+			);
+
+			set_transient( 'pvb_' . get_option( 'pvb_proxycheckio_current_key' ) . '_own_domain_added_', 3000 );
+			wp_remote_post( $endpoint, $args );
+		}
+	}
+
+	/**
+	 * Remove domains to proxycheck.io allowed domains CORS list for defined API Key.
+	 */
+	public function cors_owndomain_remove() {
+		if ( ! get_transient( 'pvb_' . get_option( 'pvb_proxycheckio_current_key' ) . '_own_domain_removed_' ) ) {
+			// Get and Decrypt API Key.
+			$encrypted_key = get_option( 'pvb_proxycheckio_API_Key_field' );
+			$get_api_key   = PVB_API_Key_Encryption::decrypt( $encrypted_key );
+
+			$endpoint = 'https://proxycheck.io/dashboard/cors/remove/?key=' . $get_api_key;
+
+			$site_url = wp_parse_url( site_url() );
+
+			$data = $site_url['host'];
+
+			$args = array(
+				'method'      => 'POST',
+				'body'        => array(
+					'data' => $data,
+				),
+				'timeout'     => '5',
+				'blocking'    => true,
+				'httpversion' => '1.1',
+			);
+
+			set_transient( 'pvb_' . get_option( 'pvb_proxycheckio_current_key' ) . '_own_domain_removed_', 3000 );
+			wp_remote_post( $endpoint, $args );
+		}
+	}
+
+	/**
+	 * Add Webcache domains to proxycheck.io allowed domains CORS list for defined API Key.
+	 */
+	public function cors_webcache_add() {
+		if ( ! get_transient( 'pvb_' . get_option( 'pvb_proxycheckio_current_key' ) . '_webcache_domains_added_' ) ) {
+			// Get and Decrypt API Key.
+			$encrypted_key = get_option( 'pvb_proxycheckio_API_Key_field' );
+			$get_api_key   = PVB_API_Key_Encryption::decrypt( $encrypted_key );
+
+			$endpoint = 'https://proxycheck.io/dashboard/cors/add/?key=' . $get_api_key;
+
+			$newline = PHP_EOL;
+			$data    = 'webcache.googleusercontent.com' . $newline . 'cc.bingj.com' . $newline . 'web.archive.org';
+
+			$args = array(
+				'method'      => 'POST',
+				'body'        => array(
+					'data' => $data,
+				),
+				'timeout'     => '5',
+				'blocking'    => true,
+				'httpversion' => '1.1',
+			);
+
+			set_transient( 'pvb_' . get_option( 'pvb_proxycheckio_current_key' ) . '_webcache_domains_added_', 3000 );
+			wp_remote_post( $endpoint, $args );
+		}
+
+	}
+
+	/**
+	 * Remove Webcache domains to proxycheck.io allowed domains CORS list for defined API Key.
+	 */
+	public function cors_webcache_remove() {
+		if ( ! get_transient( 'pvb_' . get_option( 'pvb_proxycheckio_current_key' ) . '_webcache_domains_added_' ) ) {
+			// Get and Decrypt API Key.
+			$encrypted_key = get_option( 'pvb_proxycheckio_API_Key_field' );
+			$get_api_key   = PVB_API_Key_Encryption::decrypt( $encrypted_key );
+
+			$endpoint = 'https://proxycheck.io/dashboard/cors/remove/?key=' . $get_api_key;
+
+			$newline = PHP_EOL;
+			$data    = 'webcache.googleusercontent.com' . $newline . 'cc.bingj.com' . $newline . 'web.archive.org';
+
+			$args = array(
+				'method'      => 'POST',
+				'body'        => array(
+					'data' => $data,
+				),
+				'timeout'     => '5',
+				'blocking'    => true,
+				'httpversion' => '1.1',
+			);
+
+			set_transient( 'pvb_' . get_option( 'pvb_proxycheckio_current_key' ) . '_webcache_domains_removed_', 3000 );
+			wp_remote_post( $endpoint, $args );
+		}
 	}
 
 	/**
@@ -917,40 +1166,6 @@ class Proxy_VPN_Blocker_Settings {
 				unset( $blocked_pages[ $key ] );
 				update_option( 'pvb_proxycheckio_blocked_select_pages_field', $blocked_pages );
 			}
-		}
-
-		$get_api_key = get_option( 'pvb_proxycheckio_API_Key_field' );
-		if ( ! get_option( 'pvb_proxycheck_apikey_details' ) && ! empty( $get_api_key ) ) {
-			// Build page HTML.
-			$request_args  = array(
-				'timeout'     => '10',
-				'blocking'    => true,
-				'httpversion' => '1.1',
-			);
-			$request_usage = wp_remote_get( 'https://proxycheck.io/dashboard/export/usage/?key=' . $get_api_key, $request_args );
-			$api_key_usage = json_decode( wp_remote_retrieve_body( $request_usage ) );
-
-			if ( ! empty( $api_key_usage ) ) {
-				$plan_tier = $api_key_usage->{'Plan Tier'};
-
-				if ( 'Paid' === $plan_tier ) {
-					$api_key_details = array(
-						'tier'            => 'Paid',
-						'activation_date' => gmdate( 'Y-m-d' ),
-					);
-				} elseif ( 'Free' === $plan_tier ) {
-					$api_key_details = array(
-						'tier'            => 'Free',
-						'activation_date' => gmdate( 'Y-m-d' ),
-					);
-				}
-			} else {
-				$api_key_details = array(
-					'tier'            => 'Unknown',
-					'activation_date' => '',
-				);
-			}
-			add_option( 'pvb_proxycheck_apikey_details', $api_key_details );
 		}
 
 		// Build page HTML.
@@ -1081,6 +1296,29 @@ class Proxy_VPN_Blocker_Settings {
 		}
 		return self::$instance;
 	} // End instance()
+
+
+	/**
+	 * Handle API key updates - only save if new value provided
+	 *
+	 * @param mixed $new_value The new value being saved.
+	 * @param mixed $old_value The existing value in the database.
+	 * @return mixed The value to actually save.
+	 */
+	public function handle_api_key_update( $new_value, $old_value ) {
+		// If new value is empty and we have an existing value, keep the old one.
+		if ( empty( $new_value ) && ! empty( $old_value ) ) {
+			return $old_value;
+		}
+
+		// If we have a new value, encrypt it (if using encryption).
+		if ( ! empty( $new_value ) ) {
+			return PVB_API_Key_Encryption::encrypt( $new_value );
+		}
+
+		// If both are empty, save empty (new installation).
+		return $new_value;
+	}
 
 	/**
 	 * Cloning is forbidden.

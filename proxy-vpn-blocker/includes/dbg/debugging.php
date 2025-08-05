@@ -90,15 +90,14 @@ foreach ( $all_plugins as $key => $value ) {
 	);
 }
 
-
-$get_api_key = get_option( 'pvb_proxycheckio_API_Key_field' );
-if ( ! empty( $get_api_key ) || 'on' === get_option( 'pvb_proxycheckio_dummy_data' ) ) {
+if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) || 'on' === get_option( 'pvb_proxycheckio_dummy_data' ) ) {
 	$request_args = array(
 		'timeout'     => '10',
 		'blocking'    => true,
 		'httpversion' => '1.1',
 	);
-	if ( 'on' === get_option( 'pvb_proxycheckio_dummy_data' ) && empty( $get_api_key ) ) {
+
+	if ( 'on' === get_option( 'pvb_proxycheckio_dummy_data' ) && empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
 		// Get the dummy data from the Proxy & VPN Blocker Dummy Pool.
 		$request_usage = wp_remote_get( dirname( __DIR__ ) . '/dbg/demo_data/proxycheck.daystat.dummy.json' );
 		if ( is_wp_error( $request_usage ) ) {
@@ -107,10 +106,15 @@ if ( ! empty( $get_api_key ) || 'on' === get_option( 'pvb_proxycheckio_dummy_dat
 			$api_key_usage = json_decode( wp_remote_retrieve_body( $request_usage ) );
 		}
 	} else {
+		// Get and Decrypt API Key.
+		$encrypted_key = get_option( 'pvb_proxycheckio_API_Key_field' );
+		$get_api_key   = PVB_API_Key_Encryption::decrypt( $encrypted_key );
+
 		// Get the data from the proxycheck dashboard API.
 		$request_usage = wp_remote_get( 'https://proxycheck.io/dashboard/export/usage/?key=' . $get_api_key, $request_args );
 		$api_key_usage = json_decode( wp_remote_retrieve_body( $request_usage ) );
 	}
+
 	if ( isset( $api_key_usage->status ) && 'denied' === $api_key_usage->status ) {
 		$proxycheck_api_access_status = 'proxycheck.io Dashboard API Access Disabled. Can\'t get this statistic.';
 	} else {
@@ -159,6 +163,12 @@ if ( ! empty( get_option( 'pvb_option_ip_header_type' ) ) ) {
 } else {
 	$visitor_ip_address = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 }
+
+// If dummy data is enabled, use the dummy IP address.
+if ( 'on' === get_option( 'pvb_proxycheckio_dummy_data' ) && empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
+	$visitor_ip_address = '8.8.8.8'; // Dummy IP address.
+}
+
 $proxycheck_answer = proxycheck_function( $visitor_ip_address, 1, 1, 0 );
 
 // Is API Key Set?
@@ -492,6 +502,9 @@ if ( 'on' === get_option( 'pvb_enable_debugging' ) ) {
 	$html .= '  <div class="pvbareawrap">' . "\n";
 	$html .= '		<h2>Checking if we can reach the proxycheck.io API...</h2>' . "\n";
 	$html .= '		<p>Getting response from proxycheck.io API using your IP Address: ' . $visitor_ip_address . ' from the ' . $header_type[0] . ' Header:</p>' . "\n";
+	if ( 'on' === get_option( 'pvb_proxycheckio_dummy_data' ) && empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
+		$html .= '		<p>Note: Using a placeholder IP Address. It is not possible to check your real IP Address within WordPress Live Demo Environment.</p>' . "\n";
+	}
 	$html .= '		<pre>' . wp_json_encode( $proxycheck_answer, JSON_PRETTY_PRINT ) . '</pre>' . "\n";
 	if ( 'ok' === $proxycheck_answer->status ) {
 		$html .= '		<p>It seems everything is working okay here!</p>' . "\n";

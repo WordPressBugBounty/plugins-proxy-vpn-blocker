@@ -65,8 +65,12 @@ function proxycheck_function( $visitor_ip, $asn_check, $raw, $skip_transient ) {
 			$vpn_option = 0;
 		}
 
+		// Get and Decrypt API Key.
+		$encrypted_key = get_option( 'pvb_proxycheckio_API_Key_field' );
+		$get_api_key   = PVB_API_Key_Encryption::decrypt( $encrypted_key );
+
 		// Perform the query.
-		$response = wp_remote_post( 'https://proxycheck.io/v2/' . $visitor_ip . '?key=' . get_option( 'pvb_proxycheckio_API_Key_field' ) . '&risk=1&vpn=' . $vpn_option . '&days=' . get_option( 'pvb_proxycheckio_Days_Selector' ) . '&asn=' . $asn_check, $args );
+		$response = wp_remote_post( 'https://proxycheck.io/v2/' . $visitor_ip . '?key=' . $get_api_key . '&risk=1&vpn=' . $vpn_option . '&days=' . get_option( 'pvb_proxycheckio_Days_Selector' ) . '&asn=' . $asn_check, $args );
 
 		// Decode the JSON from proxycheck.io API.
 		$decoded_json = json_decode( wp_remote_retrieve_body( $response ) );

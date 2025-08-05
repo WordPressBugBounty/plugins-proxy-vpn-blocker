@@ -64,19 +64,21 @@ $allowed_html = array(
 	'p'       => array(),
 );
 
-
-
-$get_api_key  = get_option( 'pvb_proxycheckio_API_Key_field' );
 $add_ip_nonce = wp_create_nonce( 'add-ip-whitelist' );
 
-if ( ! empty( $get_api_key ) ) {
+if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
 	// Requesting current blacklist.
 	$request_args      = array(
 		'timeout'     => '5',
 		'blocking'    => true,
 		'httpversion' => '1.1',
 	);
-	$request_whitelist = wp_remote_get( 'https://proxycheck.io/dashboard/whitelist/list/?key=' . get_option( 'pvb_proxycheckio_API_Key_field' ), $request_args );
+
+	// Get and Decrypt API Key.
+	$encrypted_key = get_option( 'pvb_proxycheckio_API_Key_field' );
+	$get_api_key   = PVB_API_Key_Encryption::decrypt( $encrypted_key );
+
+	$request_whitelist = wp_remote_get( 'https://proxycheck.io/dashboard/whitelist/list/?key=' . $get_api_key, $request_args );
 	$current_whitelist = json_decode( wp_remote_retrieve_body( $request_whitelist ) );
 
 	if ( isset( $current_whitelist->status ) && 'denied' === $current_whitelist->status ) {

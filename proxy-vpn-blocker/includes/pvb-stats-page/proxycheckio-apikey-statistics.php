@@ -131,7 +131,6 @@ if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
 		$html .= '	<div class="pvb-timer-count" title="Auto-refresh countdown"></div>' . "\n";
 		$html .= '	</div>' . "\n";
 		$html .= '	<h1>' . __( 'Your proxycheck.io API Key Statistics', 'proxy-vpn-blocker' ) . '</h1>' . "\n";
-		$html .= '	<div class="api-info-apikey">' . __( 'API Key: ', 'proxy-vpn-blocker' ) . get_option( 'pvb_proxycheckio_API_Key_field' ) . '</div>' . "\n";
 		$html .= '<div class="api-info-tier">' . __( 'Plan: ', 'proxy-vpn-blocker' ) . $plan_tier . ' | ' . number_format_short( $daily_limit ) . ' Daily Queries</div>' . "\n";
 		$html .= '</div>' . "\n";
 		$html .= '<div class="api-info">' . "\n";

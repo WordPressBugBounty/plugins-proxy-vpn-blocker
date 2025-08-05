@@ -75,7 +75,45 @@ class Proxy_VPN_Blocker_Admin_API {
 				break;
 
 			case 'apikey':
-				$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '" />' . "\n";
+				$current_key = get_option( 'pvb_proxycheckio_API_Key_field', '' );
+				$has_key     = ! empty( $current_key );
+
+				if ( $has_key ) {
+					$html .= '<div class="api-key-status-card" style="border: 1px solid #00a32a; border-radius: 11px; padding: 15px; background: #f0f8f0; margin-bottom: 15px; max-width: 100%;">';
+					$html .= '<div style="display: flex; align-items: center; justify-content: space-between;">';
+					$html .= '<div><span style="color: #00a32a; font-weight: 600;">✅ API Key Active</span><br><small style="color: #666;">Key is configured and encrypted</small></div>';
+					$html .= '<button type="button" class="pvbsecondary small" onclick="toggleapiKeyUpdate(\'' . esc_attr( $field['id'] ) . '\')">Change API Key</button>';
+					$html .= '</div>';
+					$html .= '</div>';
+
+					$html .= '<div id="' . esc_attr( $field['id'] ) . '-update" style="display: none;">';
+					$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="Enter new API key" value="" style="width: 100%; max-width: 400px;" />';
+					$html .= '<p class="description">Enter a new API key to replace the current one, or leave blank to keep existing key.</p>';
+					$html .= '</div>';
+
+					$html .= '<script>
+					        function toggleapiKeyUpdate(fieldId) {
+								const updateDiv = document.getElementById(fieldId + "-update");
+								const toggleBtn = document.getElementById(fieldId + "-toggle");
+								const inputField = document.getElementById(fieldId);
+								
+								if (updateDiv.style.display === "none" || updateDiv.style.display === "") {
+									// Show the update field
+									updateDiv.style.display = "block";
+									toggleBtn.textContent = "Hide";
+									inputField.focus();
+								} else {
+									// Hide the update field and clear input
+									updateDiv.style.display = "none";
+									toggleBtn.textContent = "Update Key";
+									inputField.value = "";
+								}
+							}
+					</script>';
+				} else {
+					$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="" />';
+					$html .= '<p class="description">Enter your proxycheck.io API key to enable enhanced functionality.</p>';
+				}
 				break;
 
 			case 'cors_public':
@@ -225,6 +263,18 @@ class Proxy_VPN_Blocker_Admin_API {
 					}
 				}
 				$html .= '<select class="js-select2pvb-header-custom form-control" style="width: 100%" data-placeholder="' . esc_attr( $field['placeholder'] ) . '" name="' . esc_attr( $option_name ) . '[]" id="' . esc_attr( $field['id'] ) . '" autocomplete="off">';
+				foreach ( $field['options'] as $k => $v ) {
+					$selected = false;
+					if ( in_array( $k, (array) $data ) ) {
+						$selected = true;
+					}
+					$html .= '<option ' . selected( $selected, true, false ) . ' value="' . esc_attr( $k ) . '">' . $v . '</option>';
+				}
+				$html .= '</select> ';
+				break;
+
+			case 'select_paths_multi':
+				$html .= '<select class="js-select2pvb-header-custom form-control" style="width: 100%" data-placeholder="' . esc_attr( $field['placeholder'] ) . '" name="' . esc_attr( $option_name ) . '[]" id="' . esc_attr( $field['id'] ) . '" multiple="multiple" autocomplete="off">';
 				foreach ( $field['options'] as $k => $v ) {
 					$selected = false;
 					if ( in_array( $k, (array) $data ) ) {

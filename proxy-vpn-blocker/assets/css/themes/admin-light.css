@@ -661,6 +661,7 @@ img.country-flag {
 
 
 /* Buttons */
+/* Main buttons */
 button.pvbdefault, input.pvbdefault {
     background: #16b3fb;
     color: #fff;
@@ -674,6 +675,23 @@ button.pvbdefault:active, input.pvbdefault:active {
     background-color:#149edf;
     color: #fff;
 }
+
+/* Secondary buttons */
+button.pvbsecondary, input.pvbsecondary {
+    background: #5e5e5e;
+    color: #fff;
+}
+button.pvbsecondary:hover, input.pvbsecondary:hover {
+    background-color:#1a1a1a;
+    color: #fff;
+}
+button.pvbsecondary:focus, input.pvbsecondary:focus,
+button.pvbsecondary:active, input.pvbsecondary:active {
+    background-color:#1a1a1a;
+    color: #fff;
+}
+
+/* Dismiss buttons */
 button.pvbdismiss, input.pvbdismiss {
     border: 2px solid #c92828;
     background: #fff;
