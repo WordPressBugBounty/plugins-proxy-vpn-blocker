@@ -75,10 +75,55 @@ class Proxy_VPN_Blocker_Admin_API {
 				break;
 
 			case 'apikey':
-				$current_key = get_option( 'pvb_proxycheckio_API_Key_field', '' );
-				$has_key     = ! empty( $current_key );
+				$current_key      = get_option( 'pvb_proxycheckio_API_Key_field', '' );
+				$invalid_key_data = get_option( 'pvb_proxycheckio_API_Key_invalid', array() );
+				$has_key          = ! empty( $current_key );
+				$has_invalid_key  = ! empty( $invalid_key_data ) && is_array( $invalid_key_data );
 
+				// Validate the current key if it exists.
+				$key_is_valid = false;
 				if ( $has_key ) {
+					// Decrypt the key to validate its length.
+					$decrypted_key = PVB_API_Key_Encryption::decrypt( $current_key );
+					$key_is_valid  = ( strlen( $decrypted_key ) === 27 );
+				}
+
+				// PRIORITY 1: Show invalid key status if there's a recent failed attempt
+				if ( $has_invalid_key ) {
+					// Show the status based on whether we also have a valid working key.
+					$invalid_key   = isset( $invalid_key_data['key'] ) ? $invalid_key_data['key'] : '';
+					$error_message = isset( $invalid_key_data['error'] ) ? $invalid_key_data['error'] : 'Invalid API key';
+					$timestamp     = isset( $invalid_key_data['timestamp'] ) ? $invalid_key_data['timestamp'] : time();
+
+					if ( $has_key && $key_is_valid ) {
+						// We have a working key but user tried to change it to an invalid one.
+						$html .= '<div class="api-key-status-card" style="border: 1px solid #ff8c00; border-radius: 11px; padding: 15px; background: #fff8f0; margin-bottom: 15px; max-width: 100%;">';
+						$html .= '<div style="display: flex; align-items: center; justify-content: space-between;">';
+						$html .= '<div><span style="color: #ff8c00; font-weight: 600;">⚠️ Previous Key Still Set</span><br><small style="color: #666;">Invalid attempt: ' . esc_html( substr( $invalid_key, 0, 10 ) ) . '... (' . human_time_diff( $timestamp ) . ' ago) - Previous key is still being used</small></div>';
+						$html .= '<button type="button" class="pvbsecondary small" onclick="toggleapiKeyUpdate(\'' . esc_attr( $field['id'] ) . '\')">Try New Key</button>';
+						$html .= '</div>';
+						$html .= '</div>';
+
+						$html .= '<div id="' . esc_attr( $field['id'] ) . '-update" style="display: block;">';
+						$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="Enter valid API key (27 characters)" value="" style="width: 100%; max-width: 400px; border-color: #ff8c00;" />';
+						$html .= '<p class="description" style="color: #ff8c00;"><strong>Key Change Failed:</strong> ' . esc_html( $error_message ) . '<br>Your previous API key has been recovered. Enter a valid 27-character key to replace it.</p>';
+						$html .= '</div>';
+					} else {
+						// No working key, just show the invalid attempt.
+						$html .= '<div class="api-key-status-card" style="border: 1px solid #dc3232; border-radius: 11px; padding: 15px; background: #fdf2f2; margin-bottom: 15px; max-width: 100%;">';
+						$html .= '<div style="display: flex; align-items: center; justify-content: space-between;">';
+						$html .= '<div><span style="color: #dc3232; font-weight: 600;">❌ Invalid API Key</span><br><small style="color: #666;">Last attempt: ' . esc_html( substr( $invalid_key, 0, 10 ) ) . '... (' . human_time_diff( $timestamp ) . ' ago)</small></div>';
+						$html .= '<button type="button" class="pvbsecondary small" onclick="toggleapiKeyUpdate(\'' . esc_attr( $field['id'] ) . '\')">Try Again</button>';
+						$html .= '</div>';
+						$html .= '</div>';
+
+						$html .= '<div id="' . esc_attr( $field['id'] ) . '-update" style="display: block;">';
+						$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="Enter valid API key (27 characters)" value="" style="width: 100%; max-width: 400px; border-color: #dc3232;" />';
+						$html .= '<p class="description" style="color: #dc3232;">' . esc_html( $error_message ) . ' Please enter a valid 27-character API key.</p>';
+						$html .= '</div>';
+					}
+				} elseif ( $has_key && $key_is_valid ) {
+					// PRIORITY 2: Show green status for valid key (only if no invalid attempts).
 					$html .= '<div class="api-key-status-card" style="border: 1px solid #00a32a; border-radius: 11px; padding: 15px; background: #f0f8f0; margin-bottom: 15px; max-width: 100%;">';
 					$html .= '<div style="display: flex; align-items: center; justify-content: space-between;">';
 					$html .= '<div><span style="color: #00a32a; font-weight: 600;">✅ API Key Active</span><br><small style="color: #666;">Key is configured and encrypted</small></div>';
@@ -87,32 +132,28 @@ class Proxy_VPN_Blocker_Admin_API {
 					$html .= '</div>';
 
 					$html .= '<div id="' . esc_attr( $field['id'] ) . '-update" style="display: none;">';
-					$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="Enter new API key" value="" style="width: 100%; max-width: 400px;" />';
-					$html .= '<p class="description">Enter a new API key to replace the current one, or leave blank to keep existing key.</p>';
+					$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="Enter new API key (27 characters)" value="" style="width: 100%; max-width: 400px;" />';
+					$html .= '<p class="description">Enter a new API key to replace the current one, or leave blank to keep existing key. Key must be exactly 27 characters.</p>';
 					$html .= '</div>';
 
-					$html .= '<script>
-					        function toggleapiKeyUpdate(fieldId) {
-								const updateDiv = document.getElementById(fieldId + "-update");
-								const toggleBtn = document.getElementById(fieldId + "-toggle");
-								const inputField = document.getElementById(fieldId);
-								
-								if (updateDiv.style.display === "none" || updateDiv.style.display === "") {
-									// Show the update field
-									updateDiv.style.display = "block";
-									toggleBtn.textContent = "Hide";
-									inputField.focus();
-								} else {
-									// Hide the update field and clear input
-									updateDiv.style.display = "none";
-									toggleBtn.textContent = "Update Key";
-									inputField.value = "";
-								}
-							}
-					</script>';
+				} elseif ( $has_key && ! $key_is_valid ) {
+					// PRIORITY 3: Show red status for corrupted/invalid stored key.
+					$html .= '<div class="api-key-status-card" style="border: 1px solid #dc3232; border-radius: 11px; padding: 15px; background: #fdf2f2; margin-bottom: 15px; max-width: 100%;">';
+					$html .= '<div style="display: flex; align-items: center; justify-content: space-between;">';
+					$html .= '<div><span style="color: #dc3232; font-weight: 600;">❌ Invalid API Key</span><br><small style="color: #666;">Stored key is corrupted or invalid</small></div>';
+					$html .= '<button type="button" class="pvbsecondary small" onclick="toggleapiKeyUpdate(\'' . esc_attr( $field['id'] ) . '\')">Update API Key</button>';
+					$html .= '</div>';
+					$html .= '</div>';
+
+					$html .= '<div id="' . esc_attr( $field['id'] ) . '-update" style="display: none;">';
+					$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="Enter new API key (27 characters)" value="" style="width: 100%; max-width: 400px;" />';
+					$html .= '<p class="description">Enter a new API key to replace the current one, or leave blank to keep existing key. Key must be exactly 27 characters.</p>';
+					$html .= '</div>';
+
 				} else {
-					$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="" />';
-					$html .= '<p class="description">Enter your proxycheck.io API key to enable enhanced functionality.</p>';
+					// PRIORITY 4: No key at all - show empty field.
+					$html .= '<input class="pvb" id="' . esc_attr( $field['id'] ) . '" type="text" autocomplete="off" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . ' (27 characters)" value="" />';
+					$html .= '<p class="description">Enter your proxycheck.io API key to enable enhanced functionality. Key must be exactly 27 characters.</p>';
 				}
 				break;
 

@@ -177,4 +177,95 @@ jQuery(document).ready(function($) {
         Cookies.set('pvb-hide-rvw-div', true, { expires: 365 });
     });
 
+         // Real-time validation for API key fields
+    $('input[name*="proxycheckio_API_Key_field"]').on('input', function() {
+        var $input = $(this);
+        var value = $input.val();
+        var $description = $input.siblings('.description');
+        
+        // If description doesn't exist, create one
+        if ($description.length === 0) {
+            $description = $('<p class="description"></p>');
+            $input.after($description);
+        }
+        
+        if (value.length === 0) {
+            $input.css('border-color', '');
+            // Check if we're in an error state and adjust message accordingly
+            var statusCard = $('.api-key-status-card');
+            if (statusCard.length && statusCard.html().includes('Invalid API Key')) {
+                $description.html('<span style="color: #dc3232;">Please enter a valid 27-character API key.</span>');
+            } else {
+                $description.html('Enter your proxycheck.io API key. Format: xxxxxx-xxxxxx-xxxxxx-xxxxxx');
+            }
+        } else if (value.length !== 27) {
+            $input.css('border-color', '#dc3232');
+            $description.html('<span style="color: #dc3232;">⚠️ API Key must be exactly 27 characters (currently ' + value.length + ' characters)</span>');
+        } else if (!validateApiKeyFormat(value)) {
+            $input.css('border-color', '#dc3232');
+            $description.html('<span style="color: #dc3232;">⚠️ Invalid format. Must be: xxxxxx-xxxxxx-xxxxxx-xxxxxx (6 letters/numbers, dash, repeat 4 times)</span>');
+        } else {
+            $input.css('border-color', '#00a32a');
+            $description.html('<span style="color: #00a32a;">✅ Valid API key format - will be validated on save</span>');
+        }
+    });
+    
+    // Form submission validation
+    $('form').on('submit', function(e) {
+        var $apiKeyInputs = $(this).find('input[name*="proxycheckio_API_Key_field"]');
+        var hasError = false;
+        var errorMessage = '';
+        
+        $apiKeyInputs.each(function() {
+            var value = $(this).val();
+            
+            if (value.length > 0) {
+                if (value.length !== 27) {
+                    hasError = true;
+                    errorMessage = 'API Key must be exactly 27 characters long. Current length: ' + value.length;
+                    $(this).focus();
+                    return false; // Break out of each loop
+                } else if (!validateApiKeyFormat(value)) {
+                    hasError = true;
+                    errorMessage = 'API Key must be in format: xxxxxx-xxxxxx-xxxxxx-xxxxxx (6 alphanumeric characters separated by dashes)';
+                    $(this).focus();
+                    return false; // Break out of each loop
+                }
+            }
+        });
+        
+        if (hasError) {
+            e.preventDefault();
+            alert(errorMessage);
+            return false;
+        }
+    });
 });
+
+// Toggle API Key Update Field.
+function toggleapiKeyUpdate(fieldId) {
+    const updateDiv = document.getElementById(fieldId + "-update");
+    const toggleBtn = document.getElementById(fieldId + "-toggle");
+    const inputField = document.getElementById(fieldId);
+    
+    if (updateDiv.style.display === "none" || updateDiv.style.display === "") {
+        // Show the update field
+        updateDiv.style.display = "block";
+        toggleBtn.textContent = "Hide";
+        inputField.focus();
+    } else {
+        // Hide the update field and clear input
+        updateDiv.style.display = "none";
+        toggleBtn.textContent = "Update Key";
+        inputField.value = "";
+    }
+}
+
+// Function to validate API key format
+// The format is: xxxxxx-xxxxxx-xxxxxx-xxxxxx
+    function validateApiKeyFormat(apiKey) {
+        // Check if it matches the pattern: xxxxxx-xxxxxx-xxxxxx-xxxxxx
+        // Where x is alphanumeric (a-z, A-Z, 0-9)
+        var pattern = /^[a-zA-Z0-9]{6}-[a-zA-Z0-9]{6}-[a-zA-Z0-9]{6}-[a-zA-Z0-9]{6}$/;
+        return pattern.test(apiKey);
+ }

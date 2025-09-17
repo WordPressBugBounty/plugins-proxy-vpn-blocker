@@ -41,15 +41,18 @@ jQuery(document).ready(function ($) {
         });
 
         const seriesDefinitions = [
-            { name: "Proxies", field: "proxies", color: 0x628FDF },
-            { name: "VPNs", field: "vpns", color: 0x85DFC3 },
-            { name: "Undetected", field: "undetected", color: 0xC4E68C },
+            { name: "Total", field: "total", color: 0xE2E2E2 },
+            { name: "Proxy", field: "proxies", color: 0x628FDF },
+            { name: "VPN", field: "vpns", color: 0x85DFC3 },
+            { name: "Compromised", field: "compromised", color: 0xDF6262 },
+            { name: "Scraper", field: "scraper", color: 0xE88FDD },
+            { name: "Hosting Provider", field: "hosting", color: 0x92400E },
+            { name: "Tor", field: "tor", color: 0xA45EB5 },
             { name: "Disposable Emails", field: "disposable emails", color: 0xF3E741 },
             { name: "Reusable Emails", field: "reusable emails", color: 0xE6AA39 },
             { name: "Refused Queries", field: "refused queries", color: 0xBA3023 },
             { name: "Custom Rules", field: "custom rules", color: 0xAA34DC },
             { name: "Blacklisted", field: "blacklisted", color: 0x4A4A4A },
-            { name: "Total", field: "total", color: 0xE2E2E2 }
         ];
 
         const seriesMap = {}; // Keyed by field name

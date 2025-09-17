@@ -1297,28 +1297,89 @@ class Proxy_VPN_Blocker_Settings {
 		return self::$instance;
 	} // End instance()
 
-
 	/**
-	 * Handle API key updates - only save if new value provided
+	 * Handle API key updates - validate and save invalid marker if needed
 	 *
 	 * @param mixed $new_value The new value being saved.
 	 * @param mixed $old_value The existing value in the database.
 	 * @return mixed The value to actually save.
 	 */
 	public function handle_api_key_update( $new_value, $old_value ) {
-		// If new value is empty and we have an existing value, keep the old one.
-		if ( empty( $new_value ) && ! empty( $old_value ) ) {
+		// Clear invalid marker if new value is empty.
+		if ( empty( $new_value ) ) {
+			delete_option( 'pvb_proxycheckio_API_Key_invalid' );
+			return empty( $old_value ) ? '' : $old_value;
+		}
+
+		// Validate length.
+		if ( strlen( $new_value ) !== 27 ) {
+			update_option(
+				'pvb_proxycheckio_API_Key_invalid',
+				array(
+					'key'       => $new_value,
+					'error'     => 'API Key must be exactly 27 characters long. The provided key has ' . strlen( $new_value ) . ' characters.',
+					'timestamp' => time(),
+				)
+			);
 			return $old_value;
 		}
 
-		// If we have a new value, encrypt it (if using encryption).
-		if ( ! empty( $new_value ) ) {
-			return PVB_API_Key_Encryption::encrypt( $new_value );
+		// Validate with API.
+		$response = wp_remote_get(
+			'https://proxycheck.io/dashboard/blacklist/list/?key=' . rawurlencode( $new_value ),
+			array(
+				'timeout' => 10,
+				'headers' => array( 'User-Agent' => 'Proxy-VPN-Blocker/' ),
+			)
+		);
+
+		// Handle API errors.
+		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
+			update_option(
+				'pvb_proxycheckio_API_Key_invalid',
+				array(
+					'key'       => $new_value,
+					'error'     => 'Unable to validate API key with service. Please try again.',
+					'timestamp' => time(),
+				)
+			);
+			return $old_value;
 		}
 
-		// If both are empty, save empty (new installation).
-		return $new_value;
+		// Parse response.
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		// Check if key is invalid.
+		if ( isset( $data['message'] ) && 'Your API Key appears to be invalid.' === $data['message'] ) {
+			update_option(
+				'pvb_proxycheckio_API_Key_invalid',
+				array(
+					'key'       => $new_value,
+					'error'     => 'API Key is invalid according to proxycheck.io service.',
+					'timestamp' => time(),
+				)
+			);
+			return $old_value;
+		}
+
+		// Check for denied status (but allow dashboard access disabled).
+		if ( isset( $data['status'] ) && 'denied' === $data['status'] && ( ! isset( $data['message'] ) || strpos( $data['message'], 'Dashboard API Access' ) === false ) ) {
+			update_option(
+				'pvb_proxycheckio_API_Key_invalid',
+				array(
+					'key'       => $new_value,
+					'error'     => isset( $data['message'] ) ? $data['message'] : 'Access denied by service.',
+					'timestamp' => time(),
+				)
+			);
+			return $old_value;
+		}
+
+		// Key is valid - clear any invalid markers and save encrypted key.
+		delete_option( 'pvb_proxycheckio_API_Key_invalid' );
+		return PVB_API_Key_Encryption::encrypt( $new_value );
 	}
+
 
 	/**
 	 * Cloning is forbidden.

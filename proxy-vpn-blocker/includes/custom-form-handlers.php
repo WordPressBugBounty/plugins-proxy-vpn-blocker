@@ -99,7 +99,6 @@ function whitelist_remove() {
 		$encrypted_key = get_option( 'pvb_proxycheckio_API_Key_field' );
 		$get_api_key   = PVB_API_Key_Encryption::decrypt( $encrypted_key );
 
-
 		$response     = wp_remote_post( 'https://proxycheck.io/dashboard/whitelist/remove/?key=' . $get_api_key, $args );
 		$decoded_json = json_decode( wp_remote_retrieve_body( $response ) );
 		if ( 'ok' === $decoded_json->status ) {

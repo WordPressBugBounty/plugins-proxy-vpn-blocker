@@ -58,23 +58,29 @@ function pvb_fetch_apigraph() {
 	$datefix            = $date->add( new DateInterval( 'P1D' ) );
 
 	foreach ( $api_key_stats as $key => $value ) {
-		$proxies           = $value->proxies ?? 0;
-		$vpns              = $value->vpns ?? 0;
-		$undetected        = $value->undetected ?? 0;
-		$disposable_emails = $value->{'disposable emails'} ?? 0;
-		$reusable_emails   = $value->{'reusable emails'} ?? 0;
-		$refused_queries   = $value->{'refused queries'} ?? 0;
-		$custom_rules      = $value->{'custom rules'} ?? 0;
+		$proxies           = $value->proxy ?? 0;
+		$vpns              = $value->vpn ?? 0;
+		$compromised       = $value->compromised ?? 0;
+		$scraper           = $value->scraper ?? 0;
+		$tor               = $value->tor ?? 0;
+		$hosting           = $value->hosting ?? 0;
+		$disposable_emails = $value->disposable_email ?? 0;
+		$reusable_emails   = $value->reusable_email ?? 0;
+		$refused_queries   = $value->refused_queries ?? 0;
+		$custom_rules      = $value->custom_rule ?? 0;
 		$blacklisted       = $value->blacklisted ?? 0;
 
-		// Calculate the total for this item.
-		$row_total = $proxies + $vpns + $undetected + $disposable_emails + $reusable_emails + $refused_queries + $custom_rules + $blacklisted;
+		// Get the total from the API response
+		$row_total = $value->total_queries ?? 0;
 
 		$data = array(
 			'days'              => $datefix->modify( '-1 day' )->format( 'M jS' ),
 			'proxies'           => $proxies,
 			'vpns'              => $vpns,
-			'undetected'        => $undetected,
+			'compromised'       => $compromised,
+			'scraper'           => $scraper,
+			'tor'               => $tor,
+			'hosting'           => $hosting,
 			'disposable emails' => $disposable_emails,
 			'reusable emails'   => $reusable_emails,
 			'refused queries'   => $refused_queries,

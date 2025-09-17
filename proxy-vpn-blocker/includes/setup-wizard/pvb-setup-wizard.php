@@ -134,6 +134,19 @@ function get_recommended_header( $headers ) {
 									<div>
 										<h3 class="option-title"><?php esc_html_e( 'proxycheck.io API Key', 'proxy-vpn-blocker' ); ?></h3>
 										<span class="optional-badge"><?php esc_html_e( 'Optional', 'proxy-vpn-blocker' ); ?></span>
+										<?php
+										if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
+											// If the API key is already set, show a message.
+											?>
+												<p><?php esc_html_e( 'A proxycheck.io API Key has been set previously. You may change this in the main settings', 'proxy-vpn-blocker' ); ?></p>
+											<?php
+										} else {
+											// If the API key is not set, show the input field.
+											?>
+												<input type="text" autocomplete="off" placeholder="XXXXXX-XXXXXX-XXXXXX-XXXXXX" spellcheck="false" id="pvb_proxycheckio_API_Key_field" name="pvb_proxycheckio_API_Key_field" value="<?php echo esc_attr( get_option( 'pvb_proxycheckio_API_Key_field' ) ); ?>" class="regular-text">
+											<?php
+										}
+										?>
 										<input type="text" autocomplete="off" placeholder="XXXXXX-XXXXXX-XXXXXX-XXXXXX" spellcheck="false" id="pvb_proxycheckio_API_Key_field" name="pvb_proxycheckio_API_Key_field" value="<?php echo esc_attr( get_option( 'pvb_proxycheckio_API_Key_field' ) ); ?>" class="regular-text">
 										<p class="option-description">
 											<?php esc_html_e( 'Enter your proxycheck.io API key to enable advanced proxy and VPN detection features. If you don\'t have an API key, you can still use the service with limited queries.', 'proxy-vpn-blocker' ); ?>
@@ -392,7 +405,7 @@ function get_recommended_header( $headers ) {
 											<span class="optional-badge"><?php esc_html_e( 'Optional', 'proxy-vpn-blocker' ); ?></span>
 										<?php endif; ?>
 										<?php pvb_render_toggle_switch( 'pvb_cache_buster', 'pvb_cache_buster', $cache_buster_value ); ?>
-										<?php if ( $cache_detected ): ?>
+										<?php if ( $cache_detected ) : ?>
 											<p class="option-description">
 												<?php esc_html_e( 'We detected potential caching on your site. Enabling this option helps prevent cached pages from interfering with visitor blocking by setting DONOTCACHEPAGE headers on pages you have selected for blocking with Proxy & VPN Blocker.', 'proxy-vpn-blocker' ); ?>
 											</p>
@@ -412,13 +425,13 @@ function get_recommended_header( $headers ) {
 												<div class="detail-title"><?php esc_html_e( 'What does this do?', 'proxy-vpn-blocker' ); ?></div>
 												<div class="detail-text"><?php esc_html_e( 'Setting the DONOTCACHEPAGE header tells caching plugins and servers not to cache the page, ensuring visitor blocking works reliably.', 'proxy-vpn-blocker' ); ?></div>
 											</div>
-											<?php if ( !empty($caching_plugins) ): ?>
+											<?php if ( ! empty( $caching_plugins ) ) : ?>
 												<div class="detail-section">
 													<div class="detail-title"><?php esc_html_e( 'Detected Caching Plugins:', 'proxy-vpn-blocker' ); ?></div>
-													<div class="detail-text"><?php echo esc_html( implode(', ', $caching_plugins) ); ?></div>
+													<div class="detail-text"><?php echo esc_html( implode( ', ', $caching_plugins ) ); ?></div>
 												</div>
 											<?php endif; ?>
-											<?php if ( $server_cache ): ?>
+											<?php if ( $server_cache ) : ?>
 												<div class="detail-section">
 													<div class="detail-title"><?php esc_html_e( 'Server-side Caching Detected', 'proxy-vpn-blocker' ); ?></div>
 													<div class="detail-text"><?php esc_html_e( 'We detected server-side caching headers. This may affect visitor blocking.', 'proxy-vpn-blocker' ); ?></div>

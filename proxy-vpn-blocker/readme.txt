@@ -4,7 +4,7 @@ Tags: security, proxy blocker, vpn blocker, proxycheck, ip address
 Requires at least: 4.9
 Tested up to: 6.8.2
 Requires PHP: 7.2
-Stable tag: 3.4.3
+Stable tag: 3.4.4
 License: GPLv2
 
 Stop unwanted traffic—block proxies, VPNs, TOR and spam using the proxycheck.io API. Easy to configure with geoblocking, IP logging & admin controls.
@@ -100,6 +100,10 @@ Remember: If you ever have to do this, delete the disablepvb.txt file after you 
 6. Action Log - A list of recently detected IP Addresses.
 
 == Changelog ==
+= 3.4.4 2025-09-17 =
+* API Statistics Graph fixed in Settings, the proxycheck.io API format changed for the API Statistics graph recently which broke previous implementations.
+* Improvements made to API Key field in settings for API Key Validation.
+
 = 3.4.3 2025-08-05 =
 * Further Improvement to plugin install and uninstall.
 * proxycheck.io API Key is no longer displayed once saved - this is also encrypted.
