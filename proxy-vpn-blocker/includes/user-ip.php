@@ -185,7 +185,16 @@ function new_modify_user_table_row( $user_ip_html, $column_name, $user_id ) {
 			$user_ip_html .= '	<span class="dashicons dashicons-clock pvb-users-tooltip-icon"></span>';
 			$user_ip_html .= '	<span class="pvb-users-tooltip-content">' . $login_time . '</span>';
 			$user_ip_html .= '</div>';
-			$user_ip_html .= '<p class="pvb-last-login-ip"><img class="pvb-ip-user-flag" src="' . $login_flag . '" title="' . $last_login_country_full . ' : ' . $last_login_city . '"></img> <a href="https://proxycheck.io/threats/' . get_user_meta( $user_id, 'last_login_ip', true ) . '" target="_blank" title="IP Threat Information for: ' . get_user_meta( $user_id, 'last_login_ip', true ) . '" >' . get_user_meta( $user_id, 'last_login_ip', true ) . '</a></p><p>Risk: <strong style="color:' . $riskl_color . ';">' . $last_login_risk . '%</strong></p>';
+			$user_ip_html .= '<p class="pvb-last-login-ip">
+								<img class="pvb-ip-user-flag" src="' . $login_flag . '" title="' . $last_login_country_full . ' : ' . $last_login_city . '"></img>
+								<span class="pvb-ip-address-container">
+									<a href="https://proxycheck.io/threats/' . get_user_meta( $user_id, 'last_login_ip', true ) . '" target="_blank" title="IP Threat Information for: ' . get_user_meta( $user_id, 'last_login_ip', true ) . '" class="pvb-ip-address-link">' . get_user_meta( $user_id, 'last_login_ip', true ) . '</a>
+								</span>
+								<a href="#" class="pvb-ip-filter-icon" style="background:' . $riskl_bg . ';" data-ip="' . esc_attr( get_user_meta( $user_id, 'last_login_ip', true ) ) . '" title="Filter users by this IP address">
+									<span class="dashicons dashicons-search"></span>
+								</a>
+							</p>
+							<p>Risk: <strong style="color:' . $riskl_color . ';">' . $last_login_risk . '%</strong></p>';
 			$user_ip_html .= '</div>';
 		} else {
 			$user_ip_html .= '<div class="pvb-user-ip-container" style="background:#e9e9e9;">';
@@ -194,9 +203,11 @@ function new_modify_user_table_row( $user_ip_html, $column_name, $user_id ) {
 			$user_ip_html .= '</div>';
 		}
 		if ( '' !== get_user_meta( $user_id, 'signup_ip', true ) && 'none' !== get_user_meta( $user_id, 'signup_ip', true ) && '' === get_user_meta( $user_id, 'registration_ip', true ) ) {
-			$user_ip_html .= '<div class="pvb-user-ip-container" style="background:' . $riskr_bg . ';"';
+			$user_ip_html .= '<div class="pvb-user-ip-container" style="background:' . $riskr_bg . ';">';
 			$user_ip_html .= '<strong>Registration IP</strong>';
-			$user_ip_html .= '<p class="pvb-registration-ip"><a style="font-size: 13px;" href="https://proxycheck.io/threats/' . get_user_meta( $user_id, 'signup_ip', true ) . '" target="_blank" title="IP Threat Information for: ' . get_user_meta( $user_id, 'signup_ip', true ) . '">' . get_user_meta( $user_id, 'signup_ip', true ) . '</a><p style="font-size: 13px;">Risk: <strong>Unknown</strong></p>';
+			$user_ip_html .= '<p class="pvb-registration-ip">
+								<a style="font-size: 13px;" href="https://proxycheck.io/threats/' . get_user_meta( $user_id, 'signup_ip', true ) . '" target="_blank" title="IP Threat Information for: ' . get_user_meta( $user_id, 'signup_ip', true ) . '">' . get_user_meta( $user_id, 'signup_ip', true ) . '</a><p style="font-size: 13px;">Risk: <strong>Unknown</strong>
+							</p>';
 			$user_ip_html .= '</div>';
 		} elseif ( '' !== get_user_meta( $user_id, 'registration_ip', true ) ) {
 			$user_ip_html .= '<div class="pvb-user-ip-container" style="background:' . $riskr_bg . ';">';
@@ -205,7 +216,16 @@ function new_modify_user_table_row( $user_ip_html, $column_name, $user_id ) {
 			$user_ip_html .= '	<span class="dashicons dashicons-clock pvb-users-tooltip-icon"></span>';
 			$user_ip_html .= '	<span class="pvb-users-tooltip-content">' . $reg_time . '</span>';
 			$user_ip_html .= '</div>';
-			$user_ip_html .= '<p class="pvb-registration-ip"><img class="pvb-ip-user-flag" src="' . $registration_flag . '" title="' . $registration_country_full . ' : ' . $registration_city . '"></img> <a href="https://proxycheck.io/threats/' . get_user_meta( $user_id, 'registration_ip', true ) . '" target="_blank" title="IP Threat Information for: ' . get_user_meta( $user_id, 'registration_ip', true ) . '">' . get_user_meta( $user_id, 'registration_ip', true ) . '</a></p><p>Risk: <strong style="color:' . $riskr_color . ';">' . $riskr . '</strong></p>';
+			$user_ip_html .= '<p class="pvb-registration-ip">
+									<img class="pvb-ip-user-flag" src="' . $registration_flag . '" title="' . $registration_country_full . ' : ' . $registration_city . '"></img>
+									<span class="pvb-ip-address-container">
+										<a href="https://proxycheck.io/threats/' . get_user_meta( $user_id, 'registration_ip', true ) . '" target="_blank" title="IP Threat Information for: ' . get_user_meta( $user_id, 'registration_ip', true ) . '" class="pvb-ip-address-link">' . get_user_meta( $user_id, 'registration_ip', true ) . '</a>
+									</span>
+									<a href="#" class="pvb-ip-filter-icon" style="background:' . $riskr_bg . ';" data-ip="' . esc_attr( get_user_meta( $user_id, 'registration_ip', true ) ) . '" title="Filter users by this IP address">
+										<span class="dashicons dashicons-search"></span>
+									</a>
+								</p>
+								<p>Risk: <strong style="color:' . $riskr_color . ';">' . $riskr . '</strong></p>';
 			$user_ip_html .= '</div>';
 		} else {
 			$user_ip_html .= '<div class="pvb-user-ip-container" style="background:#e9e9e9;">';
@@ -214,9 +234,116 @@ function new_modify_user_table_row( $user_ip_html, $column_name, $user_id ) {
 			$user_ip_html .= '</div>';
 		}
 	}
-	return $user_ip_html;
+		return wp_kses_post( $user_ip_html );
 }
 add_filter( 'manage_users_custom_column', 'new_modify_user_table_row', 10, 3 );
+
+/**
+ * Add IP address filtering to WordPress user search
+ *
+ * @since 3.5.5
+ * @param array $args The query arguments for WP_User_Query.
+ * @return array Modified query arguments.
+ */
+function pvb_filter_users_by_ip( $args ) {
+	// Only modify if there's a search term.
+	if ( empty( $args['search'] ) ) {
+		return $args;
+	}
+
+	$search_term = $args['search'];
+
+	// Remove the '*' wildcard that WordPress adds to search terms.
+	$search_term = trim( $search_term, '*' );
+
+	// Check if the search term looks like an IP address (IPv4).
+	if ( pvb_is_ip_address( $search_term ) ) {
+		// Create meta query to search for IP addresses in user meta.
+		$ip_meta_query = array(
+			'relation' => 'OR',
+			array(
+				'key'     => 'registration_ip',
+				'value'   => $search_term,
+				'compare' => 'LIKE',
+			),
+			array(
+				'key'     => 'last_login_ip',
+				'value'   => $search_term,
+				'compare' => 'LIKE',
+			),
+		);
+
+		// Get existing meta query if any
+		$existing_meta_query = isset( $args['meta_query'] ) ? $args['meta_query'] : array();
+
+		// Merge with existing meta query properly.
+		if ( ! empty( $existing_meta_query ) && is_array( $existing_meta_query ) ) {
+			// If existing meta query has a 'relation' key, use it, otherwise default to 'AND'.
+			$relation = isset( $existing_meta_query['relation'] ) ? $existing_meta_query['relation'] : 'AND';
+
+			// Create new meta query structure,
+			$new_meta_query = array(
+				'relation' => $relation,
+			);
+
+			// Add existing meta queries (skip the first element if it's the relation).
+			foreach ( $existing_meta_query as $key => $meta_condition ) {
+				if ( 'relation' !== $key ) {
+					$new_meta_query[] = $meta_condition;
+				}
+			}
+
+			// Add our IP search meta query.
+			$new_meta_query[] = $ip_meta_query;
+
+			$final_meta_query = $new_meta_query;
+		} else {
+			// No existing meta query, use just our IP search.
+			$final_meta_query = $ip_meta_query;
+		}
+
+		// Set the final meta query.
+		$args['meta_query'] = $final_meta_query;
+
+		// Clear the search to prevent WordPress from doing its own search.
+		$args['search'] = '';
+		$args['search_columns'] = array();
+	}
+
+	return $args;
+}
+add_filter( 'users_list_table_query_args', 'pvb_filter_users_by_ip', 20 );
+
+
+
+/**
+ * Check if a string looks like an IP address
+ *
+ * @since 3.5.5
+ * @param string $string The string to check.
+ * @return bool True if the string looks like an IP address.
+ */
+function pvb_is_ip_address( $string ) {
+	// Remove any whitespace.
+	$string = trim( $string );
+
+	// Check for IPv4 format (basic validation).
+	if ( preg_match( '/^(\d{1,3}\.){0,3}\d{1,3}/', $string, $matches ) ) {
+		$ip_part = $matches[0];
+
+		// For partial IPs, just check the format.
+		if ( substr_count( $ip_part, '.' ) < 3 ) {
+			return true;
+		}
+
+		// For full IPs, do more strict validation.
+		if ( filter_var( $ip_part, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
 
 
 /**

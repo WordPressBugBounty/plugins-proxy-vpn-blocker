@@ -114,7 +114,7 @@ class Proxy_VPN_Blocker {
 	 * @since   1.0
 	 * @return  void
 	 */
-	public function __construct( $file = '', $version = '3.4.5' ) {
+	public function __construct( $file = '', $version = '3.5.7' ) {
 		$this->_version = $version;
 		$this->_token   = 'proxy_vpn_blocker';
 
@@ -324,6 +324,11 @@ class Proxy_VPN_Blocker {
 			);
 
 		}
+		// Load users IP filter script on users page.
+		if ( 'users' === $screen->id ) {
+			wp_register_script( $this->_token . '-users-ip-filter', esc_url( $this->assets_url ) . 'js/pvb-users-ip-filter.js', array( 'jquery' ), $this->_version, true );
+			wp_enqueue_script( $this->_token . '-users-ip-filter' );
+		}
 	}//end pvb_scripts_footer_function()
 
 	/**
@@ -366,7 +371,7 @@ class Proxy_VPN_Blocker {
 	 * @see proxy_vpn_blocker()
 	 * @return Main proxy_vpn_blocker instance
 	 */
-	public static function instance( $file = '', $version = '3.4.5' ) {
+	public static function instance( $file = '', $version = '3.5.7' ) {
 
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );

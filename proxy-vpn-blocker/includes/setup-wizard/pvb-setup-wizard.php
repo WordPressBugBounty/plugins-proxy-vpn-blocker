@@ -147,7 +147,6 @@ function get_recommended_header( $headers ) {
 											<?php
 										}
 										?>
-										<input type="text" autocomplete="off" placeholder="XXXXXX-XXXXXX-XXXXXX-XXXXXX" spellcheck="false" id="pvb_proxycheckio_API_Key_field" name="pvb_proxycheckio_API_Key_field" value="<?php echo esc_attr( get_option( 'pvb_proxycheckio_API_Key_field' ) ); ?>" class="regular-text">
 										<p class="option-description">
 											<?php esc_html_e( 'Enter your proxycheck.io API key to enable advanced proxy and VPN detection features. If you don\'t have an API key, you can still use the service with limited queries.', 'proxy-vpn-blocker' ); ?>
 										</p>

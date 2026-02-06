@@ -10,7 +10,7 @@
  *
  * @since 3.3.0
  */
-define( 'PVB_DB_VERSION', '5.2.5' );
+define( 'PVB_DB_VERSION', '5.3.1' );
 
 /**
  * Function to check if the database needs an upgrade.
@@ -81,11 +81,23 @@ function upgrade_pvb_db() {
 			captcha_passed varchar(100) NOT NULL,
 			blocked_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 			api_type varchar(100) NOT NULL,
-			PRIMARY KEY  (id)
+			PRIMARY KEY  (id),
+			INDEX idx_blocked_at (blocked_at),
+			INDEX idx_blocked_at_ip (blocked_at, ip_address),
+			INDEX idx_blocked_at_country (blocked_at, country, country_iso)
 		) $charset_collate;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		dbDelta( $sql );
+
+		// Try dbDelta first, then fallback to direct query if needed.
+		$result = dbDelta( $sql );
+
+		// Check if table was created successfully.
+		$table_name = $wpdb->prefix . 'pvb_visitor_action_log';
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) !== $table_name ) {
+			// Table doesn't exist, try direct query as fallback.
+			$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
 
 		// Include and run any necessary post setup functions.
 		require_once 'includes/post-additions.php';
@@ -199,11 +211,23 @@ function upgrade_pvb_db() {
 				block_method varchar(100) NOT NULL,
 				captcha_passed varchar(100) NOT NULL,
 				blocked_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-				PRIMARY KEY  (id)
+				PRIMARY KEY  (id),
+       			INDEX idx_blocked_at (blocked_at),
+        		INDEX idx_blocked_at_ip (blocked_at, ip_address),
+        		INDEX idx_blocked_at_country (blocked_at, country, country_iso)
 			) $charset_collate;";
 
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-			dbDelta( $sql );
+
+			// Try dbDelta first, then fallback to direct query if needed.
+			$result = dbDelta( $sql );
+
+			// Check if table was created successfully.
+			$table_name = $wpdb->prefix . 'pvb_visitor_action_log';
+			if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) !== $table_name ) {
+				// Table doesn't exist, try direct query as fallback.
+				$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			}
 
 			update_option( 'pvb_db_version', '5.1.1' );
 		}
@@ -253,6 +277,59 @@ function upgrade_pvb_db() {
 				// If length > 28, assume it's already encrypted and skip.
 			}
 			update_option( 'pvb_db_version', '5.2.5' );
+		}
+
+		// Upgrade DB to 5.3.0 if lower.
+		if ( version_compare( $database_version, '5.3.0', '<' ) ) {
+			// Migrate old VPN setting to new risk settings if risk settings are not already set.
+			if ( get_option( 'pvb_proxycheckio_VPN_select_box' ) === 'on' ) {
+				update_option( 'pvb_proxycheckio_detectiontype_vpn', 'on' );
+			} else {
+				update_option( 'pvb_proxycheckio_detectiontype_vpn', '' );
+			}
+			update_option( 'pvb_proxycheckio_detectiontype_proxy', 'on' );
+			update_option( 'pvb_proxycheckio_detectiontype_compromised', 'on' );
+			update_option( 'pvb_proxycheckio_detectiontype_tor', 'on' );
+			update_option( 'pvb_db_version', '5.3.0' );
+		}
+
+		// Upgrade DB to 5.3.1 if lower.
+		if ( version_compare( $database_version, '5.3.1', '<' ) ) {
+			// Ensure the pvb_visitor_action_log table exists (repair for previous installation failures).
+			$table_name = $wpdb->prefix . 'pvb_visitor_action_log';
+			if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) !== $table_name ) {
+				$charset_collate = $wpdb->get_charset_collate();
+
+				$sql = "CREATE TABLE {$wpdb->prefix}pvb_visitor_action_log (
+					id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+					ip_address varchar(100) NOT NULL,
+					detected_type varchar(100) NOT NULL,
+					country varchar(100) NOT NULL,
+					country_iso varchar(100) NOT NULL,
+					risk_score varchar(100) NOT NULL,
+					blocked_url varchar(255) NOT NULL,
+					block_method varchar(100) NOT NULL,
+					captcha_passed varchar(100) NOT NULL,
+					blocked_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+					api_type varchar(100) NOT NULL,
+					PRIMARY KEY  (id),
+					INDEX idx_blocked_at (blocked_at),
+					INDEX idx_blocked_at_ip (blocked_at, ip_address),
+					INDEX idx_blocked_at_country (blocked_at, country, country_iso)
+				) $charset_collate;";
+
+				require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+				// Try dbDelta first, then fallback to direct query if needed.
+				$result = dbDelta( $sql );
+
+				// Check if table was created successfully.
+				if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) !== $table_name ) {
+					// Table doesn't exist, try direct query as fallback.
+					$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				}
+			}
+			update_option( 'pvb_db_version', '5.3.1' );
 		}
 	}
 }

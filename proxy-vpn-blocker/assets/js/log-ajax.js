@@ -25,6 +25,16 @@ jQuery(document).ready(function($) {
         extraDataRow.slideToggle("slow");
     });
 
+    // Function to update the risk score colors.
+    function updateRiskScoreColors() {
+        document.querySelectorAll('.item-3 span').forEach(span => {
+            const score = parseInt(span.textContent);
+            const hue = (1 - score / 100) * 120;
+            span.style.backgroundColor = `hsl(${hue}, 80%, 45%)`;
+            span.style.color = score > 50 ? 'white' : 'black';
+        });
+    }
+
     // Function to load logs via AJAX
     function loadLogs(page = 1) {
         if (isRefreshing) return; // Prevent loading if currently refreshing
@@ -58,33 +68,57 @@ jQuery(document).ready(function($) {
                         const flagPath = `${imagePath}${countryCode}.png`;
 
                         let proxyType = log.detected_type === "VPN" ? 'type_vpn' : 'type_others';
+                        let blockMethod = log.block_method === "captcha_challenge" ? 'Captcha Challenge' :
+                                          log.block_method === "url_redirect" ? 'URL Redirect' :
+                                          log.block_method === "block_page" ? 'Block Page' :
+                                          log.block_method === "settings_default" ? 'Settings Default' : 'Undefined';
 
-                        let logHtml = 
-                            '<div class="angry-grid" data-log-id="' + log.id + '">' +  // Use log.id as a unique identifier
-                                '<div class="item-0" title="' + log.blocked_at_wp + '"><span class="space">' + timeAgo(log.blocked_at) + '</span></div>' +
-                                '<div class="item-1"><span><a href="https://proxycheck.io/threats/' + log.ip_address + '" target="_blank">' + log.ip_address + '</a></span></div>' +
-                                '<div class="item-2"><span><img class="country-flag" alt="' + log.country + ' flag" title="' + log.country + '" src="' + flagPath + '"><span>' + log.country + ' (' + log.country_iso + ')</span></span></div>' +
-                                '<div class="item-3"><span>' + log.risk_score + '</span></div>' +
-                                '<div class="semi-circle" style="display: none;"><i class="fa-fw fa-solid fa-angle-down"></i></div>' + // Initially hidden
-                            '</div>' +
-                            '<div class="extra-data-row">' +
-                                '<div class="extra-data-row-content">' +
-                                    '<span class="space ipinflux_' + proxyType + '">' + log.detected_type + '</span>' +
-                                    '<span class="space ipinflux_blocked_on_url" alt="' + log.blocked_url + '">URL: ' + log.blocked_url + '</span>';
-                        
+                        let logHtml = '<div class="angry-grid" data-log-id="' + log.id + '">' +  // Use log.id as a unique identifier
+                            '<div class="item-0" title="' + log.blocked_at_wp + '"><span class="space">' + timeAgo(log.blocked_at) + '</span></div>' +
+                            '<div class="item-1"><span><a href="https://proxycheck.io/threats/' + log.ip_address + '" target="_blank">' + log.ip_address + '</a></span></div>' +
+                            '<div class="item-2"><span><img class="country-flag" alt="' + log.country + ' flag" title="' + log.country + '" src="' + flagPath + '"><span>' + log.country + ' (' + log.country_iso + ')</span></span></div>' +
+                            '<div class="item-3"><span>' + log.risk_score + '</span></div>' +
+                            '<div class="semi-circle" style="display: none;"><i class="fa-fw fa-solid fa-angle-down"></i></div>' + // Initially hidden
+                        '</div>' +
+                        '<div class="extra-data-row">' +
+                            '<div class="extra-data-row-content">';
+
+                        // Handle multiple detected types - split by comma and create individual badges
+                        if (log.detected_type) {
+                            const detectedTypes = log.detected_type.split(',').map(type => type.trim());
+                            logHtml += '<div class="extra-data-row-section">' +
+                            '<div class="data-row-title">Detected Types</div>';
+                            detectedTypes.forEach(function(type) {
+                                logHtml += '<span class="space ipinflux_type_' + type.toLowerCase() + '">' + type + '</span>';
+                            });
+                            logHtml += '</div>';
+                        } else {
+                            // Fallback for single type or empty
+                            logHtml += '<div class="extra-data-row-section">' +
+                            '<div class="data-row-title">Detected Type</div>' +
+                            '<span class="space ipinflux_type_' + proxyType + '">' + log.detected_type + '</span>' +
+                            '</div>';
+                        }
+
+                        logHtml += '<div class="extra-data-row-section">' +
+                        '<div class="data-row-title">Information</div>';
+
+                        logHtml += '<span class="space ipinflux_blocked_on_url" alt="' + log.blocked_url + '">URL: ' + log.blocked_url + '</span>';
+
                         if (log.api_type) {
                             logHtml += '<span class="space ipinflux_api_type_used" alt="' + log.api_type + '">Processed By: ' + log.api_type + '</span>';
                         }
 
                         if (pvb_action_logs.proxycheck_apikey_set === 'yes') {
-                            logHtml += 
-                            '<div class="log-whitelist-btn"><button class="add-to-whitelist-btn" data-ip="' + log.ip_address + '">' +
+                            logHtml += '<div class="log-whitelist-btn"><button class="add-to-whitelist-btn" data-ip="' + log.ip_address + '">' +
                                 '<i class="fa-solid fa-plus"></i> Whitelist IP' +
                             '</button></div>';
                         }
 
+
                         logHtml += '</div>' +
-                            '</div>';
+                        '</div>' +
+                        '</div>';
 
                         // Append the log data to the .log_content container
                         $('.log_content').append(logHtml);
@@ -98,6 +132,9 @@ jQuery(document).ready(function($) {
                             $angryGrid.find('.semi-circle').fadeIn("slow"); // Show the semi-circle
                         }
                     });
+
+                    // Call your colorizer here!
+                    updateRiskScoreColors();
 
                     // Step 5: Update the current page
                     currentPage = page;
@@ -143,7 +180,6 @@ jQuery(document).ready(function($) {
     }, 15000);  // Every 15 seconds
 });
 
-// Function to convert timestamp to time ago format relative to the user's timezone
 function timeAgo(timestamp) {
     const targetDate = new Date(timestamp + "Z");
     const now = new Date();
@@ -225,3 +261,4 @@ jQuery(function($) {
         });
     });
 });
+

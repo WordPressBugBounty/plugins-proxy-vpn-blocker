@@ -3,6 +3,7 @@
   padding:5px;
   margin:0 0 2px 0;
   max-width: 300px;
+  position: relative;
 }
 
 .pvb-users-tooltip-container {
@@ -14,6 +15,7 @@
 .pvb-users-tooltip-icon {
   position: relative;
   cursor: pointer;
+  float: right;
 }
 
 .pvb-users-tooltip-content {
@@ -35,7 +37,7 @@
   pointer-events: none; /* Prevent the tooltip from blocking interaction */
 }
 
-.pvb-users-tooltip-container:hover .pvb-users-tooltip-content {
+.pvb-users-tooltip-icon:hover ~ .pvb-users-tooltip-content {
   visibility: visible;
   opacity: 1;
   pointer-events: auto; /* Allow interaction with the tooltip */
@@ -43,14 +45,56 @@
 
 .pvb-last-login-ip, .pvb-registration-ip {
   line-height: 1.1;
-  text-overflow: ellipsis;
-  overflow: hidden;
   white-space: nowrap;
   font-size: 13px;
+  position: relative;
 }
 
 .pvb-ip-user-flag {
   vertical-align: text-bottom;
   height: 1.1em;
   width: 20px;
+}
+
+/* IP Filter Icons */
+.pvb-ip-address-container {
+    position: relative;
+    display: inline-block;
+    min-width: 120px;
+    max-width: 180px;
+    width: 100%;
+}
+
+.pvb-ip-address-link {
+    display: inline-block;
+    max-width: calc(100% - 25px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    word-break: break-all;
+}
+
+.pvb-ip-filter-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #666;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 18px;
+    line-height: 1;
+    z-index: 10;
+}
+
+.pvb-ip-filter-icon:hover {
+    color: #007cba;
+    text-decoration: none;
+}
+
+.pvb-ip-filter-icon .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
 }

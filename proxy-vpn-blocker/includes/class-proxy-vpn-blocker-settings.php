@@ -137,6 +137,7 @@ class Proxy_VPN_Blocker_Settings {
 		array_push( $links, $settings_link );
 		return $links;
 	}
+
 	/**
 	 * Get custom post type paths
 	 *
@@ -155,24 +156,173 @@ class Proxy_VPN_Blocker_Settings {
 		return $paths;
 	}
 
+	/**
+	 * Get dynamic plugin paths from WordPress rewrite rules
+	 *
+	 * Scans rewrite rules to detect virtual paths created by plugins
+	 * that don't correspond to actual WordPress posts/pages.
+	 *
+	 * @return array Array of detected virtual paths
+	 */
+	public static function pvb_get_dynamic_plugin_paths() {
+		// Hard safety gates.
+		if (
+			! is_admin() ||
+			wp_doing_ajax() ||
+			wp_doing_cron() ||
+			defined( 'WP_INSTALLING' )
+		) {
+			return array();
+		}
+
+		$cache_key = 'pvb_dynamic_plugin_paths';
+		$cache_ttl = DAY_IN_SECONDS;
+
+		$cached = get_transient( $cache_key );
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+
+		global $wp_rewrite;
+
+		if ( empty( $wp_rewrite->rules ) || ! is_array( $wp_rewrite->rules ) ) {
+			return array();
+		}
+
+		$paths = array();
+
+		foreach ( $wp_rewrite->rules as $pattern => $query ) {
+			if ( strpos( $query, 'index.php?' ) !== 0 ) {
+				continue;
+			}
+
+			if (
+				strpos( $pattern, '^wp-' ) === 0 ||
+				strpos( $pattern, '^index.php' ) === 0 ||
+				preg_match( '#(attachment|category|tag|author|date|search|feed|page|comments|embed|wc-api)#', $pattern ) ||
+				'^/?$' === $pattern
+			) {
+				continue;
+			}
+
+			$clean = trim( $pattern, '^$' );
+			$clean = rtrim( $clean, '/?' );
+
+			// Skip complex regex.
+			if ( preg_match( '/[()\[\]*+.|\\\\|]/', $clean ) ) {
+				continue;
+			}
+
+			$path = trim( $clean, '/' );
+
+			if (
+				empty( $path ) ||
+				is_numeric( $path ) ||
+				strlen( $path ) < 2 ||
+				strlen( $path ) > 50 ||
+				! preg_match( '/^[a-zA-Z0-9_\-\/]+$/', $path )
+			) {
+				continue;
+			}
+
+			$skip = array(
+				'admin',
+				'login',
+				'register',
+				'dashboard',
+				'profile',
+				'settings',
+				'media',
+				'upload',
+				'download',
+				'api',
+				'rest',
+				'oauth',
+				'auth',
+				'cart',
+				'checkout',
+				'account',
+				'orders',
+				'downloads',
+				'subscriptions',
+			);
+
+			if ( in_array( $path, $skip, true ) ) {
+				continue;
+			}
+
+			$paths[] = trailingslashit( $path );
+
+			if ( count( $paths ) >= 100 ) {
+				break;
+			}
+		}
+
+		$paths = array_values( array_unique( $paths ) );
+
+		set_transient( $cache_key, $paths, $cache_ttl );
+
+		return $paths;
+	}
 
 	/**
-	 * Get all detected paths
+	 * Get all paths with display labels for settings select field
 	 *
 	 * @return array
 	 */
-	private static function pvb_get_all_detected_paths() {
+	public static function pvb_get_all_path_options() {
+		$options     = array();
+		$all_paths   = self::pvb_get_all_detected_paths_dynamic();
+		$saved_paths = get_option( 'pvb_defined_protected_paths' );
+
+		// Handle both old and new data structures for backward compatibility.
+		if ( ! is_array( $saved_paths ) ) {
+			$saved_paths = array();
+		}
+
+		// Extract configured paths from new structure.
+		$configured_paths = array();
+		foreach ( $saved_paths as $path_key => $path_config ) {
+			if ( is_array( $path_config ) && isset( $path_config['method'] ) ) {
+				// New structure - path is key.
+				$configured_paths[] = $path_key;
+			} elseif ( is_string( $path_config ) ) {
+				// Old structure - path is value.
+				$configured_paths[] = $path_config;
+			}
+		}
+
+		// Use detected paths as base, ensure key = value.
+		foreach ( $all_paths as $path ) {
+			$path             = trailingslashit( untrailingslashit( $path ) );
+			$options[ $path ] = 'Detected: ' . $path;
+		}
+
+		// Add custom entries not in detected list.
+		foreach ( $configured_paths as $path ) {
+			$path = trailingslashit( untrailingslashit( $path ) );
+			if ( ! isset( $options[ $path ] ) ) {
+				$options[ $path ] = 'Custom: ' . $path;
+			}
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Get all detected paths with dynamic loading for admin
+	 *
+	 * @return array
+	 */
+	private static function pvb_get_all_detected_paths_dynamic() {
 		$paths = array();
 
 		// 1. Get paths from custom post types.
-		if ( method_exists( 'Proxy_VPN_Blocker_Settings', 'get_custom_post_type_paths' ) ) {
-			$paths = array_merge( $paths, self::get_custom_post_type_paths() );
-		}
+		$paths = array_merge( $paths, self::get_custom_post_type_paths() );
 
-		// 2. Get paths from rewrite rules (if defined).
-		if ( function_exists( 'pvb_get_dynamic_plugin_paths' ) ) {
-			$paths = array_merge( $paths, pvb_get_dynamic_plugin_paths() );
-		}
+		// 2. Get paths from rewrite rules (dynamically loaded).
+		$dynamic_paths = self::pvb_get_dynamic_plugin_paths();
+		$paths         = array_merge( $paths, $dynamic_paths );
 
 		// 3. BuddyPress specific paths — only if active.
 		if ( function_exists( 'bp_core_get_directory_page_ids' ) ) {
@@ -189,12 +339,22 @@ class Proxy_VPN_Blocker_Settings {
 		// 4. Include already saved paths (to preserve custom user entries).
 		$saved_paths = get_option( 'pvb_defined_protected_paths' );
 		if ( is_array( $saved_paths ) ) {
-			$paths = array_merge( $paths, $saved_paths );
+			$paths = array_merge( $paths, array_keys( $saved_paths ) );
 		}
 
 		// 5. Normalize and remove duplicates.
-		$paths = array_map( 'trim', $paths );
-		$paths = array_map( 'untrailingslashit', $paths );
+		$paths = array_map(
+			function ( $path ) {
+				return is_string( $path ) ? trim( $path ) : $path;
+			},
+			$paths
+		);
+		$paths = array_map(
+			function ( $path ) {
+				return is_string( $path ) ? untrailingslashit( $path ) : $path;
+			},
+			$paths
+		);
 		$paths = array_filter(
 			$paths,
 			function ( $path ) {
@@ -210,36 +370,6 @@ class Proxy_VPN_Blocker_Settings {
 		}
 
 		return $paths;
-	}
-
-	/**
-	 * Get all paths with display labels for settings select field
-	 *
-	 * @return array
-	 */
-	private static function pvb_get_all_path_options() {
-		$options     = array();
-		$all_paths   = self::pvb_get_all_detected_paths();
-		$saved_paths = get_option( 'pvb_defined_protected_paths' );
-		if ( ! is_array( $saved_paths ) ) {
-			$saved_paths = array();
-		}
-
-		// Use detected paths as base, ensure key = value.
-		foreach ( $all_paths as $path ) {
-			$path             = trailingslashit( untrailingslashit( $path ) );
-			$options[ $path ] = 'Detected: ' . $path;
-		}
-
-		// Add custom entries not in detected list.
-		foreach ( $saved_paths as $path ) {
-			$path = trailingslashit( untrailingslashit( $path ) );
-			if ( ! isset( $options[ $path ] ) ) {
-				$options[ $path ] = 'Custom: ' . $path;
-			}
-		}
-
-		return $options;
 	}
 
 	/**
@@ -560,18 +690,60 @@ class Proxy_VPN_Blocker_Settings {
 					'placeholder'  => __( 'Select Header...', 'proxy-vpn-blocker' ),
 				),
 				array(
-					'id'          => 'proxycheckio_VPN_select_box',
-					'label'       => __( 'Also Detect VPNs?', 'proxy-vpn-blocker' ),
-					'description' => __( 'Set this to \'on\' to enable detection of VPN Visitors in addition to Proxies.', 'proxy-vpn-blocker' ),
-					'type'        => 'checkbox',
-					'default'     => '',
-				),
-				array(
 					'id'          => 'log_user_ip_select_box',
 					'label'       => __( 'Log User IP\'s Locally', 'proxy-vpn-blocker' ),
 					'description' => __( 'When set to on, User\'s Registration and most recent Login IP Addresses will be logged locally and displayed (with link to proxycheck.io threats page for the IP) in WordPress Users list and on User profile for administrators.', 'proxy-vpn-blocker' ),
 					'type'        => 'checkbox',
 					'default'     => 'on',
+				),
+			),
+		);
+		$settings['DetectionTypes']           = array(
+			'title'       => __( 'Detection Types', 'proxy-vpn-blocker' ),
+			'icon'        => __( 'fa-solid fa-user-secret', 'proxy-vpn-blocker' ),
+			'description' => __( 'Here you can select the types that you would like to block.', 'proxy-vpn-blocker' ),
+			'fields'      => array(
+				array(
+					'id'          => 'proxycheckio_detectiontype_proxy',
+					'label'       => __( 'Detect Proxies?', 'proxy-vpn-blocker' ),
+					'description' => __( 'When Enabled, Proxy detection will be active.', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => 'on',
+				),
+				array(
+					'id'          => 'proxycheckio_detectiontype_vpn',
+					'label'       => __( 'Detect VPNs?', 'proxy-vpn-blocker' ),
+					'description' => __( 'When enabled, VPN detection will be active.', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => '',
+				),
+				array(
+					'id'          => 'proxycheckio_detectiontype_compromised',
+					'label'       => __( 'Detect Compromised Server IPs?', 'proxy-vpn-blocker' ),
+					'description' => __( 'When enabled, Compromised Server IP detection will be active.', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => 'on',
+				),
+				array(
+					'id'          => 'proxycheckio_detectiontype_scraper',
+					'label'       => __( 'Detect Web Scraper IPs?', 'proxy-vpn-blocker' ),
+					'description' => __( 'When enabled, Web Scraper IP detection will be active.', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => '',
+				),
+				array(
+					'id'          => 'proxycheckio_detectiontype_tor',
+					'label'       => __( 'Detect Tor IPs?', 'proxy-vpn-blocker' ),
+					'description' => __( 'When enabled, Tor IP detection will be active.', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => 'on',
+				),
+				array(
+					'id'          => 'proxycheckio_detectiontype_hosting',
+					'label'       => __( 'Detect Hosting Provider IPs?', 'proxy-vpn-blocker' ),
+					'description' => __( 'When enabled, Hosting Provider IP detection will be active.', 'proxy-vpn-blocker' ),
+					'type'        => 'checkbox',
+					'default'     => '',
 				),
 			),
 		);
@@ -776,14 +948,6 @@ class Proxy_VPN_Blocker_Settings {
 					'placeholder' => __( '30', 'proxy-vpn-blocker' ),
 				),
 				array(
-					'id'          => 'proxycheckio_Days_Selector',
-					'label'       => __( 'Last Detected Within', 'proxy-vpn-blocker' ),
-					'description' => __( 'You can set this from 1 to 60 days depending on how strict you want the detection to be. 1 day would be very liberal, 60 days would be very strict.', 'proxy-vpn-blocker' ),
-					'type'        => 'textslider',
-					'default'     => '7',
-					'placeholder' => __( '7', 'proxy-vpn-blocker' ),
-				),
-				array(
 					'id'            => 'protect_login_authentication',
 					'label'         => __( 'Protect WordPress Login/Auth', 'proxy-vpn-blocker' ),
 					'description'   => __( 'This option blocks Proxy/VPN\'s on wp-login.php, Login Authentication.', 'proxy-vpn-blocker' ),
@@ -949,10 +1113,6 @@ class Proxy_VPN_Blocker_Settings {
 			echo '		</li>' . "\n";
 		}
 
-		echo '	<div class="pvb-settings-tabs-after">' . "\n"; // settings tabs after start.
-		echo '		<p>Proxy & VPN Blocker Lite: ' . get_option( 'proxy_vpn_blocker_version' ) . '</p>' . "\n";
-		echo '	</div>' . "\n"; // settings tabs after end.
-
 		echo '		</ul>' . "\n";
 		echo '		<div class="tabs-content">' . "\n"; // tabs content start.
 		foreach ( (array) $wp_settings_sections[ $page ] as $section ) {
@@ -984,6 +1144,13 @@ class Proxy_VPN_Blocker_Settings {
 			</noscript>' . "\n";
 		//phpcs:enable
 		echo '</div>' . "\n"; // settings grouping end.
+		echo '	<div style="display: block; margin: 0 auto;  padding: 8px;">' . "\n"; // settings tabs after start.
+		echo '		<div style="padding: 8px; background: rgba(255, 255, 255, 0.5); border-radius: 7px;">' . "\n";
+		echo '			<small>&copy; 2017 - 2025 Proxy & VPN Blocker | </small>' . "\n";
+		echo '			<small>Proxy & VPN Blocker Lite Version: ' . esc_html( get_option( 'proxy_vpn_blocker_version' ) ) . ' | </small>' . "\n";
+		echo '			<small>Using proxycheck.io V3 API Version: ' . esc_html( get_option( 'proxy_vpn_blocker_proxycheck_api_version' ) ) . ' (BETA)</small>' . "\n";
+		echo '		</div>' . "\n";
+		echo '	</div>' . "\n"; // settings tabs after end.
 	}
 
 	/**

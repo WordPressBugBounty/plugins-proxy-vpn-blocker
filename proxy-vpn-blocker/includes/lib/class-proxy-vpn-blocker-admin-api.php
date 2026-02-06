@@ -66,6 +66,11 @@ class Proxy_VPN_Blocker_Admin_API {
 			$data = '';
 		}
 
+		// Backward compatibility: Convert premium format data to free format for defined_protected_paths.
+		if ( $field['id'] === 'defined_protected_paths' && is_array( $data ) && ! empty( $data ) && is_array( reset( $data ) ) ) {
+			$data = array_keys( $data );
+		}
+
 		$html = '';
 
 		switch ( $field['type'] ) {

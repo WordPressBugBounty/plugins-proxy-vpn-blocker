@@ -4,14 +4,14 @@
  *
  * @package           Proxy & VPN Blocker
  * @author            Proxy & VPN Blocker
- * @copyright         2017 - 2025 Proxy & VPN Blocker
+ * @copyright         2017 - 2026 Proxy & VPN Blocker
  * @license           GPL-2.0-or-later
  *
  * @wordpress-plugin
  * Plugin Name: Proxy & VPN Blocker
  * Plugin URI: https://proxyvpnblocker.com
  * description: Proxy & VPN Blocker prevents Proxies, VPN's and other unwanted visitors from accessing pages, posts and more, using Proxycheck.io API data.
- * Version: 3.4.5
+ * Version: 3.5.7
  * Author: Proxy & VPN Blocker
  * Author URI: https://profiles.wordpress.org/rickstermuk
  * License: GPLv2
@@ -26,12 +26,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-$version     = '3.4.5';
-$update_date = 'September 24th 2025';
+$version     = '3.5.7';
+$update_date = 'January 23rd 2026';
+
+// Set the proxycheck.io v3 API version we are using.
+$proxycheck_api_version = '10-November-2025';
 
 if ( version_compare( get_option( 'proxy_vpn_blocker_version' ), $version, '<' ) ) {
 	update_option( 'proxy_vpn_blocker_version', $version );
 	update_option( 'proxy_vpn_blocker_last_update', $update_date );
+	update_option( 'proxy_vpn_blocker_proxycheck_api_version', $proxycheck_api_version );
 }
 
 /**
@@ -200,41 +204,87 @@ function pvb_general_check() {
 			$perform_country_check = 0;
 		}
 		$proxycheck_answer = proxycheck_function( $visitor_ip_address, 1, 0, 0 );
-		if ( 'yes' === $proxycheck_answer[0] ) {
-			// Check if Risk Score Checking is on.
-			if ( 'on' === get_option( 'pvb_proxycheckio_risk_select_box' ) ) {
-				// Check if proxycheck answer array key 4 is set and is NOT type VPN or RULE.
-				if ( 'VPN' !== $proxycheck_answer[4] ) {
-					// Check if proxycheck answer array key 4 for risk score and compare it to the set proxy risk score.
-					if ( $proxycheck_answer[3] >= get_option( 'pvb_proxycheckio_max_riskscore_proxy' ) ) {
-						if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7], 'PHP' );
-						}
-						pvb_block_deny();
-					}
-				} elseif ( 'VPN' === $proxycheck_answer[4] ) {
-					// Check if proxycheck answer array key 4 for risk score and compare it to the set VPN risk score.
-					if ( $proxycheck_answer[3] >= get_option( 'pvb_proxycheckio_max_riskscore_vpn' ) ) {
-						if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7], 'PHP' );
-						}
-						pvb_block_deny();
-					}
-				}
+
+		$detected       = $proxycheck_answer[0];
+		$country_info   = $proxycheck_answer[1];
+		$continent_info = $proxycheck_answer[2];
+		$risk_score     = $proxycheck_answer[3];
+		$detected_type  = $proxycheck_answer[4];
+
+		if ( 'yes' === $detected ) {
+			// Define all possible detection types and their corresponding option names.
+			$detection_types = array(
+				'proxy'       => 'pvb_proxycheckio_detectiontype_proxy',
+				'vpn'         => 'pvb_proxycheckio_detectiontype_vpn',
+				'compromised' => 'pvb_proxycheckio_detectiontype_compromised',
+				'scraper'     => 'pvb_proxycheckio_detectiontype_scraper',
+				'tor'         => 'pvb_proxycheckio_detectiontype_tor',
+				'hosting'     => 'pvb_proxycheckio_detectiontype_hosting',
+			);
+
+			// Handle multiple detected types (comma-separated or array).
+			$detected_types = array();
+			if ( is_array( $detected_type ) ) {
+				$detected_types = $detected_type;
 			} else {
-				// Do this if risk score checking is off.
-				if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-					pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7], 'PHP' );
+				$detected_types = array_map( 'trim', explode( ',', strtolower( $detected_type ) ) );
+			}
+
+			// Check if any detected type should be blocked.
+			$should_block  = false;
+			$blocking_type = null;
+
+			foreach ( $detected_types as $type ) {
+				$type = strtolower( trim( $type ) );
+
+				// Check if this detection type is enabled for blocking.
+				if ( isset( $detection_types[ $type ] ) && 'on' === get_option( $detection_types[ $type ] ) ) {
+					$should_block  = true;
+					$blocking_type = $type;
+					break; // We found a type that should be blocked.
 				}
-				pvb_block_deny();
+			}
+
+			if ( $should_block ) {
+				$proceed_with_blocking = true;
+
+				// Check if Risk Score Checking is enabled.
+				if ( 'on' === get_option( 'pvb_proxycheckio_risk_select_box' ) ) {
+					$risk_threshold_met = false;
+
+					// Determine which risk score threshold to use based on the blocking type.
+					if ( 'vpn' === $blocking_type ) {
+						$max_risk_score = get_option( 'pvb_proxycheckio_max_riskscore_vpn' );
+						if ( $risk_score >= $max_risk_score ) {
+							$risk_threshold_met = true;
+						}
+					} else {
+						// For all other types, use the general proxy risk score.
+						$max_risk_score = get_option( 'pvb_proxycheckio_max_riskscore_proxy' );
+						if ( $risk_score >= $max_risk_score ) {
+							$risk_threshold_met = true;
+						}
+					}
+
+					// Only proceed with blocking if risk threshold is met.
+					$proceed_with_blocking = $risk_threshold_met;
+				}
+
+				// Execute blocking if we should proceed.
+				if ( $proceed_with_blocking ) {
+					if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
+						pvb_log_action( $visitor_ip_address, $detected_type, $country_info, $proxycheck_answer[5], $risk_score, $proxycheck_answer[7], 'PHP' );
+					}
+					pvb_block_deny();
+				}
 			}
 		} elseif ( 1 === $perform_country_check ) {
 			if ( empty( get_option( 'pvb_proxycheckio_whitelist_countries_select_box' ) ) ) {
 				// Block Countries in Country Block List. Allow all others.
-				if ( 'null' !== $proxycheck_answer[1] && 'null' !== $proxycheck_answer[2] ) {
-					if ( in_array( $proxycheck_answer[1], $countries, true ) || in_array( $proxycheck_answer[2], $countries, true ) ) {
+				if ( 'null' !== $country_info && 'null' !== $continent_info ) {
+					if ( in_array( $country_info, $countries, true ) || in_array( $continent_info, $countries, true ) ) {
 						if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7], 'PHP' );
+							pvb_log_action( $visitor_ip_address, $detected_type, $country_info, $proxycheck_answer[5], $risk_score, $proxycheck_answer[7], 'PHP' );
 						}
 						pvb_block_deny();
 					} else {
@@ -244,12 +294,12 @@ function pvb_general_check() {
 			}
 			if ( 'on' === get_option( 'pvb_proxycheckio_whitelist_countries_select_box' ) ) {
 				// Allow Countries through if listed if this is to be treated as a whitelist. Block all other countries.
-				if ( 'null' !== $proxycheck_answer[1] && 'null' !== $proxycheck_answer[2] ) {
-					if ( in_array( $proxycheck_answer[1], $countries, true ) || in_array( $proxycheck_answer[2], $countries, true ) ) {
+				if ( 'null' !== $country_info && 'null' !== $continent_info ) {
+					if ( in_array( $country_info, $countries, true ) || in_array( $continent_info, $countries, true ) ) {
 						set_transient( 'pvb_' . get_option( 'pvb_proxycheckio_current_key' ) . '_' . $visitor_ip_address, time() + 1800 . '-' . 0, 60 * get_option( 'pvb_proxycheckio_good_ip_cache_time' ) );
 					} else {
 						if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
-							pvb_log_action( $visitor_ip_address, $proxycheck_answer[4], $proxycheck_answer[1], $proxycheck_answer[5], $proxycheck_answer[3], $proxycheck_answer[7] );
+							pvb_log_action( $visitor_ip_address, $detected_type, $country_info, $proxycheck_answer[5], $risk_score, $proxycheck_answer[7], 'PHP' );
 						}
 						pvb_block_deny();
 					}
@@ -449,24 +499,46 @@ function pvb_select_paths_integrate() {
 			// Check if current path matches any protected path.
 			$is_protected = false;
 
-			foreach ( $blocked_paths as $protected_path ) {
-				$protected_path = trim( $protected_path, '/' );
-
-				if ( empty( $protected_path ) ) {
-					continue;
+			// Handle both data formats:
+			// 1. Premium format: array('path/' => array('method' => '...', 'redirect_url' => '...'))
+			// 2. Simple format: array('path/', 'path2/')
+			if ( ! empty( $blocked_paths ) && is_array( $blocked_paths ) ) {
+				// Check if it's the premium format (associative array with path keys)
+				$path_keys = array();
+				foreach ( $blocked_paths as $key => $value ) {
+					if ( is_array( $value ) && isset( $value['method'] ) ) {
+						// Premium format: key is the path
+						$path_keys[] = $key;
+					} elseif ( is_string( $value ) ) {
+						// Simple format: value is the path
+						$path_keys[] = $value;
+					}
 				}
 
-				// Check for exact match.
-				if ( $request_path === $protected_path ) {
-					$is_protected = true;
-					break;
+				// If no paths were extracted, try treating keys as paths (fallback)
+				if ( empty( $path_keys ) ) {
+					$path_keys = array_keys( $blocked_paths );
 				}
 
-				// Check if request path starts with protected path (for sub-pages).
-				// e.g., protecting "courses" also protects "courses/advanced-php".
-				if ( strpos( $request_path . '/', $protected_path . '/' ) === 0 ) {
-					$is_protected = true;
-					break;
+				foreach ( $path_keys as $protected_path ) {
+					$protected_path = trim( $protected_path, '/' );
+
+					if ( empty( $protected_path ) ) {
+						continue;
+					}
+
+					// Check for exact match.
+					if ( $request_path === $protected_path ) {
+						$is_protected = true;
+						break;
+					}
+
+					// Check if request path starts with protected path (for sub-pages).
+					// e.g., protecting "courses" also protects "courses/advanced-php".
+					if ( strpos( $request_path . '/', $protected_path . '/' ) === 0 ) {
+						$is_protected = true;
+						break;
+					}
 				}
 			}
 

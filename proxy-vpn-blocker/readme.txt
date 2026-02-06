@@ -1,43 +1,42 @@
 === Proxy & VPN Blocker ===
 Contributors: rickstermuk
-Tags: security, proxy blocker, vpn blocker, proxycheck, ip address
+Tags: security, vpn blocker, proxy blocker, tor blocker, spam protection
 Requires at least: 4.9
-Tested up to: 6.8.2
+Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 3.4.5
+Stable tag: 3.5.7
 License: GPLv2
 
-Stop unwanted traffic—block proxies, VPNs, TOR and spam using the proxycheck.io API. Easy to configure with geoblocking, IP logging & admin controls.
+Block VPNs, proxies, Tor, and spam on WordPress. Strengthen security and stop fake users with smart IP blocking via proxycheck.io.
 
 == Description ==
-= Block Proxies, VPNs, TOR, and More – Protect Your WordPress Site =
-[Proxy & VPN Blocker](https://proxyvpnblocker.com) helps secure your WordPress site by detecting and blocking traffic from anonymous sources using the powerful [proxycheck.io](https://proxycheck.io) API. Prevent unwanted access to login, registration, wp-admin, specific pages or posts — or even your entire site — from:
+= Block VPNs, Proxies, Tor & Spam - Strengthen Your WordPress Security =
 
-* Proxies
-* VPNs (optional)
-* Tor nodes
-* Mysterium nodes
-* Compromised servers
-* Specific IPs, ranges, ASNs, or countries
+**Proxy & VPN Blocker** is a complete **WordPress security plugin** designed to protect your site from anonymous and abusive traffic.  
+It functions as a powerful **VPN blocker**, **proxy blocker**, and **Tor blocker**, preventing unwanted visitors, spam bots, and fake users from accessing your site.  
 
-It also blocks spam comments from anonymous networks commonly used by spammers.
+Using the trusted [proxycheck.io](https://proxycheck.io) API, it detects connections from VPNs, open proxies, Tor nodes, and compromised servers — giving you real-time protection without slowing down your site.  
+
+Perfect for login, registration, comments, or any page you want to secure, Proxy & VPN Blocker also includes smart **spam protection**, geoblocking, and IP logging to help you stay in control of who can access your WordPress site.
+
+Whether you’re running a blog, store, or membership site, this plugin helps keep out fake users, block risky regions, and stop automated spam attempts before they start.
 
 = Key Features =
-✅ Detects and blocks Proxies, VPNs (optional), TOR, Mysterium Nodes, Web Proxies, and Compromised Servers  
-🌐 Geo-blocking support – easily block or allow traffic from specific countries  
-🎯 Supports IP ranges, CIDRs, specific IPs, and ASN blocking  
-🔍 Uses proxycheck.io’s Risk Score for more intelligent blocking decisions  
-📊 Built-in API Key Statistics page with live query usage graphs and daily totals  
-📋 Visitor Action Log – view blocked IPs, detection reason, and plugin response  
-🧠 Caches known good IPs to reduce API queries and improve performance  
-🛡 Works with both IPv4 and IPv6 addresses  
-☁️ Compatible with Cloudflare and other CDN headers  
-🛑 Blocks access to Login, Registration, Admin, Comments, and specified pages/posts  
-📄 Customize the “Access Denied” message or redirect to a specific page  
-👥 Logs registration and most recent login IPs in the Users list and profile  
-📊 View API usage statistics directly in your WordPress Dashboard  
-📝 Manage your proxycheck.io Whitelist and Blacklist without leaving WordPress  
-🔧 Simple integration via the WordPress Editor and WordPress Toolbar for page-level protection  
+* Powerful WordPress security plugin - blocks VPNs, proxies, Tor, Mysterium nodes, and compromised servers in real time  
+* Country blocking & geoblocking - allow or deny traffic by country or region with flexible IP-based controls  
+* Supports IP ranges, CIDRs, specific IPs, and ASNs for precise network-level blocking  
+* Optionally use proxycheck.io’s Risk Score for smarter VPN and proxy detection decisions  
+* Built-in API Key Statistics with live usage graphs and daily query totals  
+* Visitor Action Log - view blocked IPs, detection reason, and plugin response directly in your dashboard  
+* Caches known good IPs to reduce API usage and improve performance  
+* Works seamlessly with both IPv4 and IPv6 addresses  
+* Compatible with Cloudflare and other CDN headers for accurate IP detection  
+* Block access to Login, Registration, Admin, Comments, or any page/post easily  
+* Customize the “Access Denied” message or redirect visitors to a specific page  
+* Log registration and recent login IPs in the Users list and profile - linked to proxycheck.io’s Threats page  
+* Manage proxycheck.io Whitelist and Blacklist directly from WordPress  
+* Simple integration via WordPress Editor and Toolbar for page-level protection  
+* Lightweight, fast, and built to complement other security plugins  
 
 And much more available in [Proxy & VPN Blocker Premium](https://proxyvpnblocker.com/premium)!
 
@@ -47,10 +46,10 @@ This Plugin can be used without a proxycheck.io API key, but it will be limited 
 Here's an overview of the free and paid API options:
 
 * Without an API key (100 queries/day)
-* With a free API key (1,000 queries/day – ideal for small sites)
+* With a free API key (1,000 queries/day - ideal for small sites)
 * With a paid API key (10,000 to over 10 million queries/day)
 
-Your API key can be reused across multiple sites and apps.
+Your API key can be used across all of your sites and apps, you only need a proxycheck.io plan that fits your overall needs.
 
 = User IP Logging Feature =
 Proxy & VPN Blocker allows for local logging of user registration IP addresses. The IP addresses are displayed next to each user in the Users list and on their profile pages, visible to administrators. The Plugin also logs the most recent login IP address for each user, which is also displayed in the User's list and profile page, with the IP address linked to the proxycheck.io Threats page.
@@ -76,20 +75,41 @@ Installing "Proxy & VPN Blocker" can be done either by searching for "Proxy & VP
 3. Activate the Plugin through the 'Plugins' menu in WordPress
 
 == Frequently Asked Questions ==
-=What is proxycheck.io?=
 
-Proxycheck.io is a simple, accurate and reliable API for the detection and blocking of people using Proxies, Tor & VPN servers.
+= What is proxycheck.io and how does it work? =
+[proxycheck.io](https://proxycheck.io) is a reliable API that detects visitors using VPNs, proxies, Tor, or other anonymizing networks.  
+**Proxy & VPN Blocker** connects to this API to check each visitor’s IP in real time, helping you block VPN users, proxies, or spam bots before they can access your WordPress site.
 
-=Blocking Proxies and VPN's on all pages?=
+= How do I block all VPNs and proxies across my WordPress site? =
+In the settings, enable “Block on all pages.” This option tells Proxy & VPN Blocker to check every page view for proxy or VPN traffic.  
+⚠️ **Note:** Using this feature may increase API usage significantly and may not work well with caching plugins (see below).
 
-Although this Plugin has an option to block Proxies & VPN's on all pages, this option is not generally recommended due to significantly higher query usage, but was added on user request.
+= Why isn’t Proxy & VPN Blocker blocking VPNs when caching plugins are active? =
+If you use caching plugins like WP Rocket, WP Super Cache, or W3 Total Cache, they may serve static pages that bypass the plugin’s IP detection.  
+To fix this, enable the **Add DONOTCACHEPAGE Headers** option under PVB Settings > Page Caching. This ensures proxy and VPN checks always run correctly.
 
-It is important to note that if you are using a WordPress caching Plugin (eg WP Super Cache, WP Rocket, W3 Total Cache and many others), these may prevent the Proxy or VPN from being blocked if you are using 'Block on all pages' as the caching Plugin will likely serve the visitor a static cached version of your website pages. As the cached pages are served by the caching Plugin in static HTML, the code for proxy detection will not run on these cached pages. This won't affect the normal protections this Plugin provides for Log-in, Registration and commenting.
+= How can I unblock myself if I accidentally blocked my country or region? =
+No worries! Upload a text file named **disablepvb.txt** to your WordPress root directory.  
+When this file exists, Proxy & VPN Blocker will skip proxycheck.io requests, allowing you to log in and adjust your blocking rules.  
+After fixing your settings, delete the file to re-enable protection.
 
-=I accidently locked myself out by blocking my own country/continent, what do I do?=
-The fix is simple, upload a .txt file called disablepvb.txt to your wordpress root directory, PVB looks for this file when the proxy and VPN checks are made, if the file exists it will prevent the Plugin from contacting the proxycheck.io API. You will now be able to log in and remove your country/continent in the PVB Settings.
+= Can I use the plugin without a proxycheck.io API key? =
+Yes. The plugin can function without an API key, but you’ll be limited to **100 daily queries**.  
+For more reliable protection, register for a **free proxycheck.io API key**, which gives you 1,000 daily queries. Paid plans provide 10,000+ per day for larger sites.
 
-Remember: If you ever have to do this, delete the disablepvb.txt file after you are done! If you don't remove it, the Plugin wont be protecting your site.
+= Does Proxy & VPN Blocker log user IPs? =
+Yes. The plugin optionally logs registration and recent login IP addresses, displayed in the WordPress Users list and profile pages.  
+Each IP is linked to proxycheck.io’s Threats page for detailed insights.  
+This feature helps you identify suspicious or abusive users at a glance.
+
+= Is Proxy & VPN Blocker GDPR compliant? =
+Yes. Only visitor IPs are transmitted to proxycheck.io for lookup, no personally identifiable data.  
+See [proxycheck.io Privacy Policy](https://proxycheck.io/privacy) and [GDPR Compliance](https://proxycheck.io/gdpr) for details.
+
+= Is this plugin made by proxycheck.io? =
+No, this plugin is developed independently but is officially recommended by proxycheck.io.  
+For plugin support, use the [WordPress.org support forum](https://wordpress.org/support/plugin/proxy-vpn-blocker).  
+For API or account support, contact proxycheck.io directly.
 
 == Screenshots ==
 1. Settings UI.
@@ -100,6 +120,35 @@ Remember: If you ever have to do this, delete the disablepvb.txt file after you 
 6. Action Log - A list of recently detected IP Addresses.
 
 == Changelog ==
+= 3.5.7 2026-01-23 =
+* Further Fixes for user table IP display
+
+= 3.5.6 2026-01-19 =
+* Fixes for user table IP display
+
+= 3.5.5 2026-01-18 =
+* Users list now searchable/filterable by IP Address so you can find users who may be using the same IP.
+* Switched to newer 10th of November proxycheck.io API v3 Version.
+* Removed redundant Days selector from the Advanced tab of Settings.
+* Minor improvement made to cache buster option.
+* Removed debug code.
+
+= 3.5.4 2025-12-21 =
+* Security Improvement for post/page bulk actions.
+
+= 3.5.3 2025-12-05 =
+* Fix for visitor action log database.
+
+= 3.5.2 2025-11-09 =
+* corrected a version number.
+
+= 3.5.1 2025-11-09 =
+* Improvements made regarding proxycheck.io v3 API.
+* Added new "Detection Types" tab to PVB Settings, here you may change the types that are detected if required.
+
+= 3.5.0 2025-11-08 =
+* Upgraded to proxycheck.io v3 API.
+
 = 3.4.5 2025-09-24 =
 * Correction for potential PHP warning message with DONOTCACHEPAGE.
 

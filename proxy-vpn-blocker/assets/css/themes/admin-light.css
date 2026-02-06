@@ -640,7 +640,13 @@ img.country-flag {
     border: 1px solid #ffab1f;
  }
 
- .extra-data-row span.ipinflux_type_others {
+ .extra-data-row span.ipinflux_type_hosting, .extra-data-row span.ipinflux_type_scraper {
+    background: #e9f9ff;
+    color: #005272;
+    border: 1px solid #002064;
+ }
+
+ .extra-data-row span.ipinflux_type_proxy,  .extra-data-row span.ipinflux_type_compromised, .extra-data-row span.ipinflux_type_tor {
     background: #ffe2e2;
     color: #fc2323 ;
     border: 1px solid#fc2323;
@@ -650,6 +656,18 @@ img.country-flag {
     background: #f8e6ff;
     color: #aa04e7;
     border: 1px solid #aa04e7;
+ }
+
+ .extra-data-row span.ipinflux_block_method {
+    background: #f0f0f0;
+    color: #616161;
+    border: 1px solid #616161;
+ }
+
+ .extra-data-row span.ipinflux_captcha_passed {
+    background: #e5f8e4;
+    color: #059100;
+    border: 1px solid #059100;
  }
 
  .extra-data-row span.ipinflux_api_type_used {

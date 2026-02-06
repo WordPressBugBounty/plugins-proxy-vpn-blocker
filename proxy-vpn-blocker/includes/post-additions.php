@@ -116,6 +116,16 @@ add_filter( 'bulk_actions-edit-page', 'pvb_set_pages_bulk_action' );
  * Handle the custom bulk action to set posts or pages as blocked.
  */
 function handle_pvb_set_postspages_bulk_action() {
+	// Check user permissions.
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( __( 'You do not have sufficient permissions to access this page.', 'proxy-vpn-blocker' ) );
+	}
+
+	// Verify nonce for security.
+	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'bulk-posts' ) ) {
+		wp_die( __( 'Security check failed.', 'proxy-vpn-blocker' ) );
+	}
+
 	// Check if the action is set.
 	$action = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : '';
 
@@ -170,6 +180,16 @@ add_filter( 'bulk_actions-edit-page', 'pvb_unset_pages_bulk_action' );
  * Handle the custom bulk action to unset posts or pages as blocked.
  */
 function handle_pvb_unset_postspages_bulk_action() {
+	// Check user permissions.
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( __( 'You do not have sufficient permissions to access this page.', 'proxy-vpn-blocker' ) );
+	}
+
+	// Verify nonce for security.
+	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'bulk-posts' ) ) {
+		wp_die( __( 'Security check failed.', 'proxy-vpn-blocker' ) );
+	}
+
 	// Check if the action is set.
 	$action = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : '';
 

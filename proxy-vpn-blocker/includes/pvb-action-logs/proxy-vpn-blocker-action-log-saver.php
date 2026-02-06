@@ -23,11 +23,13 @@ function pvb_log_action( $ip = null, $type = null, $country = null, $country_iso
 	$time                 = current_datetime()->setTimezone( new DateTimeZone( 'UTC' ) )->format( 'Y-m-d H:i:sP' );
 	$blocked_url          = $url;
 	$api_type             = $apitype;
+	$block_method         = null;
+	$captcha_passed       = null;
 
 	// Safe insertion using prepared statements.
 	$wpdb->query(
 		$wpdb->prepare(
-			"INSERT INTO {$wpdb->prefix}pvb_visitor_action_log (ip_address, detected_type, country, country_iso, risk_score, blocked_at, blocked_url, api_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+			"INSERT INTO {$wpdb->prefix}pvb_visitor_action_log (ip_address, detected_type, country, country_iso, risk_score, blocked_at, blocked_url, block_method, captcha_passed, api_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
 			$ip_address,
 			$detected_type,
 			$detected_country,
@@ -35,6 +37,8 @@ function pvb_log_action( $ip = null, $type = null, $country = null, $country_iso
 			$risk_score,
 			$time,
 			$blocked_url,
+			$block_method,
+			$captcha_passed,
 			$api_type
 		)
 	);
