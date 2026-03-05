@@ -168,13 +168,31 @@ jQuery(document).ready(function($) {
     });
 
 
-    if (typeof Cookies.get('pvb-hide-rvw-div') !== 'undefinied') {
-        $(".pvbrvwwrap").show();
-    }
-
+    // Handle review banner dismissal via AJAX to save permanently to database.
     $(".pvbdonatedismiss").on('click', function(){
-        $(".pvbrvwwrap").remove();
-        Cookies.set('pvb-hide-rvw-div', true, { expires: 365 });
+        var $banner = $(this).closest('.pvbrvwwrap');
+        
+        // Make AJAX call to save dismissal to database.
+        $.ajax({
+            url: pvb_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'pvb_dismiss_review_banner',
+                nonce: pvb_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $banner.remove();
+                } else {
+                    // Fallback: hide locally if AJAX fails.
+                    $banner.remove();
+                }
+            },
+            error: function() {
+                // Fallback: hide locally on error.
+                $banner.remove();
+            }
+        });
     });
 
          // Real-time validation for API key fields

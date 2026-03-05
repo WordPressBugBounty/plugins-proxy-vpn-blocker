@@ -95,22 +95,6 @@ button.pvbinfodismiss:focus, input.pvbinfodismiss:focus {
     color: #fff;
 }
 
-/* Review Area */
-.pvbrvwwrap {
-    background: #ffffff url(../img/donationbg.png);
-    border: 1px solid #c5cdd4;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.1);
-}
-@media screen and (min-width:1200px) {
-    .pvbrvwwrapleft {
-        background: #bebebe url(../img/pvb-rvw.png);
-        border-right: 1px solid #c5cdd4;
-    }
-}
-.pvbrvwwraptext p {
-    color: #212931;
-}
-
 /* top menu links section */
 nav {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.1);

@@ -2,9 +2,9 @@
 Contributors: rickstermuk
 Tags: security, vpn blocker, proxy blocker, tor blocker, spam protection
 Requires at least: 4.9
-Tested up to: 6.9
+Tested up to: 6.9.1
 Requires PHP: 7.2
-Stable tag: 3.5.7
+Stable tag: 3.5.8
 License: GPLv2
 
 Block VPNs, proxies, Tor, and spam on WordPress. Strengthen security and stop fake users with smart IP blocking via proxycheck.io.
@@ -120,6 +120,10 @@ For API or account support, contact proxycheck.io directly.
 6. Action Log - A list of recently detected IP Addresses.
 
 == Changelog ==
+= 3.5.8 2026-03-05 =
+* Minor correction for compatibility with the updated Plugin Loader for new installations. current installations will not be affected by this.
+* Changed to proxycheck.io V3 API 11th February 2026 Version
+
 = 3.5.7 2026-01-23 =
 * Further Fixes for user table IP display
 

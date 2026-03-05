@@ -114,7 +114,7 @@ class Proxy_VPN_Blocker {
 	 * @since   1.0
 	 * @return  void
 	 */
-	public function __construct( $file = '', $version = '3.5.7' ) {
+	public function __construct( $file = '', $version = '3.5.8' ) {
 		$this->_version = $version;
 		$this->_token   = 'proxy_vpn_blocker';
 
@@ -260,6 +260,15 @@ class Proxy_VPN_Blocker {
 		if ( stripos( $screen->base, 'proxy_vpn_blocker_' ) ) {
 			wp_register_script( $this->_token . '-settings-pvb-js', esc_url( $this->assets_url ) . 'js/settings' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 			wp_enqueue_script( $this->_token . '-settings-pvb-js' );
+			// Localize script for review banner AJAX dismissal.
+			wp_localize_script(
+				$this->_token . '-settings-pvb-js',
+				'pvb_ajax',
+				array(
+					'nonce'   => wp_create_nonce( 'pvb_dismiss_review_nonce' ),
+					'ajax_url' => admin_url( 'admin-ajax.php' ),
+				)
+			);
 			wp_register_script( $this->_token . '-settings-pvb-select2-js', esc_url( $this->assets_url ) . 'js/select2/select2pvb' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
 			wp_enqueue_script( $this->_token . '-settings-pvb-select2-js' );
 			wp_register_script( $this->_token . '-settings-pvb-cookie-js', esc_url( $this->assets_url ) . 'js/cookie' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version, true );
@@ -371,7 +380,7 @@ class Proxy_VPN_Blocker {
 	 * @see proxy_vpn_blocker()
 	 * @return Main proxy_vpn_blocker instance
 	 */
-	public static function instance( $file = '', $version = '3.5.7' ) {
+	public static function instance( $file = '', $version = '3.5.8' ) {
 
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );

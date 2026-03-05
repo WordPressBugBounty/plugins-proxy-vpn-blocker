@@ -1340,7 +1340,8 @@ class Proxy_VPN_Blocker_Settings {
 		echo '<div class="wrap" id="' . $this->parent->_token . '_settings" dir="ltr">' . "\n";
 		echo '<h2 class="pvb-wp-notice-fix"></h2>' . "\n";
 
-		include_once 'review-mode.php';
+		// Note: review-mode.php is now loaded globally via admin_notices hook.
+		// The banner will show on all admin pages when thresholds are met.
 
 		if ( empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
 			echo '<div class="pvbinfowrap">' . "\n";
