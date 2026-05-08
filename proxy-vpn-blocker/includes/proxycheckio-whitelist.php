@@ -5,6 +5,10 @@
  * @package Proxy & VPN Blocker
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 $allowed_html = array(
 	'div'     => array(
 		'class' => array(),
@@ -101,8 +105,8 @@ if ( ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
 		$html .= '	<div class="pvbareawrap">' . "\n";
 		$html .= '		<h1>' . __( 'proxycheck.io Whitelist Editor', 'proxy-vpn-blocker' ) . '</h1>' . "\n";
 		$html .= '		<h2>' . __( 'View and Edit Your proxycheck.io Whitelist', 'proxy-vpn-blocker' ) . '</h2>' . "\n";
-		$html .= '		<p>' . __( 'The whitelist feature allows you to specify a list of IP Addresses, IP Ranges or ASN numbers which will not be detected as Proxy Servers or VPN\'s when checked using your API Key. You can write anything in the box below including \'#comments\' next to your ip/range/ASN, only valid Addresses, Ranges and ASN\'s will be lifted from the box so you need not worry about how you format your entries. ' ) . '</p>' . "\n";
-		$html .= '		<p>' . __( 'Please note your Whitelist is always checked before any other checks are performed including before your Blacklist. ' ) . '</p>' . "\n";
+		$html .= '		<p>' . __( 'The whitelist feature allows you to specify a list of IP Addresses, IP Ranges or ASN numbers which will not be detected as Proxy Servers or VPN\'s when checked using your API Key. You can write anything in the box below including \'#comments\' next to your ip/range/ASN, only valid Addresses, Ranges and ASN\'s will be lifted from the box so you need not worry about how you format your entries. ', 'proxy-vpn-blocker' ) . '</p>' . "\n";
+		$html .= '		<p>' . __( 'Please note your Whitelist is always checked before any other checks are performed including before your Blacklist. ', 'proxy-vpn-blocker' ) . '</p>' . "\n";
 		// Adding to whitelist.
 		$html .= '		<div id="add-list-wrapper">' . "\n";
 		$html .= '			<form id="add-list-form" action="' . admin_url( 'admin-post.php' ) . '" method="POST" >' . "\n";

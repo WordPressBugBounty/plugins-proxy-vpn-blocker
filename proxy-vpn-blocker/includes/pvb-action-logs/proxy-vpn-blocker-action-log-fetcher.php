@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
- // Hook to register the AJAX handler.
+// Hook to register the AJAX handler.
 add_action( 'wp_ajax_fetch_pvb_logs', 'fetch_pvb_logs' );
 
 /**
@@ -40,18 +40,37 @@ function fetch_pvb_logs() {
 	);
 
 	// Get WordPress timezone.
-	$wp_timezone = wp_timezone(); // Returns a DateTimeZone object
+	$wp_timezone = wp_timezone(); // Returns a DateTimeZone object.
 
-	// Convert each log's `blocked_at` to WordPress timezone.
+	// Escape all string fields before they leave PHP so the JavaScript layer
+	// never receives raw attacker-controlled HTML/attribute content.
+	//
+	// esc_html() converts < > & " ' to their HTML entities, which prevents
+	// a stored payload such as:  xx" onerror="alert(1)"
+	// from being interpreted as HTML when the JS injects the value into the DOM.
+	//
+	// esc_url() is used for the URL column so javascript: and data: schemes are
+	// stripped even if they somehow bypassed the write-time sanitisation.
 	foreach ( $logs as $log ) {
-		// Create a DateTime object from the UTC `blocked_at` timestamp.
+
+		// Timezone conversion (unchanged logic).
 		$blocked_at_utc = new DateTime( $log->blocked_at, new DateTimeZone( 'UTC' ) );
-
-		// Convert the timestamp to the WordPress timezone.
 		$blocked_at_utc->setTimezone( $wp_timezone );
-
-		// Store the converted time in a new property or overwrite the original.
 		$log->blocked_at_wp = $blocked_at_utc->format( 'Y-m-d H:i:s' );
+
+		// Escape free-text / enum fields.
+		$log->ip_address    = esc_html( $log->ip_address );
+		$log->detected_type = esc_html( $log->detected_type );
+		$log->country       = esc_html( $log->country );
+		$log->country_iso   = esc_html( $log->country_iso );
+		$log->api_type      = esc_html( $log->api_type );
+		$log->block_method  = esc_html( $log->block_method );
+
+		// Numeric field – cast to int so the JS always receives a number.
+		$log->risk_score = intval( $log->risk_score );
+
+		// URL field – strip dangerous schemes.
+		$log->blocked_url = esc_url( $log->blocked_url );
 	}
 
 	// If logs are fetched successfully, return them.

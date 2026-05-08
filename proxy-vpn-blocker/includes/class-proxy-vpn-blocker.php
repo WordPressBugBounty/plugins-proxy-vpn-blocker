@@ -114,7 +114,7 @@ class Proxy_VPN_Blocker {
 	 * @since   1.0
 	 * @return  void
 	 */
-	public function __construct( $file = '', $version = '3.5.8' ) {
+	public function __construct( $file = '', $version = '3.5.9' ) {
 		$this->_version = $version;
 		$this->_token   = 'proxy_vpn_blocker';
 
@@ -228,11 +228,11 @@ class Proxy_VPN_Blocker {
 	public function pvb_scripts_header_function( $hook = '' ) {
 		$screen = get_current_screen();
 		if ( stripos( $screen->base, 'proxy_vpn_blocker_statistics' ) && ! empty( get_option( 'pvb_proxycheckio_API_Key_field' ) ) ) {
-			wp_register_script( $this->_token . '-settings-pvb-am5index-js', esc_url( $this->assets_url ) . 'js/amcharts5/index.js', $this->_version, false );
+			wp_register_script( $this->_token . '-settings-pvb-am5index-js', esc_url( $this->assets_url ) . 'js/amcharts5/index.js', array(), $this->_version, false );
 			wp_enqueue_script( $this->_token . '-settings-pvb-am5index-js' );
-			wp_register_script( $this->_token . '-settings-pvb-am5xy-js', esc_url( $this->assets_url ) . 'js/amcharts5/xy.js', $this->_version, false );
+			wp_register_script( $this->_token . '-settings-pvb-am5xy-js', esc_url( $this->assets_url ) . 'js/amcharts5/xy.js', array(), $this->_version, false );
 			wp_enqueue_script( $this->_token . '-settings-pvb-am5xy-js' );
-			wp_register_script( $this->_token . '-settings-pvb-am5animated-js', esc_url( $this->assets_url ) . 'js/amcharts5/themes/Animated.js', $this->_version, false );
+			wp_register_script( $this->_token . '-settings-pvb-am5animated-js', esc_url( $this->assets_url ) . 'js/amcharts5/themes/Animated.js', array(), $this->_version, false );
 			wp_enqueue_script( $this->_token . '-settings-pvb-am5animated-js' );
 		}
 		wp_register_script( $this->_token . '-wpsettings-pvb-tooltips', esc_url( $this->assets_url ) . 'js/ui-extensions.min.js', array( 'jquery' ), $this->_version, false );
@@ -380,7 +380,7 @@ class Proxy_VPN_Blocker {
 	 * @see proxy_vpn_blocker()
 	 * @return Main proxy_vpn_blocker instance
 	 */
-	public static function instance( $file = '', $version = '3.5.8' ) {
+	public static function instance( $file = '', $version = '3.5.9' ) {
 
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );
@@ -394,7 +394,7 @@ class Proxy_VPN_Blocker {
 	 * @since 1.0
 	 */
 	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, esc_html( __( 'Cloning is forbidden.' ) ), esc_attr( $this->parent->_version ) );
+		_doing_it_wrong( __FUNCTION__, esc_html( __( 'Cloning is forbidden.', 'proxy-vpn-blocker' ) ), esc_attr( $this->parent->_version ) );
 	} // End __clone ()
 
 	/**
@@ -403,7 +403,7 @@ class Proxy_VPN_Blocker {
 	 * @since 1.0
 	 */
 	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, esc_html( __( 'Unserializing instances of this class is forbidden.' ) ), esc_attr( $this->parent->_version ) );
+		_doing_it_wrong( __FUNCTION__, esc_html( __( 'Unserializing instances of this class is forbidden.', 'proxy-vpn-blocker' ) ), esc_attr( $this->parent->_version ) );
 	} // End __wakeup ()
 
 	/**

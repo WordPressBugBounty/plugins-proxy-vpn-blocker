@@ -5,6 +5,10 @@
  * @package  Proxy & VPN Blocker Premium
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * CUSTOM COLUMNS
  */
@@ -33,10 +37,10 @@ function display_restricted_column_content( $column_key, $post_id ) {
 		$restricted = get_post_meta( $post_id, '_pvb_checkbox_block_on_post', true );
 		if ( '' === get_option( 'pvb_proxycheckio_all_pages_activation' ) ) {
 			if ( '1' === $restricted ) {
-				echo '<img src="' . plugins_url( 'assets/img/green-dot.svg', __DIR__ ) . '" alt="Proxy & VPN Blocker (Not Blocking)" style="width: 10px; height: 10px; margin: 0 4px -1px 0;">';
+				echo '<img src="' . esc_url( plugins_url( 'assets/img/green-dot.svg', __DIR__ ) ) . '" alt="Proxy &amp; VPN Blocker (Not Blocking)" style="width: 10px; height: 10px; margin: 0 4px -1px 0;">';
 				echo 'Proxies/VPNs Blocked';
 			} else {
-				echo '<img src="' . plugins_url( 'assets/img/red-dot.svg', __DIR__ ) . '" alt="Proxy & VPN Blocker (Not Blocking)" style="width: 10px; height: 10px; margin: 0 4px -1px 0;">';
+				echo '<img src="' . esc_url( plugins_url( 'assets/img/red-dot.svg', __DIR__ ) ) . '" alt="Proxy &amp; VPN Blocker (Not Blocking)" style="width: 10px; height: 10px; margin: 0 4px -1px 0;">';
 				echo 'Proxies/VPNs Not Blocked';
 			}
 		} else {
@@ -63,10 +67,10 @@ function display_restricted_column_content_pages( $column_key, $post_id ) {
 		$restricted = get_post_meta( $post_id, '_pvb_checkbox_block_on_post', true );
 		if ( '' === get_option( 'pvb_proxycheckio_all_pages_activation' ) ) {
 			if ( '1' === $restricted ) {
-				echo '<img src="' . plugins_url( 'assets/img/green-dot.svg', __DIR__ ) . '" alt="Proxy & VPN Blocker (Not Blocking)" style="width: 10px; height: 10px; margin: 0 4px -1px 0;">';
+				echo '<img src="' . esc_url( plugins_url( 'assets/img/green-dot.svg', __DIR__ ) ) . '" alt="Proxy &amp; VPN Blocker (Not Blocking)" style="width: 10px; height: 10px; margin: 0 4px -1px 0;">';
 				echo 'Proxies/VPNs Blocked';
 			} else {
-				echo '<img src="' . plugins_url( 'assets/img/red-dot.svg', __DIR__ ) . '" alt="Proxy & VPN Blocker (Not Blocking)" style="width: 10px; height: 10px; margin: 0 4px -1px 0;">';
+				echo '<img src="' . esc_url( plugins_url( 'assets/img/red-dot.svg', __DIR__ ) ) . '" alt="Proxy &amp; VPN Blocker (Not Blocking)" style="width: 10px; height: 10px; margin: 0 4px -1px 0;">';
 				echo 'Proxies/VPNs Not Blocked';
 			}
 		} else {
@@ -118,12 +122,12 @@ add_filter( 'bulk_actions-edit-page', 'pvb_set_pages_bulk_action' );
 function handle_pvb_set_postspages_bulk_action() {
 	// Check user permissions.
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( __( 'You do not have sufficient permissions to access this page.', 'proxy-vpn-blocker' ) );
+		wp_die( esc_html_e( 'You do not have sufficient permissions to access this page.', 'proxy-vpn-blocker' ) );
 	}
 
 	// Verify nonce for security.
 	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'bulk-posts' ) ) {
-		wp_die( __( 'Security check failed.', 'proxy-vpn-blocker' ) );
+		wp_die( esc_html_e( 'Security check failed.', 'proxy-vpn-blocker' ) );
 	}
 
 	// Check if the action is set.
@@ -182,12 +186,12 @@ add_filter( 'bulk_actions-edit-page', 'pvb_unset_pages_bulk_action' );
 function handle_pvb_unset_postspages_bulk_action() {
 	// Check user permissions.
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( __( 'You do not have sufficient permissions to access this page.', 'proxy-vpn-blocker' ) );
+		wp_die( esc_html_e( 'You do not have sufficient permissions to access this page.', 'proxy-vpn-blocker' ) );
 	}
 
 	// Verify nonce for security.
 	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'bulk-posts' ) ) {
-		wp_die( __( 'Security check failed.', 'proxy-vpn-blocker' ) );
+		wp_die( esc_html_e( 'Security check failed.', 'proxy-vpn-blocker' ) );
 	}
 
 	// Check if the action is set.
@@ -234,9 +238,10 @@ function pvb_bulk_action_add_postpage_admin_notice() {
 		$blocked_count = intval( $_REQUEST['bulk_blocked_postspages'] );
 		printf(
 			'<div id="message" class="updated notice is-dismissible"><p>' .
-			_n( '%s post or page has been restricted for blocking in Proxy & VPN Blocker.', '%s posts or pages have been restricted for blocking in Proxy & VPN Blocker.', $blocked_count, 'proxy-vpn-blocker' ) .
+			// translators: %s is the number of posts/pages that have been blocked.
+			esc_html( _n( '%s post or page has been restricted for blocking in Proxy & VPN Blocker.', '%s posts or pages have been restricted for blocking in Proxy & VPN Blocker.', $blocked_count, 'proxy-vpn-blocker' ) ) .
 			'</p></div>',
-			$blocked_count
+			absint( $blocked_count )
 		);
 	}
 }
@@ -250,9 +255,10 @@ function pvb_bulk_action_remove_postpage_admin_notice() {
 		$unblocked_count = intval( $_REQUEST['bulk_unblocked_postspages'] );
 		printf(
 			'<div id="message" class="updated notice is-dismissible"><p>' .
-			_n( '%s post or page has been unrestricted for blocking in Proxy & VPN Blocker.', '%s posts or pages have been unrestricted for blocking in Proxy & VPN Blocker.', $unblocked_count, 'proxy-vpn-blocker' ) .
+			// translators: %s is the number of posts/pages that have been unblocked.
+			esc_html( _n( '%s post or page has been unrestricted for blocking in Proxy & VPN Blocker.', '%s posts or pages have been unrestricted for blocking in Proxy & VPN Blocker.', $unblocked_count, 'proxy-vpn-blocker' ) ) .
 			'</p></div>',
-			$unblocked_count
+			absint( $unblocked_count )
 		);
 	}
 }

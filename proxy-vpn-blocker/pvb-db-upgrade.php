@@ -5,6 +5,10 @@
  * @package Proxy & VPN Blocker
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Proxy & VPN Blocker Premium Current DB Version.
  *
@@ -244,10 +248,11 @@ function upgrade_pvb_db() {
 			$charset_collate = $wpdb->get_charset_collate();
 
 			// Add the new api_type column to the existing table.
-			$sql = "ALTER TABLE {$wpdb->prefix}pvb_visitor_action_log ADD COLUMN api_type varchar(100) NOT NULL;";
+			$sql = 'ALTER TABLE ' . esc_sql( $wpdb->prefix ) . 'pvb_visitor_action_log ADD COLUMN api_type varchar(100) NOT NULL;';
 
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Table name cannot use prepare(), sanitised with esc_sql().
 			$wpdb->query( $sql );
 
 			update_option( 'pvb_db_version', '5.2.3' );

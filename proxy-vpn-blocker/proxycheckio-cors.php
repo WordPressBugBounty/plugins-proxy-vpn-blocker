@@ -5,6 +5,10 @@
  * @package Proxy & VPN Blocker
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Adds proxycheck.io CORS to site header with extended functionality.
  */
@@ -28,6 +32,9 @@ function pvb_cors_javascript() {
 				],
 				ajaxurl: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
 				proxycheck_key: '<?php echo esc_html( get_option( 'pvb_proxycheckio_CORS_public_key' ) ); ?>',
+				// Nonce is embedded server-side at page-render time — no public
+				// nonce-vending endpoint is needed or registered.
+				nonce: '<?php echo esc_js( wp_create_nonce( 'pvb_cors_nonce' ) ); ?>',
 				settings: Object.freeze({
 					risk_enabled: <?php echo 'on' === get_option( 'pvb_proxycheckio_risk_select_box' ) ? 'true' : 'false'; ?>,
 					max_risk_proxy: <?php echo (int) get_option( 'pvb_proxycheckio_max_riskscore_proxy', 66 ); ?>,
@@ -74,47 +81,31 @@ function pvb_cors_javascript() {
 				}
 			}
 
-			// Function to log detection to WordPress
+			// Function to log detection to WordPress.
+			// Uses the nonce embedded at page-render time — no separate nonce
+			// fetch is required, and no public nonce endpoint is exposed.
 			function logDetectionToWordPress(data) {
 				if (!data || !data.ip) return;
 
-				// First fetch a fresh nonce
+				const proxyData = data[data.ip];
+				const logData = {
+					action: 'pvb_log_cors_detection',
+					security: pvbConfig.nonce,
+					ip: data.ip,
+					type: proxyData?.type || 'unknown',
+					country: proxyData?.country || 'unknown',
+					country_iso: proxyData?.isocode || 'unknown',
+					risk: proxyData?.risk || '0',
+					page_url: window.location.href
+				};
+
 				fetch(pvbConfig.ajaxurl, {
 					method: 'POST',
 					credentials: 'same-origin',
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded',
 					},
-					body: new URLSearchParams({
-						action: 'pvb_get_fresh_nonce'
-					})
-				})
-				.then(response => response.json())
-				.then(nonceData => {
-					if (!nonceData.success || !nonceData.data) {
-						throw new Error('Failed to get nonce');
-					}
-
-					const proxyData = data[data.ip];
-					const logData = {
-						action: 'pvb_log_cors_detection',
-						security: nonceData.data,  // Use fresh nonce
-						ip: data.ip,
-						type: proxyData?.type || 'unknown',
-						country: proxyData?.country || 'unknown',
-						country_iso: proxyData?.isocode || 'unknown',
-						risk: proxyData?.risk || '0',
-						page_url: window.location.href
-					};
-
-					return fetch(pvbConfig.ajaxurl, {
-						method: 'POST',
-						credentials: 'same-origin',
-						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded',
-						},
-						body: new URLSearchParams(logData)
-					});
+					body: new URLSearchParams(logData)
 				})
 				.catch(error => console.error('PVB CORS Logging Error:', error));
 			}
@@ -197,9 +188,10 @@ if ( 'on' === get_option( 'pvb_cors_integration' ) && ! empty( get_option( 'pvb_
 }
 
 /**
- * AJAX handler for logging CORS detections
+ * AJAX handler for logging CORS detections.
  */
 function pvb_handle_cors_detection() {
+	// Verify the nonce that was embedded at page-render time.
 	check_ajax_referer( 'pvb_cors_nonce', 'security' );
 
 	// Ensure the logging function exists.
@@ -208,27 +200,38 @@ function pvb_handle_cors_detection() {
 		return;
 	}
 
-	// Validate and sanitize input.
-	$ip          = isset( $_POST['ip'] ) ? sanitize_text_field( wp_unslash( $_POST['ip'] ) ) : '';
-	$type        = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
-	$country     = isset( $_POST['country'] ) ? sanitize_text_field( wp_unslash( $_POST['country'] ) ) : '';
-	$country_iso = isset( $_POST['country_iso'] ) ? sanitize_text_field( wp_unslash( $_POST['country_iso'] ) ) : '';
-	$risk        = isset( $_POST['risk'] ) ? intval( $_POST['risk'] ) : 0;
-	$page_url    = isset( $_POST['page_url'] ) ? esc_url_raw( wp_unslash( $_POST['page_url'] ) ) : '';
-
-	// Validate IP address.
-	if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+	// --- IP address ---
+	$raw_ip = isset( $_POST['ip'] ) ? sanitize_text_field( wp_unslash( $_POST['ip'] ) ) : '';
+	if ( ! filter_var( $raw_ip, FILTER_VALIDATE_IP ) ) {
 		wp_send_json_error( array( 'message' => 'Invalid IP address' ) );
 		return;
 	}
+	$ip = $raw_ip;
 
-	// Validate risk score.
+	// --- Detection type ---
+	$allowed_types = array( 'VPN', 'Proxy', 'Tor', 'Relay', 'MESH', 'unknown' );
+	$raw_type      = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : 'unknown';
+	$type          = in_array( $raw_type, $allowed_types, true ) ? $raw_type : 'unknown';
+
+	// --- Country ISO code ---
+	// Must be exactly two ASCII uppercase letters (ISO 3166-1 alpha-2).
+	$raw_iso     = isset( $_POST['country_iso'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_POST['country_iso'] ) ) ) : '';
+	$country_iso = preg_match( '/^[A-Z]{2}$/', $raw_iso ) ? $raw_iso : 'XX';
+
+	// --- Country name ---
+	$country = isset( $_POST['country'] ) ? substr( sanitize_text_field( wp_unslash( $_POST['country'] ) ), 0, 64 ) : '';
+
+	// --- Risk score ---
+	$risk = isset( $_POST['risk'] ) ? intval( $_POST['risk'] ) : 0;
 	if ( $risk < 0 || $risk > 100 ) {
 		wp_send_json_error( array( 'message' => 'Invalid risk score' ) );
 		return;
 	}
 
-	// Use existing logging function.
+	// --- Page URL ---
+	$page_url = isset( $_POST['page_url'] ) ? esc_url_raw( wp_unslash( $_POST['page_url'] ) ) : '';
+
+	// Log the validated values.
 	pvb_log_action( $ip, $type, $country, $country_iso, $risk, $page_url, 'CORS' );
 
 	wp_send_json_success();
@@ -238,12 +241,3 @@ if ( 'on' === get_option( 'pvb_log_user_ip_select_box' ) ) {
 	add_action( 'wp_ajax_pvb_log_cors_detection', 'pvb_handle_cors_detection' );
 	add_action( 'wp_ajax_nopriv_pvb_log_cors_detection', 'pvb_handle_cors_detection' );
 }
-
-/**
- * Generate a fresh nonce.
- */
-function pvb_get_fresh_nonce() {
-	wp_send_json_success( wp_create_nonce( 'pvb_cors_nonce' ) );
-}
-add_action( 'wp_ajax_pvb_get_fresh_nonce', 'pvb_get_fresh_nonce' );
-add_action( 'wp_ajax_nopriv_pvb_get_fresh_nonce', 'pvb_get_fresh_nonce' );

@@ -298,8 +298,11 @@ function pvb_review_admin_notice() {
 			<div class="pvbrvwwraptext">
 				<h2 class="pvb-headline">
 					<?php
-						// translators: %s is the site name.
-						printf( esc_html__( 'Thank you for using Proxy & VPN Blocker on %s! 🎉', 'proxy-vpn-blocker' ), $site_name );
+						printf(
+							/* translators: %s is the site name. */
+							esc_html__( 'Thank you for using Proxy & VPN Blocker on %s! 🎉', 'proxy-vpn-blocker' ),
+							esc_html( $site_name )
+						);
 					?>
 				</h2>
 				<?php if ( $has_stats ) : ?>
@@ -307,7 +310,7 @@ function pvb_review_admin_notice() {
 					<i class="fa-solid fa-chart-simple"></i>
 					<?php
 						printf(
-							// translators: %1$s is the period text, %2$s is the total blocks, %3$s is the unique IPs.
+							/* translators: %1$s is the time period (e.g. "Over the past 30 days"), %2$s is the total number of blocked requests, %3$s is the number of unique IP addresses. */
 							esc_html__( '%1$s, %2$s requests were blocked from %3$s unique IP Addresses, helping to keep your site secure.', 'proxy-vpn-blocker' ),
 							esc_html( $period_text ),
 							'<strong>' . esc_html( $total_blocks ) . '</strong>',

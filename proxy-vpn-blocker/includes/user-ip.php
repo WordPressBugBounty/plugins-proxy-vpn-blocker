@@ -5,6 +5,10 @@
  * @package Proxy & VPN Blocker
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Get a users IP and other information when they register. Save this as user meta.
  *
@@ -394,7 +398,7 @@ function edit_user_profile( $profileuser ) {
 		if ( ! empty( $last_login_ip_metrics[0]['datetime_blog'] ) ) {
 			$login_time = $last_login_ip_metrics[0]['datetime_blog'];
 		} else {
-			$login_time = 'Uknown';
+			$login_time = 'Unknown';
 		}
 
 		$registration_ip_metrics   = get_user_meta( $profileuser->ID, 'registration_ip_metrics', false );
@@ -438,18 +442,33 @@ function edit_user_profile( $profileuser ) {
 		if ( ! empty( $registration_ip_metrics[0]['datetime_blog'] ) ) {
 			$reg_time = $registration_ip_metrics[0]['datetime_blog'];
 		} else {
-			$reg_time = 'Uknown';
+			$reg_time = 'Unknown';
 		}
 
+		// Define allowed HTML tags and attributes for wp_kses().
+		$allowed_html = array(
+			'br'     => array(),
+			'div'    => array( 'class' => array(), 'style' => array() ),
+			'p'      => array( 'class' => array(), 'style' => array() ),
+			'strong' => array( 'style' => array() ),
+			'span'   => array( 'class' => array(), 'style' => array() ),
+			'a'      => array( 'href' => array(), 'target' => array(), 'title' => array(), 'style' => array() ),
+			'img'    => array( 'class' => array(), 'src' => array(), 'title' => array() ),
+		);
+
+		$last_login_ip      = get_user_meta( $profileuser->ID, 'last_login_ip', true );
+		$signup_ip          = get_user_meta( $profileuser->ID, 'signup_ip', true );
+		$registration_ip    = get_user_meta( $profileuser->ID, 'registration_ip', true );
+
 		$user_ip_html = '';
-		if ( '' !== get_user_meta( $profileuser->ID, 'last_login_ip', true ) ) {
-			$user_ip_html .= '<br /><div class="pvb-user-ip-container" style="background:' . $riskl_bg . ';">';
+		if ( '' !== $last_login_ip ) {
+			$user_ip_html .= '<br /><div class="pvb-user-ip-container" style="background:' . esc_attr( $riskl_bg ) . ';">';
 			$user_ip_html .= '<strong>Last Login IP</strong>';
 			$user_ip_html .= '<div class="pvb-users-tooltip-container">';
 			$user_ip_html .= '	<span class="dashicons dashicons-clock pvb-users-tooltip-icon"></span>';
-			$user_ip_html .= '	<span class="pvb-users-tooltip-content">' . $login_time . '</span>';
+			$user_ip_html .= '	<span class="pvb-users-tooltip-content">' . esc_html( $login_time ) . '</span>';
 			$user_ip_html .= '</div>';
-			$user_ip_html .= '<p class="pvb-last-login-ip"><img class="pvb-ip-user-flag" src="' . $login_flag . '" title="' . $last_login_country_full . ' : ' . $last_login_city . '"></img> <a href="https://proxycheck.io/threats/' . get_user_meta( $profileuser->ID, 'last_login_ip', true ) . '" target="_blank" title="IP Threat Information for: ' . get_user_meta( $profileuser->ID, 'last_login_ip', true ) . '" >' . get_user_meta( $profileuser->ID, 'last_login_ip', true ) . '</a></p><p>Risk: <strong style="color:' . $riskl_color . ';">' . $last_login_risk . '%</strong></p>';
+			$user_ip_html .= '<p class="pvb-last-login-ip"><img class="pvb-ip-user-flag" src="' . esc_url( $login_flag ) . '" title="' . esc_attr( $last_login_country_full ) . ' : ' . esc_attr( $last_login_city ) . '"></img> <a href="' . esc_url( 'https://proxycheck.io/threats/' . $last_login_ip ) . '" target="_blank" title="' . esc_attr( 'IP Threat Information for: ' . $last_login_ip ) . '" >' . esc_html( $last_login_ip ) . '</a></p><p>Risk: <strong style="color:' . esc_attr( $riskl_color ) . ';">' . esc_html( $last_login_risk ) . '%</strong></p>';
 			$user_ip_html .= '</div>';
 		} else {
 			$user_ip_html .= '<br /><div class="pvb-user-ip-container" style="background:#e9e9e9;">';
@@ -457,19 +476,19 @@ function edit_user_profile( $profileuser ) {
 			$user_ip_html .= '<p class="pvb-last-login-ip">User Hasn\'t Logged In</p>';
 			$user_ip_html .= '</div>';
 		}
-		if ( '' !== get_user_meta( $profileuser->ID, 'signup_ip', true ) && 'none' !== get_user_meta( $profileuser->ID, 'signup_ip', true ) && '' === get_user_meta( $profileuser->ID, 'registration_ip', true ) ) {
-			$user_ip_html .= '<br /><div class="pvb-user-ip-container" style="background:' . $riskr_bg . ';"';
+		if ( '' !== $signup_ip && 'none' !== $signup_ip && '' === $registration_ip ) {
+			$user_ip_html .= '<br /><div class="pvb-user-ip-container" style="background:' . esc_attr( $riskr_bg ) . ';">';
 			$user_ip_html .= '<strong>Registration IP</strong>';
-			$user_ip_html .= '<p class="pvb-registration-ip"><a style="font-size: 13px;" href="https://proxycheck.io/threats/' . get_user_meta( $user_id, 'signup_ip', true ) . '" target="_blank" title="IP Threat Information for: ' . get_user_meta( $profileuser->ID, 'signup_ip', true ) . '">' . get_user_meta( $profileuser->ID, 'signup_ip', true ) . '</a><p style="font-size: 13px;">Risk: <strong>Unknown</strong></p>';
+			$user_ip_html .= '<p class="pvb-registration-ip"><a style="font-size: 13px;" href="' . esc_url( 'https://proxycheck.io/threats/' . $signup_ip ) . '" target="_blank" title="' . esc_attr( 'IP Threat Information for: ' . $signup_ip ) . '">' . esc_html( $signup_ip ) . '</a><p style="font-size: 13px;">Risk: <strong>Unknown</strong></p>';
 			$user_ip_html .= '</div>';
-		} elseif ( '' !== get_user_meta( $profileuser->ID, 'registration_ip', true ) ) {
-			$user_ip_html .= '<br /><div class="pvb-user-ip-container" style="background:' . $riskr_bg . ';">';
+		} elseif ( '' !== $registration_ip ) {
+			$user_ip_html .= '<br /><div class="pvb-user-ip-container" style="background:' . esc_attr( $riskr_bg ) . ';">';
 			$user_ip_html .= '<strong>Registration IP</strong>';
 			$user_ip_html .= '<div class="pvb-users-tooltip-container">';
 			$user_ip_html .= '	<span class="dashicons dashicons-clock pvb-users-tooltip-icon"></span>';
-			$user_ip_html .= '	<span class="pvb-users-tooltip-content">' . $reg_time . '</span>';
+			$user_ip_html .= '	<span class="pvb-users-tooltip-content">' . esc_html( $reg_time ) . '</span>';
 			$user_ip_html .= '</div>';
-			$user_ip_html .= '<p class="pvb-registration-ip"><img class="pvb-ip-user-flag" src="' . $registration_flag . '" title="' . $registration_country_full . ' : ' . $registration_city . '"></img> <a href="https://proxycheck.io/threats/' . get_user_meta( $profileuser->ID, 'registration_ip', true ) . '" target="_blank" title="IP Threat Information for: ' . get_user_meta( $profileuser->ID, 'registration_ip', true ) . '">' . get_user_meta( $profileuser->ID, 'registration_ip', true ) . '</a></p><p>Risk: <strong style="color:' . $riskr_color . ';">' . $riskr . '</strong></p>';
+			$user_ip_html .= '<p class="pvb-registration-ip"><img class="pvb-ip-user-flag" src="' . esc_url( $registration_flag ) . '" title="' . esc_attr( $registration_country_full ) . ' : ' . esc_attr( $registration_city ) . '"></img> <a href="' . esc_url( 'https://proxycheck.io/threats/' . $registration_ip ) . '" target="_blank" title="' . esc_attr( 'IP Threat Information for: ' . $registration_ip ) . '">' . esc_html( $registration_ip ) . '</a></p><p>Risk: <strong style="color:' . esc_attr( $riskr_color ) . ';">' . esc_html( $riskr ) . '</strong></p>';
 			$user_ip_html .= '</div>';
 		} else {
 			$user_ip_html .= '<br /><div class="pvb-user-ip-container" style="background:#e9e9e9;">';
@@ -477,7 +496,7 @@ function edit_user_profile( $profileuser ) {
 			$user_ip_html .= '<p class="pvb-registration-ip">Not Recorded</p>';
 			$user_ip_html .= '</div>';
 		}
-		echo $user_ip_html;
+		echo wp_kses( $user_ip_html, $allowed_html );
 	}
 }
 add_action( 'edit_user_profile', 'edit_user_profile', 10, 1 );

@@ -74,7 +74,7 @@ function pvb_render_classic_checkbox_meta_box( $post ) {
 	<p>
 		<label>
 			<input type="checkbox" name="_pvb_checkbox_block_on_post" value="1" <?php checked( $value, '1' ); ?> />
-			<?php _e( 'Block on this Page/Post', 'pvb' ); ?>
+			<?php esc_html_e( 'Block on this Page/Post', 'proxy-vpn-blocker' ); ?>
 		</label>
 	</p>
 	<?php

@@ -12,16 +12,12 @@ jQuery(document).ready(function($) {
         const extraDataRow = $(this).next('.extra-data-row');
         const semiCircle = $(this).find('.semi-circle');
 
-        // Check if the extra-data-row is currently visible before toggling
         if (extraDataRow.is(':visible')) {
-            // If visible, hide the semi-circle with a fade-out effect
             semiCircle.fadeOut("fast");
         } else {
-            // If hidden, show the semi-circle with a fade-in effect
             semiCircle.fadeIn("fast");
         }
 
-        // Toggle the visibility of the extra-data-row with a slide effect
         extraDataRow.slideToggle("slow");
     });
 
@@ -35,16 +31,181 @@ jQuery(document).ready(function($) {
         });
     }
 
+    /**
+     * Build a single log row using DOM construction only.
+     *
+     * No log value is ever passed through innerHTML or string concatenation —
+     * every field is assigned via .textContent, .setAttribute(), or a typed
+     * DOM property. This means a stored payload such as:
+     *   xx" onerror="alert(1)"
+     * is treated as a plain string by the browser and never parsed as HTML.
+     */
+    function buildLogRow(log) {
+        const imagePath = pvb_action_logs.flags_url;
+
+        // ── Outer angry-grid wrapper ──────────────────────────────────────────
+        const angryGrid = document.createElement('div');
+        angryGrid.className = 'angry-grid';
+        angryGrid.dataset.logId = log.id; // safe: dataset assignment, not innerHTML
+
+        // item-0 — timestamp
+        const item0 = document.createElement('div');
+        item0.className = 'item-0';
+        item0.title = log.blocked_at_wp;           // .title is a text property, not HTML
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'space';
+        timeSpan.textContent = timeAgo(log.blocked_at); // textContent never parsed as HTML
+        item0.appendChild(timeSpan);
+        angryGrid.appendChild(item0);
+
+        // item-1 — IP address link
+        const item1 = document.createElement('div');
+        item1.className = 'item-1';
+        const ipSpan = document.createElement('span');
+        const ipLink = document.createElement('a');
+        // Build the href by concatenating onto a fixed prefix, then assign
+        // as a property — the browser normalises it and won't execute javascript:
+        ipLink.href = 'https://proxycheck.io/threats/' + encodeURIComponent(log.ip_address);
+        ipLink.target = '_blank';
+        ipLink.textContent = log.ip_address;
+        ipSpan.appendChild(ipLink);
+        item1.appendChild(ipSpan);
+        angryGrid.appendChild(item1);
+
+        // item-2 — country flag + name
+        const item2 = document.createElement('div');
+        item2.className = 'item-2';
+        const countrySpan = document.createElement('span');
+
+        const flag = document.createElement('img');
+        flag.className = 'country-flag';
+        // src is built from a fixed base path + a server-escaped ISO code.
+        // Assigning to .src (not innerHTML) means the browser parses it as a
+        // URL — a payload like  xx" onerror="...  becomes a broken image URL,
+        // not an event handler.
+        flag.src = imagePath + log.country_iso + '.png';
+        flag.alt = log.country + ' flag'; // .alt is a text property
+        flag.title = log.country;         // .title is a text property
+
+        const countryText = document.createElement('span');
+        countryText.textContent = log.country + ' (' + log.country_iso + ')';
+
+        countrySpan.appendChild(flag);
+        countrySpan.appendChild(countryText);
+        item2.appendChild(countrySpan);
+        angryGrid.appendChild(item2);
+
+        // item-3 — risk score
+        const item3 = document.createElement('div');
+        item3.className = 'item-3';
+        const riskSpan = document.createElement('span');
+        riskSpan.textContent = log.risk_score;
+        item3.appendChild(riskSpan);
+        angryGrid.appendChild(item3);
+
+        // semi-circle toggle indicator
+        const semiCircle = document.createElement('div');
+        semiCircle.className = 'semi-circle';
+        semiCircle.style.display = 'none';
+        const chevron = document.createElement('i');
+        chevron.className = 'fa-fw fa-solid fa-angle-down';
+        semiCircle.appendChild(chevron);
+        angryGrid.appendChild(semiCircle);
+
+        // ── Extra data row ────────────────────────────────────────────────────
+        const extraRow = document.createElement('div');
+        extraRow.className = 'extra-data-row';
+        const extraContent = document.createElement('div');
+        extraContent.className = 'extra-data-row-content';
+
+        // Detected types section
+        const typesSection = document.createElement('div');
+        typesSection.className = 'extra-data-row-section';
+        const typeTitle = document.createElement('div');
+
+        if (log.detected_type) {
+            const detectedTypes = log.detected_type.split(',').map(t => t.trim());
+            typeTitle.className = 'data-row-title';
+            typeTitle.textContent = 'Detected Types';
+            typesSection.appendChild(typeTitle);
+
+            detectedTypes.forEach(function(type) {
+                const typeSpan = document.createElement('span');
+                typeSpan.className = 'space ipinflux_type_' + type.toLowerCase();
+                typeSpan.textContent = type; // textContent — not innerHTML
+                typesSection.appendChild(typeSpan);
+            });
+        } else {
+            typeTitle.className = 'data-row-title';
+            typeTitle.textContent = 'Detected Type';
+            typesSection.appendChild(typeTitle);
+
+            const fallbackSpan = document.createElement('span');
+            const proxyType = log.detected_type === 'VPN' ? 'type_vpn' : 'type_others';
+            fallbackSpan.className = 'space ipinflux_type_' + proxyType;
+            fallbackSpan.textContent = log.detected_type;
+            typesSection.appendChild(fallbackSpan);
+        }
+        extraContent.appendChild(typesSection);
+
+        // Information section
+        const infoSection = document.createElement('div');
+        infoSection.className = 'extra-data-row-section';
+        const infoTitle = document.createElement('div');
+        infoTitle.className = 'data-row-title';
+        infoTitle.textContent = 'Information';
+        infoSection.appendChild(infoTitle);
+
+        // Blocked URL — textContent only, never injected into an attribute
+        const urlSpan = document.createElement('span');
+        urlSpan.className = 'space ipinflux_blocked_on_url';
+        urlSpan.textContent = 'URL: ' + log.blocked_url;
+        infoSection.appendChild(urlSpan);
+
+        // API type
+        if (log.api_type) {
+            const apiSpan = document.createElement('span');
+            apiSpan.className = 'space ipinflux_api_type_used';
+            apiSpan.textContent = 'Processed By: ' + log.api_type;
+            infoSection.appendChild(apiSpan);
+        }
+
+        // Whitelist button
+        if (pvb_action_logs.proxycheck_apikey_set === 'yes') {
+            const wlDiv = document.createElement('div');
+            wlDiv.className = 'log-whitelist-btn';
+            const wlBtn = document.createElement('button');
+            wlBtn.className = 'add-to-whitelist-btn';
+            // Store IP in dataset — never in an HTML attribute via concatenation
+            wlBtn.dataset.ip = log.ip_address;
+            const wlIcon = document.createElement('i');
+            wlIcon.className = 'fa-solid fa-plus';
+            wlBtn.appendChild(wlIcon);
+            wlBtn.appendChild(document.createTextNode(' Whitelist IP'));
+            wlDiv.appendChild(wlBtn);
+            infoSection.appendChild(wlDiv);
+        }
+
+        extraContent.appendChild(infoSection);
+        extraRow.appendChild(extraContent);
+
+        // Return both nodes as a fragment so the caller appends them together
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(angryGrid);
+        fragment.appendChild(extraRow);
+        return fragment;
+    }
+
     // Function to load logs via AJAX
     function loadLogs(page = 1) {
-        if (isRefreshing) return; // Prevent loading if currently refreshing
-        isRefreshing = true; // Set flag to true during refresh
+        if (isRefreshing) return;
+        isRefreshing = true;
 
-        // Step 1: Capture the IDs of currently open rows
+        // Capture the IDs of currently open rows
         const openRows = [];
         $('.extra-data-row:visible').each(function () {
-            const rowId = $(this).prev('.angry-grid').attr('data-log-id'); // Get the unique log ID
-            openRows.push(rowId); // Store the ID of the open rows
+            const rowId = $(this).prev('.angry-grid').attr('data-log-id');
+            openRows.push(rowId);
         });
 
         $.ajax({
@@ -58,85 +219,23 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    // Step 2: Clear previous logs
-                    $('.log_content').empty();
+                    const container = document.querySelector('.log_content');
+                    container.innerHTML = ''; // Safe — clearing our own container, not inserting user data
 
-                    // Step 3: Loop through the logs and display them
                     $.each(response.data, function(index, log) {
-                        const imagePath = pvb_action_logs.flags_url;
-                        const countryCode = log.country_iso;
-                        const flagPath = `${imagePath}${countryCode}.png`;
-
-                        let proxyType = log.detected_type === "VPN" ? 'type_vpn' : 'type_others';
-                        let blockMethod = log.block_method === "captcha_challenge" ? 'Captcha Challenge' :
-                                          log.block_method === "url_redirect" ? 'URL Redirect' :
-                                          log.block_method === "block_page" ? 'Block Page' :
-                                          log.block_method === "settings_default" ? 'Settings Default' : 'Undefined';
-
-                        let logHtml = '<div class="angry-grid" data-log-id="' + log.id + '">' +  // Use log.id as a unique identifier
-                            '<div class="item-0" title="' + log.blocked_at_wp + '"><span class="space">' + timeAgo(log.blocked_at) + '</span></div>' +
-                            '<div class="item-1"><span><a href="https://proxycheck.io/threats/' + log.ip_address + '" target="_blank">' + log.ip_address + '</a></span></div>' +
-                            '<div class="item-2"><span><img class="country-flag" alt="' + log.country + ' flag" title="' + log.country + '" src="' + flagPath + '"><span>' + log.country + ' (' + log.country_iso + ')</span></span></div>' +
-                            '<div class="item-3"><span>' + log.risk_score + '</span></div>' +
-                            '<div class="semi-circle" style="display: none;"><i class="fa-fw fa-solid fa-angle-down"></i></div>' + // Initially hidden
-                        '</div>' +
-                        '<div class="extra-data-row">' +
-                            '<div class="extra-data-row-content">';
-
-                        // Handle multiple detected types - split by comma and create individual badges
-                        if (log.detected_type) {
-                            const detectedTypes = log.detected_type.split(',').map(type => type.trim());
-                            logHtml += '<div class="extra-data-row-section">' +
-                            '<div class="data-row-title">Detected Types</div>';
-                            detectedTypes.forEach(function(type) {
-                                logHtml += '<span class="space ipinflux_type_' + type.toLowerCase() + '">' + type + '</span>';
-                            });
-                            logHtml += '</div>';
-                        } else {
-                            // Fallback for single type or empty
-                            logHtml += '<div class="extra-data-row-section">' +
-                            '<div class="data-row-title">Detected Type</div>' +
-                            '<span class="space ipinflux_type_' + proxyType + '">' + log.detected_type + '</span>' +
-                            '</div>';
-                        }
-
-                        logHtml += '<div class="extra-data-row-section">' +
-                        '<div class="data-row-title">Information</div>';
-
-                        logHtml += '<span class="space ipinflux_blocked_on_url" alt="' + log.blocked_url + '">URL: ' + log.blocked_url + '</span>';
-
-                        if (log.api_type) {
-                            logHtml += '<span class="space ipinflux_api_type_used" alt="' + log.api_type + '">Processed By: ' + log.api_type + '</span>';
-                        }
-
-                        if (pvb_action_logs.proxycheck_apikey_set === 'yes') {
-                            logHtml += '<div class="log-whitelist-btn"><button class="add-to-whitelist-btn" data-ip="' + log.ip_address + '">' +
-                                '<i class="fa-solid fa-plus"></i> Whitelist IP' +
-                            '</button></div>';
-                        }
-
-
-                        logHtml += '</div>' +
-                        '</div>' +
-                        '</div>';
-
-                        // Append the log data to the .log_content container
-                        $('.log_content').append(logHtml);
+                        container.appendChild(buildLogRow(log));
                     });
 
-                    // Step 4: Restore the previously open rows after logs are loaded
+                    // Restore previously open rows
                     openRows.forEach(function (rowId) {
                         const $angryGrid = $(`.angry-grid[data-log-id="${rowId}"]`);
                         if ($angryGrid.length) {
-                            $angryGrid.next('.extra-data-row').show(); // Show the extra data row
-                            $angryGrid.find('.semi-circle').fadeIn("slow"); // Show the semi-circle
+                            $angryGrid.next('.extra-data-row').show();
+                            $angryGrid.find('.semi-circle').fadeIn("slow");
                         }
                     });
 
-                    // Call your colorizer here!
                     updateRiskScoreColors();
-
-                    // Step 5: Update the current page
                     currentPage = page;
                 } else {
                     $('#log-container').html('<span>No logs found</span>');
@@ -146,7 +245,7 @@ jQuery(document).ready(function($) {
                 $('#log-container').html('<span>Error loading logs</span>');
             },
             complete: function() {
-                isRefreshing = false; // Reset flag when refresh is complete
+                isRefreshing = false;
             }
         });
     }
@@ -154,7 +253,7 @@ jQuery(document).ready(function($) {
     // Initial load
     loadLogs(currentPage);
 
-    // Handle pagination - Next and Previous buttons
+    // Handle pagination
     $('#prev-page').on('click', function() {
         loadLogs(currentPage + 1);
     });
@@ -167,17 +266,17 @@ jQuery(document).ready(function($) {
 
     // Mouse events to control refresh
     $('.angry-grid').on('mouseenter', function() {
-        isMouseInGrid = true; // Set the flag when mouse enters
+        isMouseInGrid = true;
     }).on('mouseleave', function() {
-        isMouseInGrid = false; // Reset the flag when mouse leaves
+        isMouseInGrid = false;
     });
 
-    // Real-time update every 15 seconds (adjust as needed)
+    // Real-time update every 15 seconds
     refreshInterval = setInterval(function() {
-        if (!isMouseInGrid) { // Only refresh if mouse is not in .angry-grid
+        if (!isMouseInGrid) {
             loadLogs(currentPage);
         }
-    }, 15000);  // Every 15 seconds
+    }, 15000);
 });
 
 function timeAgo(timestamp) {
@@ -190,11 +289,9 @@ function timeAgo(timestamp) {
     const days = Math.floor(hours / 24);
     const weeks = Math.floor(days / 7);
     
-    // Calculate months more accurately
     let months = (now.getMonth() + 12 * now.getFullYear()) - 
                 (targetDate.getMonth() + 12 * targetDate.getFullYear());
     
-    // Adjust for month boundaries
     if (now.getDate() < targetDate.getDate()) {
         months--;
     }
@@ -224,13 +321,8 @@ function timeAgo(timestamp) {
 }
 
 function convertToLocalTime(utcTimestamp) {
-    // Create a new Date object with the UTC timestamp
     const date = new Date(utcTimestamp);
-
-    // Format the date to the local time as a string
-    const localTimeString = date.toLocaleString();
-
-    return localTimeString;
+    return date.toLocaleString();
 }
 
 jQuery(function($) {
@@ -261,4 +353,3 @@ jQuery(function($) {
         });
     });
 });
-

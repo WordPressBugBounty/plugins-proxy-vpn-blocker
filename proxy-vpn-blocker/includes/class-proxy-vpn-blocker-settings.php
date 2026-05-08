@@ -1146,7 +1146,7 @@ class Proxy_VPN_Blocker_Settings {
 		echo '</div>' . "\n"; // settings grouping end.
 		echo '	<div style="display: block; margin: 0 auto;  padding: 8px;">' . "\n"; // settings tabs after start.
 		echo '		<div style="padding: 8px; background: rgba(255, 255, 255, 0.5); border-radius: 7px;">' . "\n";
-		echo '			<small>&copy; 2017 - 2025 Proxy & VPN Blocker | </small>' . "\n";
+		echo '			<small>&copy; 2017 - 2026 Proxy & VPN Blocker | </small>' . "\n";
 		echo '			<small>Proxy & VPN Blocker Lite Version: ' . esc_html( get_option( 'proxy_vpn_blocker_version' ) ) . ' | </small>' . "\n";
 		echo '			<small>Using proxycheck.io V3 API Version: ' . esc_html( get_option( 'proxy_vpn_blocker_proxycheck_api_version' ) ) . ' (BETA)</small>' . "\n";
 		echo '		</div>' . "\n";
@@ -1370,7 +1370,7 @@ class Proxy_VPN_Blocker_Settings {
 			echo '          		<li>' . __( 'Save changes to activate full functionality.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
 			echo '          		<li>' . __( 'Configure other plugin settings as required.', 'proxy-vpn-blocker' ) . '</li>' . "\n";
 			echo '          	</ol>' . "\n";
-			echo '				<p>' . __( 'Need help? Visit our <a href="https://proxyvpnblocker.com/installation-and-configuration-free/" target="_blank">Installation & Configuration Guide</a> or visit the <a href="https://wordpress.org/support/plugin/proxy-vpn-blocker/" target="_blank">WordPress Support Community</a>.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
+			echo '				<p>' . __( 'Need help? Please view our <a href="https://docs.proxyvpnblocker.com/" target="_blank">Documentation</a> or visit the <a href="https://wordpress.org/support/plugin/proxy-vpn-blocker/" target="_blank">WordPress Support Community</a>.', 'proxy-vpn-blocker' ) . '</p>' . "\n";
 			echo '				<p>' . __( 'Need more features and customization? Check out what is available in <a href="https://proxyvpnblocker.com/premium/" target="_blank">Proxy & VPN Blocker Premium</a>', 'proxy-vpn-blocker' ) . '</p>' . "\n";
 			echo '			</div>' . "\n";
 			echo '		</div>' . "\n";
@@ -1382,9 +1382,8 @@ class Proxy_VPN_Blocker_Settings {
 		echo '  	<ul class="menu first">' . "\n";
 		echo '			<li><a href="https://proxyvpnblocker.com" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> proxyvpnblocker.com</a></li>' . "\n";
 		echo '			<li><a href="https://wordpress.org/support/plugin/proxy-vpn-blocker/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Support & Issues</a></li>' . "\n";
-		echo '			<li><a href="https://proxyvpnblocker.com/installation-and-configuration-free/" target="_blank"><i class="fa-solid fa-circle-question"></i> Configuration Guide</a></li>' . "\n";
-		echo '			<li><a href="https://proxyvpnblocker.com/faq/" target="_blank"><i class="fa-solid fa-file-lines"></i> FAQ</a></li>' . "\n";
-		echo '			<li id="premium"><a href="https://proxyvpnblocker.com/premium/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Explore Premium</a></li>' . "\n";
+		echo '			<li><a href="https://docs.proxyvpnblocker.com/" target="_blank"><i class="fa-solid fa-file-lines"></i> Documentation</a></li>' . "\n";
+		echo '			<li id="premium"><a href="https://proxyvpnblocker.com/features/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Upgrade to Premium! View Benefits</a></li>' . "\n";
 		echo ' 	 	</ul>' . "\n";
 		echo '	  <span class="toggle">Menu</span>' . "\n";
 		echo '	</label>' . "\n";
@@ -1555,7 +1554,7 @@ class Proxy_VPN_Blocker_Settings {
 	 * @since 1.0
 	 */
 	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, esc_html( __( 'Cloning is forbidden.' ) ), esc_attr( $this->parent->_version ) );
+		_doing_it_wrong( __FUNCTION__, esc_html( __( 'Cloning is forbidden.', 'proxy-vpn-blocker' ) ), esc_attr( $this->parent->_version ) );
 	} // End __clone ()
 
 	/**
@@ -1564,6 +1563,6 @@ class Proxy_VPN_Blocker_Settings {
 	 * @since 1.0
 	 */
 	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, esc_html( __( 'Unserializing instances of this class is forbidden.' ) ), esc_attr( $this->parent->_version ) );
+		_doing_it_wrong( __FUNCTION__, esc_html( __( 'Unserializing instances of this class is forbidden.', 'proxy-vpn-blocker' ) ), esc_attr( $this->parent->_version ) );
 	} // End __wakeup ()
 }

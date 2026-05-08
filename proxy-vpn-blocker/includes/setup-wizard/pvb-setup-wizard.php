@@ -118,7 +118,7 @@ function get_recommended_header( $headers ) {
 						<!-- Step 1: Welcome -->
 						<div class="pvb-step active" data-step="1">
 							<div class="step-number"><?php esc_html_e( 'Step 1', 'proxy-vpn-blocker' ); ?></div>
-							<div class="pvb-settings-tabs-logo"><img src="<?php echo plugins_url( '../../assets/img/pvb-logo-large.png ', __FILE__ ); ?>" alt="Proxy & VPN Blocker Free Logo" /></div>
+							<div class="pvb-settings-tabs-logo"><img src="<?php echo esc_url( plugins_url( '../../assets/img/pvb-logo-large.png', __FILE__ ) ); ?>" alt="Proxy &amp; VPN Blocker Free Logo" /></div>
 							<h1><?php esc_html_e( 'Thank you for installing Proxy & VPN Blocker!', 'proxy-vpn-blocker' ); ?></h1>
 							<h2><?php esc_html_e( 'This wizard will help you quickly configure the most important settings and features - it\'ll only take a couple of minutes.', 'proxy-vpn-blocker' ); ?></h2>
 							<p><?php esc_html_e( 'If you wish, you may skip this step and go directly to the regular settings page.', 'proxy-vpn-blocker' ); ?></p>
@@ -333,16 +333,16 @@ function get_recommended_header( $headers ) {
 																		<?php
 																		switch ( $header['key'] ) {
 																			case 'REMOTE_ADDR':
-																				_e( 'Standard server IP detection - works for most basic hosting.', 'proxy-vpn-blocker' );
+																				esc_html_e( 'Standard server IP detection - works for most basic hosting.', 'proxy-vpn-blocker' );
 																				break;
 																			case 'HTTP_X_FORWARDED_FOR':
-																				_e( 'For load balancers and some CDNs (may contain multiple IPs).', 'proxy-vpn-blocker' );
+																				esc_html_e( 'For load balancers and some CDNs (may contain multiple IPs).', 'proxy-vpn-blocker' );
 																				break;
 																			case 'HTTP_X_REAL_IP':
-																				_e( 'Alternative real IP header used by some reverse proxies.', 'proxy-vpn-blocker' );
+																				esc_html_e( 'Alternative real IP header used by some reverse proxies.', 'proxy-vpn-blocker' );
 																				break;
 																			default:
-																				_e( 'Custom header detected on your server.', 'proxy-vpn-blocker' );
+																				esc_html_e( 'Custom header detected on your server.', 'proxy-vpn-blocker' );
 																		}
 																		?>
 																	</p>
@@ -498,7 +498,7 @@ function pvb_render_toggle_switch( $option_name, $field_id, $default_on = false 
 	// Hidden fallback field.
 	echo '<input type="hidden" name="' . esc_attr( $option_name ) . '" value="">';
 	// Actual checkbox.
-	echo '<input autocomplete="off" tabindex="0" class="onoffswitch-checkbox" type="checkbox" name="' . esc_attr( $option_name ) . '" id="' . esc_attr( $field_id ) . '" ' . $checked . '>';
+	echo '<input autocomplete="off" tabindex="0" class="onoffswitch-checkbox" type="checkbox" name="' . esc_attr( $option_name ) . '" id="' . esc_attr( $field_id ) . '" ' . esc_attr( $checked ) . '>';
 	echo '<label class="onoffswitch-label" for="' . esc_attr( $field_id ) . '">';
 	echo '<span class="onoffswitch-inner"></span>';
 	echo '<span class="onoffswitch-switch"></span>';

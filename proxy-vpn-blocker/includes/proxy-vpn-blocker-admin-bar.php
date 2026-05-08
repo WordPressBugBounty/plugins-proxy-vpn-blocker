@@ -5,6 +5,10 @@
  * @package Proxy & VPN Blocker.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * AJAX handler for updating the toolbar state and post meta.
  */
