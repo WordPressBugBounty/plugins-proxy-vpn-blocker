@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Function to log Proxy & VPN blocker Actions
- * 
+ *
  * @param string|null $ip IP address of the visitor.
  * @param string|null $type Type of detection (e.g., "proxy", "vpn", etc.).
  * @param string|null $country Detected country of the visitor.

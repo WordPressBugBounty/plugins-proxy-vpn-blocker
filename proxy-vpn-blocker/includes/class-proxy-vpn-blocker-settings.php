@@ -1148,7 +1148,7 @@ class Proxy_VPN_Blocker_Settings {
 		echo '		<div style="padding: 8px; background: rgba(255, 255, 255, 0.5); border-radius: 7px;">' . "\n";
 		echo '			<small>&copy; 2017 - 2026 Proxy & VPN Blocker | </small>' . "\n";
 		echo '			<small>Proxy & VPN Blocker Lite Version: ' . esc_html( get_option( 'proxy_vpn_blocker_version' ) ) . ' | </small>' . "\n";
-		echo '			<small>Using proxycheck.io V3 API Version: ' . esc_html( get_option( 'proxy_vpn_blocker_proxycheck_api_version' ) ) . ' (BETA)</small>' . "\n";
+		echo '			<small>Using proxycheck.io V3 API Version: ' . esc_html( get_option( 'proxy_vpn_blocker_proxycheck_api_version' ) ) . '</small>' . "\n";
 		echo '		</div>' . "\n";
 		echo '	</div>' . "\n"; // settings tabs after end.
 	}

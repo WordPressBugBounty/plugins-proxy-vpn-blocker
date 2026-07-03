@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 3.3.0
  */
-define( 'PVB_DB_VERSION', '5.3.1' );
+define( 'PVB_DB_VERSION', '5.3.2' );
 
 /**
  * Function to check if the database needs an upgrade.
@@ -335,6 +335,11 @@ function upgrade_pvb_db() {
 				}
 			}
 			update_option( 'pvb_db_version', '5.3.1' );
+		}
+
+		// Upgrade DB to 5.3.2 if lower.
+		if ( version_compare( $database_version, '5.3.2', '<' ) ) {
+			update_option( 'pvb_db_version', '5.3.2' );
 		}
 	}
 }

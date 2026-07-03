@@ -11,7 +11,7 @@
  * Plugin Name: Proxy & VPN Blocker
  * Plugin URI: https://proxyvpnblocker.com
  * description: Proxy & VPN Blocker prevents Proxies, VPN's and other unwanted visitors from accessing pages, posts and more, using Proxycheck.io API data.
- * Version: 3.5.9
+ * Version: 3.6.0
  * Author: Proxy & VPN Blocker
  * Author URI: https://profiles.wordpress.org/rickstermuk
  * License: GPLv2
@@ -26,11 +26,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-$version     = '3.5.9';
-$update_date = 'May 8th 2026';
+$version     = '3.6.0';
+$update_date = 'July 3rd 2026';
 
 // Set the proxycheck.io v3 API version we are using.
-$proxycheck_api_version = '11-February-2026';
+$proxycheck_api_version = '24-June-2026';
 
 if ( version_compare( get_option( 'proxy_vpn_blocker_version' ), $version, '<' ) ) {
 	update_option( 'proxy_vpn_blocker_version', $version );
@@ -502,22 +502,22 @@ function pvb_select_paths_integrate() {
 			$is_protected = false;
 
 			// Handle both data formats:
-			// 1. Premium format: array('path/' => array('method' => '...', 'redirect_url' => '...'))
-			// 2. Simple format: array('path/', 'path2/')
+			// 1. Premium format: array('path/' => array('method' => '...', 'redirect_url' => '...')).
+			// 2. Simple format: array('path/', 'path2/').
 			if ( ! empty( $blocked_paths ) && is_array( $blocked_paths ) ) {
-				// Check if it's the premium format (associative array with path keys)
+				// Check if it's the premium format (associative array with path keys).
 				$path_keys = array();
 				foreach ( $blocked_paths as $key => $value ) {
 					if ( is_array( $value ) && isset( $value['method'] ) ) {
-						// Premium format: key is the path
+						// Premium format: key is the path.
 						$path_keys[] = $key;
 					} elseif ( is_string( $value ) ) {
-						// Simple format: value is the path
+						// Simple format: value is the path.
 						$path_keys[] = $value;
 					}
 				}
 
-				// If no paths were extracted, try treating keys as paths (fallback)
+				// If no paths were extracted, try treating keys as paths (fallback).
 				if ( empty( $path_keys ) ) {
 					$path_keys = array_keys( $blocked_paths );
 				}

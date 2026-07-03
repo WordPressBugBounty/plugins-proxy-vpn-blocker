@@ -47,29 +47,6 @@ jQuery(document).ready(function($) {
         }
     }
 
-    var range_sliderrange5 = document.getElementById("sliderrange5");
-    var range_slidervalue5 = document.getElementById("sliderrangeoutput5");
-    if( typeof range_sliderrange5 !== 'undefined' && range_sliderrange5 !== null) {
-        range_slidervalue5.innerHTML = range_sliderrange5.value; // Display the default range-slider__range value
-        $('#sliderrangeoutput5').append('>')
-
-        range_sliderrange4.oninput = function() {
-            range_slidervalue4.innerHTML = this.value;
-            $('#sliderrangeoutput5').append('>')
-        }
-    }
-
-    var range_sliderrange6 = document.getElementById("sliderrange6");
-    var range_slidervalue6 = document.getElementById("sliderrangeoutput6");
-    if( typeof range_sliderrange6 !== 'undefined' && range_sliderrange6 !== null) {
-        range_slidervalue6.innerHTML = range_sliderrange6.value; // Display the default range-slider__range value
-        $('#sliderrangeoutput6').append('>')
-
-        range_sliderrange6.oninput = function() {
-            range_slidervalue6.innerHTML = this.value;
-            $('#sliderrangeoutput6').append('>')
-        }
-    }
 
     if (typeof Cookies.get('pvb-hide-donation-div') !== 'undefinied') {
         $("#pvbdonationhide").show();

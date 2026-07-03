@@ -496,7 +496,7 @@ nav {
 	cursor: pointer;
     transform: scale(1) !important;
 }
-.range_slidervalue, .range_slidervalue2, .range_slidervalue3, .range_slidervalue4, .range_slidervalue5, .range_slidervalue6 {
+.range_slidervalue, .range_slidervalue2, .range_slidervalue3, .range_slidervalue4, .range_slidervalue5, .range_slidervalue6, .range_slidervalue7 {
     display: inline-block;
     position: absolute;
     width: 45px;

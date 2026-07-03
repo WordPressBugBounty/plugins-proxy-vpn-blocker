@@ -20,6 +20,8 @@ $allowed_html = array(
 		'href'   => array(),
 		'title'  => array(),
 		'target' => array(),
+		'style'  => array(),
+		'class'  => array(),
 	),
 	'i'       => array(
 		'class' => array(),
@@ -93,5 +95,12 @@ $html .= '				<button id="prev-page" class="pvbdefault submit" type="submit"><i 
 $html .= '				<button id="next-page" class="pvbdefault submit" style="float: right;" type="submit">Newer Entries <i class="fa-fw fa-solid fa-chevron-right"></i></button>' . "\n";
 $html .= '			</div>' . "\n";
 $html .= '		</div>' . "\n";
-$html .= '</div>' . "\n";
+$export_nonce = wp_create_nonce( 'pvb_export_csv_nonce' );
+$export_url   = admin_url( 'admin-ajax.php?action=export_pvb_logs_csv&nonce=' . $export_nonce );
+$html       .= '<div class="pvb-export-csv-container" style="margin-top: 15px; text-align: center;">' . "\n";
+$html       .= '    <a href="' . esc_url( $export_url ) . '" class="pvbdefault submit" style="text-decoration: none; display: inline-block; padding: 8px 20px;">' . "\n";
+$html       .= '        <i class="fa-fw fa-solid fa-download"></i> Export CSV' . "\n";
+$html       .= '    </a>' . "\n";
+$html       .= '</div>' . "\n";
+$html       .= '</div>' . "\n";
 echo wp_kses( $html, $allowed_html );

@@ -1,10 +1,10 @@
 === Proxy & VPN Blocker ===
 Contributors: rickstermuk
 Tags: security, vpn blocker, proxy blocker, tor blocker, spam protection
-Requires at least: 4.9
-Tested up to: 6.9.4
+Requires at least: 5.8
+Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 3.5.9
+Stable tag: 3.6.0
 License: GPLv2
 
 Block VPNs, proxies, Tor, and spam on WordPress. Strengthen security and stop fake users with smart IP blocking via proxycheck.io.
@@ -36,7 +36,7 @@ Whether you’re running a blog, store, or membership site, this plugin helps ke
 * Log registration and recent login IPs in the Users list and profile - linked to proxycheck.io’s Threats page  
 * Manage proxycheck.io Whitelist and Blacklist directly from WordPress  
 * Simple integration via WordPress Editor and Toolbar for page-level protection  
-* Lightweight, fast, and built to complement other security plugins  
+* Lightweight, fast, and built to complement other security plugins
 
 And much more available in [Proxy & VPN Blocker Premium](https://proxyvpnblocker.com/premium)!
 
@@ -120,6 +120,10 @@ For API or account support, contact proxycheck.io directly.
 6. Action Log - A list of recently detected IP Addresses.
 
 == Changelog ==
+= 3.6.0 2026-07-03 =
+* New: Export Action Log to CSV - one-click download of all blocked IP data from the Action Log page
+* Now using June 24th 2026 proxycheck.io v3 API Version (Now no longer BETA).
+
 = 3.5.9 2026-06-08 =
 * Security: Resolved output escaping issues flagged in security audit.
 * Security: Improved sanitisation across user profile display output.

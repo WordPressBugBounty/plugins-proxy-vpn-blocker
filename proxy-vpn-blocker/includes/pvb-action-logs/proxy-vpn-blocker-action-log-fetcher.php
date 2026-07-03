@@ -104,3 +104,100 @@ if ( ! wp_next_scheduled( 'delete_old_pvb_action_logs' ) ) {
 }
 
 add_action( 'delete_old_pvb_action_logs', 'delete_old_pvb_logs' );
+
+/**
+ * Helper function to build a CSV line string (mimics fputcsv but returns a string).
+ *
+ * @param array  $fields    The array of fields to encode.
+ * @param string $delimiter The field delimiter (default comma).
+ * @param string $enclosure The field enclosure character (default double-quote).
+ * @return string The encoded CSV line, including trailing newline.
+ */
+function pvb_fputcsv_line( $fields, $delimiter = ',', $enclosure = '"' ) {
+	$output = array();
+	foreach ( $fields as $value ) {
+		// Enclose in quotes if the value contains delimiter, enclosure, or newline.
+		if ( preg_match( '/[' . preg_quote( $delimiter . $enclosure, '/' ) . "\n\r]/", $value ) ) {
+			$value = $enclosure . str_replace( $enclosure, $enclosure . $enclosure, $value ) . $enclosure;
+		}
+		$output[] = $value;
+	}
+	return implode( $delimiter, $output ) . "\n";
+}
+
+/**
+ * Export action logs as CSV via AJAX.
+ */
+function export_pvb_logs_csv() {
+
+	// Verify nonce.
+	if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'pvb_export_csv_nonce' ) ) {
+		wp_die( 'Invalid nonce' );
+	}
+
+	// Check user capabilities.
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( 'Insufficient permissions' );
+	}
+
+	global $wpdb;
+
+	// Fetch all logs (up to 30 days, same as the cleanup cron).
+	$logs = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT * FROM {$wpdb->prefix}pvb_visitor_action_log WHERE blocked_at >= %s ORDER BY blocked_at DESC",
+			gmdate( 'Y-m-d H:i:s', strtotime( '-30 days' ) )
+		)
+	);
+
+	// Set CSV headers.
+	header( 'Content-Type: text/csv; charset=utf-8' );
+	header( 'Content-Disposition: attachment; filename="pvb-action-log-' . gmdate( 'Y-m-d' ) . '.csv"' );
+	header( 'Pragma: no-cache' );
+	header( 'Expires: 0' );
+
+	// Build the CSV content in memory.
+	$csv_content = '';
+
+	// UTF-8 BOM for Excel compatibility.
+	$csv_content .= "\xEF\xBB\xBF";
+
+	// CSV column headers.
+	$csv_content .= pvb_fputcsv_line(
+		array(
+			'IP Address',
+			'Detection Type',
+			'Country',
+			'Country ISO',
+			'Risk Score',
+			'Blocked URL',
+			'Block Method',
+			'API Type',
+			'Blocked At (UTC)',
+		)
+	);
+
+	// Write rows.
+	if ( ! empty( $logs ) ) {
+		foreach ( $logs as $log ) {
+			$csv_content .= pvb_fputcsv_line(
+				array(
+					$log->ip_address,
+					$log->detected_type,
+					$log->country,
+					$log->country_iso,
+					$log->risk_score,
+					$log->blocked_url,
+					$log->block_method,
+					$log->api_type,
+					$log->blocked_at,
+				)
+			);
+		}
+	}
+
+	// Output the complete CSV content.
+	echo $csv_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	exit;
+}
+add_action( 'wp_ajax_export_pvb_logs_csv', 'export_pvb_logs_csv' );
